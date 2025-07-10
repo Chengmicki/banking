@@ -5,6 +5,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
+import { AdminAuthProvider } from "@/hooks/use-admin-auth";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Navbar } from "@/components/layout/navbar";
 import { NotificationToast } from "@/components/ui/notification-toast";
@@ -17,6 +18,9 @@ import BillPay from "@/pages/bill-pay";
 import Cards from "@/pages/cards";
 import Crypto from "@/pages/crypto";
 import Settings from "@/pages/settings";
+import AdminLogin from "@/pages/admin-login";
+import AdminRegister from "@/pages/admin-register";
+import AdminDashboard from "@/pages/admin-dashboard";
 import NotFound from "@/pages/not-found";
 
 const pageTitle: Record<string, string> = {
@@ -101,6 +105,9 @@ function AppRouter() {
 
   return (
     <Switch>
+      <Route path="/admin/login" component={AdminLogin} />
+      <Route path="/admin/register" component={AdminRegister} />
+      <Route path="/admin/*" component={AdminDashboard} />
       {isAuthenticated ? (
         <Route component={AuthenticatedApp} />
       ) : (
@@ -115,8 +122,10 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <AuthProvider>
-          <Toaster />
-          <AppRouter />
+          <AdminAuthProvider>
+            <Toaster />
+            <AppRouter />
+          </AdminAuthProvider>
         </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>

@@ -104,19 +104,19 @@ export class MemStorage implements IStorage {
   private currentAdminId = 1;
 
   // User operations
-  async getUser(id: string): Promise<User | null> {
-    return this.users.get(id) || null;
+  async getUser(id: number): Promise<User | undefined> {
+    return this.users.get(id);
   }
 
-  async getUserByEmail(email: string): Promise<User | null> {
-    return Array.from(this.users.values()).find(user => user.email === email) || null;
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(user => user.email === email);
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = (this.currentUserId++).toString();
+    const id = this.currentUserId++;
     const user: User = {
-      _id: id,
       ...insertUser,
+      id,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -124,71 +124,55 @@ export class MemStorage implements IStorage {
     return user;
   }
 
-  async updateUser(id: string, updateData: Partial<User>): Promise<User | null> {
+  async updateUser(id: number, updateData: Partial<User>): Promise<User> {
     const user = this.users.get(id);
-    if (!user) return null;
-
+    if (!user) throw new Error("User not found");
+    
     const updatedUser = { ...user, ...updateData, updatedAt: new Date() };
     this.users.set(id, updatedUser);
     return updatedUser;
   }
 
-  async getAllUsers(): Promise<User[]> {
-    return Array.from(this.users.values());
-  }
-
-  async deleteUser(id: string): Promise<boolean> {
-    return this.users.delete(id);
-  }
-
   // Account operations
-  async getAccountsByUserId(userId: string): Promise<Account[]> {
+  async getAccountsByUserId(userId: number): Promise<Account[]> {
     return Array.from(this.accounts.values()).filter(account => account.userId === userId);
   }
 
-  async getAccount(id: string): Promise<Account | null> {
-    return this.accounts.get(id) || null;
+  async getAccount(id: number): Promise<Account | undefined> {
+    return this.accounts.get(id);
   }
 
   async createAccount(insertAccount: InsertAccount): Promise<Account> {
-    const id = (this.currentAccountId++).toString();
+    const id = this.currentAccountId++;
     const account: Account = {
-      _id: id,
       ...insertAccount,
+      id,
       createdAt: new Date(),
     };
     this.accounts.set(id, account);
     return account;
   }
 
-  async updateAccount(id: string, updateData: Partial<Account>): Promise<Account | null> {
+  async updateAccount(id: number, updateData: Partial<Account>): Promise<Account> {
     const account = this.accounts.get(id);
-    if (!account) return null;
+    if (!account) throw new Error("Account not found");
     
     const updatedAccount = { ...account, ...updateData };
     this.accounts.set(id, updatedAccount);
     return updatedAccount;
   }
 
-  async getAllAccounts(): Promise<Account[]> {
-    return Array.from(this.accounts.values());
-  }
-
-  async deleteAccount(id: string): Promise<boolean> {
-    return this.accounts.delete(id);
-  }
-
   // Transaction operations
-  async getTransactionsByAccountId(accountId: string, limit: number = 50): Promise<Transaction[]> {
+  async getTransactionsByAccountId(accountId: number, limit: number = 50): Promise<Transaction[]> {
     return Array.from(this.transactions.values())
       .filter(transaction => transaction.accountId === accountId)
       .sort((a, b) => b.createdAt!.getTime() - a.createdAt!.getTime())
       .slice(0, limit);
   }
 
-  async getTransactionsByUserId(userId: string, limit: number = 50): Promise<Transaction[]> {
+  async getTransactionsByUserId(userId: number, limit: number = 50): Promise<Transaction[]> {
     const userAccounts = await this.getAccountsByUserId(userId);
-    const accountIds = userAccounts.map(account => account._id!);
+    const accountIds = userAccounts.map(account => account.id);
     
     return Array.from(this.transactions.values())
       .filter(transaction => accountIds.includes(transaction.accountId))
@@ -197,28 +181,20 @@ export class MemStorage implements IStorage {
   }
 
   async createTransaction(insertTransaction: InsertTransaction): Promise<Transaction> {
-    const id = (this.currentTransactionId++).toString();
+    const id = this.currentTransactionId++;
     const transaction: Transaction = {
-      _id: id,
       ...insertTransaction,
+      id,
       createdAt: new Date(),
     };
     this.transactions.set(id, transaction);
     return transaction;
   }
 
-  async getAllTransactions(): Promise<Transaction[]> {
-    return Array.from(this.transactions.values());
-  }
-
-  async deleteTransaction(id: string): Promise<boolean> {
-    return this.transactions.delete(id);
-  }
-
   // Transfer operations
-  async getTransfersByUserId(userId: string, limit: number = 50): Promise<Transfer[]> {
+  async getTransfersByUserId(userId: number, limit: number = 50): Promise<Transfer[]> {
     const userAccounts = await this.getAccountsByUserId(userId);
-    const accountIds = userAccounts.map(account => account._id!);
+    const accountIds = userAccounts.map(account => account.id);
     
     return Array.from(this.transfers.values())
       .filter(transfer => accountIds.includes(transfer.fromAccountId))
@@ -227,129 +203,98 @@ export class MemStorage implements IStorage {
   }
 
   async createTransfer(insertTransfer: InsertTransfer): Promise<Transfer> {
-    const id = (this.currentTransferId++).toString();
+    const id = this.currentTransferId++;
     const transfer: Transfer = {
-      _id: id,
       ...insertTransfer,
+      id,
       createdAt: new Date(),
     };
     this.transfers.set(id, transfer);
     return transfer;
   }
 
-  async updateTransfer(id: string, updateData: Partial<Transfer>): Promise<Transfer | null> {
+  async updateTransfer(id: number, updateData: Partial<Transfer>): Promise<Transfer> {
     const transfer = this.transfers.get(id);
-    if (!transfer) return null;
+    if (!transfer) throw new Error("Transfer not found");
     
     const updatedTransfer = { ...transfer, ...updateData };
     this.transfers.set(id, updatedTransfer);
     return updatedTransfer;
   }
 
-  async getAllTransfers(): Promise<Transfer[]> {
-    return Array.from(this.transfers.values());
-  }
-
-  async deleteTransfer(id: string): Promise<boolean> {
-    return this.transfers.delete(id);
-  }
-
   // Payee operations
-  async getPayeesByUserId(userId: string): Promise<Payee[]> {
+  async getPayeesByUserId(userId: number): Promise<Payee[]> {
     return Array.from(this.payees.values()).filter(payee => payee.userId === userId);
   }
 
   async createPayee(insertPayee: InsertPayee): Promise<Payee> {
-    const id = (this.currentPayeeId++).toString();
+    const id = this.currentPayeeId++;
     const payee: Payee = {
-      _id: id,
       ...insertPayee,
+      id,
       createdAt: new Date(),
     };
     this.payees.set(id, payee);
     return payee;
   }
 
-  async getAllPayees(): Promise<Payee[]> {
-    return Array.from(this.payees.values());
-  }
-
-  async deletePayee(id: string): Promise<boolean> {
-    return this.payees.delete(id);
-  }
-
   // Bill payment operations
-  async getBillPaymentsByUserId(userId: string): Promise<BillPayment[]> {
+  async getBillPaymentsByUserId(userId: number): Promise<BillPayment[]> {
     return Array.from(this.billPayments.values()).filter(payment => payment.userId === userId);
   }
 
   async createBillPayment(insertBillPayment: InsertBillPayment): Promise<BillPayment> {
-    const id = (this.currentBillPaymentId++).toString();
+    const id = this.currentBillPaymentId++;
     const billPayment: BillPayment = {
-      _id: id,
       ...insertBillPayment,
+      id,
       createdAt: new Date(),
     };
     this.billPayments.set(id, billPayment);
     return billPayment;
   }
 
-  async getAllBillPayments(): Promise<BillPayment[]> {
-    return Array.from(this.billPayments.values());
-  }
-
-  async deleteBillPayment(id: string): Promise<boolean> {
-    return this.billPayments.delete(id);
-  }
-
   // Card operations
-  async getCardsByUserId(userId: string): Promise<Card[]> {
+  async getCardsByUserId(userId: number): Promise<Card[]> {
     return Array.from(this.cards.values()).filter(card => card.userId === userId);
   }
 
   async createCard(insertCard: InsertCard): Promise<Card> {
-    const id = (this.currentCardId++).toString();
+    const id = this.currentCardId++;
     const card: Card = {
-      _id: id,
       ...insertCard,
+      id,
       createdAt: new Date(),
     };
     this.cards.set(id, card);
     return card;
   }
 
-  async updateCard(id: string, updateData: Partial<Card>): Promise<Card | null> {
+  async updateCard(id: number, updateData: Partial<Card>): Promise<Card> {
     const card = this.cards.get(id);
-    if (!card) return null;
+    if (!card) throw new Error("Card not found");
     
     const updatedCard = { ...card, ...updateData };
     this.cards.set(id, updatedCard);
     return updatedCard;
   }
 
-  async getAllCards(): Promise<Card[]> {
-    return Array.from(this.cards.values());
-  }
-
-  async deleteCard(id: string): Promise<boolean> {
-    return this.cards.delete(id);
-  }
-
   // Crypto operations
-  async getCryptoHoldingsByUserId(userId: string): Promise<CryptoHolding[]> {
+  async getCryptoHoldingsByUserId(userId: number): Promise<CryptoHolding[]> {
     return Array.from(this.cryptoHoldings.values()).filter(holding => holding.userId === userId);
   }
 
-  async getCryptoHolding(userId: string, symbol: string): Promise<CryptoHolding | null> {
-    return Array.from(this.cryptoHoldings.values())
-      .find(holding => holding.userId === userId && holding.symbol === symbol) || null;
+  async getCryptoHolding(userId: number, symbol: string): Promise<CryptoHolding | undefined> {
+    return Array.from(this.cryptoHoldings.values()).find(
+      holding => holding.userId === userId && holding.symbol === symbol
+    );
   }
 
   async createCryptoHolding(insertCryptoHolding: InsertCryptoHolding): Promise<CryptoHolding> {
-    const id = (this.currentCryptoHoldingId++).toString();
+    const id = this.currentCryptoHoldingId++;
     const holding: CryptoHolding = {
-      _id: id,
       ...insertCryptoHolding,
+      id,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -357,97 +302,40 @@ export class MemStorage implements IStorage {
     return holding;
   }
 
-  async updateCryptoHolding(id: string, updateData: Partial<CryptoHolding>): Promise<CryptoHolding | null> {
+  async updateCryptoHolding(id: number, updateData: Partial<CryptoHolding>): Promise<CryptoHolding> {
     const holding = this.cryptoHoldings.get(id);
-    if (!holding) return null;
+    if (!holding) throw new Error("Crypto holding not found");
     
     const updatedHolding = { ...holding, ...updateData, updatedAt: new Date() };
     this.cryptoHoldings.set(id, updatedHolding);
     return updatedHolding;
   }
 
-  async getAllCryptoHoldings(): Promise<CryptoHolding[]> {
-    return Array.from(this.cryptoHoldings.values());
-  }
-
-  async deleteCryptoHolding(id: string): Promise<boolean> {
-    return this.cryptoHoldings.delete(id);
-  }
-
   // Notification operations
-  async getNotificationsByUserId(userId: string): Promise<Notification[]> {
+  async getNotificationsByUserId(userId: number): Promise<Notification[]> {
     return Array.from(this.notifications.values())
       .filter(notification => notification.userId === userId)
       .sort((a, b) => b.createdAt!.getTime() - a.createdAt!.getTime());
   }
 
   async createNotification(insertNotification: InsertNotification): Promise<Notification> {
-    const id = (this.currentNotificationId++).toString();
+    const id = this.currentNotificationId++;
     const notification: Notification = {
-      _id: id,
       ...insertNotification,
+      id,
       createdAt: new Date(),
     };
     this.notifications.set(id, notification);
     return notification;
   }
 
-  async updateNotification(id: string, updateData: Partial<Notification>): Promise<Notification | null> {
+  async updateNotification(id: number, updateData: Partial<Notification>): Promise<Notification> {
     const notification = this.notifications.get(id);
-    if (!notification) return null;
+    if (!notification) throw new Error("Notification not found");
     
     const updatedNotification = { ...notification, ...updateData };
     this.notifications.set(id, updatedNotification);
     return updatedNotification;
-  }
-
-  async getAllNotifications(): Promise<Notification[]> {
-    return Array.from(this.notifications.values());
-  }
-
-  async deleteNotification(id: string): Promise<boolean> {
-    return this.notifications.delete(id);
-  }
-
-  // Admin operations
-  async getAdmin(id: string): Promise<Admin | null> {
-    return this.admins.get(id) || null;
-  }
-
-  async getAdminByEmail(email: string): Promise<Admin | null> {
-    return Array.from(this.admins.values()).find(admin => admin.email === email) || null;
-  }
-
-  async getAdminByUsername(username: string): Promise<Admin | null> {
-    return Array.from(this.admins.values()).find(admin => admin.username === username) || null;
-  }
-
-  async createAdmin(insertAdmin: InsertAdmin): Promise<Admin> {
-    const id = (this.currentAdminId++).toString();
-    const admin: Admin = {
-      _id: id,
-      ...insertAdmin,
-      createdAt: new Date(),
-    };
-    this.admins.set(id, admin);
-    return admin;
-  }
-
-  async updateAdmin(id: string, updateData: Partial<Admin>): Promise<Admin | null> {
-    const admin = this.admins.get(id);
-    if (!admin) return null;
-    
-    const updatedAdmin = { ...admin, ...updateData };
-    this.admins.set(id, updatedAdmin);
-    return updatedAdmin;
-  }
-
-  async getAllAdmins(): Promise<Admin[]> {
-    return Array.from(this.admins.values());
-  }
-
-  async deleteAdmin(id: string): Promise<boolean> {
-    return this.admins.delete(id);
   }
 }
 

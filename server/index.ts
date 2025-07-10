@@ -1,4 +1,5 @@
 import express, { type Request, Response, NextFunction } from "express";
+// import { connectDB } from "./db-mongo";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
@@ -37,6 +38,9 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Using in-memory storage for now
+  console.log("Using in-memory storage");
+  
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

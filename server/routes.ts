@@ -4,12 +4,14 @@ import bcrypt from "bcryptjs";
 import Stripe from "stripe";
 import { storage } from "./storage";
 import { authenticateToken, generateToken, type AuthRequest } from "./middleware/auth";
-import { cryptoService } from "./services/crypto";
-import { emailService } from "./services/email";
+import { authenticateAdmin, generateAdminToken, requirePermission, type AdminAuthRequest } from "./middleware/admin-auth";
+// import { cryptoService } from "./services/crypto";
+// import { emailService } from "./services/email";
 import { 
   insertUserSchema, insertAccountSchema, insertTransactionSchema, insertTransferSchema,
-  insertPayeeSchema, insertBillPaymentSchema, insertCardSchema, insertCryptoHoldingSchema
-} from "@shared/schema";
+  insertPayeeSchema, insertBillPaymentSchema, insertCardSchema, insertCryptoHoldingSchema,
+  insertAdminSchema
+} from "@shared/mongodb-schema";
 
 // Initialize Stripe if secret key is provided
 let stripe: Stripe | null = null;
@@ -43,7 +45,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create default checking account
       await storage.createAccount({
-        userId: user.id,
+        userId: user._id!,
         accountNumber: `CHK${Date.now()}${Math.floor(Math.random() * 1000)}`,
         accountType: 'checking',
         balance: '0.00',
@@ -51,18 +53,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create default savings account
       await storage.createAccount({
-        userId: user.id,
+        userId: user._id!,
         accountNumber: `SAV${Date.now()}${Math.floor(Math.random() * 1000)}`,
         accountType: 'savings',
         balance: '0.00',
       });
       
-      const token = generateToken(user.id);
+      const token = generateToken(user._id!);
       
       res.json({
         token,
         user: {
-          id: user.id,
+          id: user._id,
           fullName: user.fullName,
           email: user.email,
         },
@@ -86,12 +88,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid credentials" });
       }
       
-      const token = generateToken(user.id);
+      const token = generateToken(user._id!);
       
       res.json({
         token,
         user: {
-          id: user.id,
+          id: user._id,
           fullName: user.fullName,
           email: user.email,
         },
@@ -436,6 +438,286 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     });
   }
+
+  // Admin Authentication Routes
+  app.post("/api/admin/auth/login", async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      
+      const admin = await storage.getAdminByUsername(username);
+      if (!admin || !admin.isActive) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      
+      const isValidPassword = await bcrypt.compare(password, admin.password);
+      if (!isValidPassword) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      
+      // Update last login
+      await storage.updateAdmin(admin._id!, { lastLogin: new Date() });
+      
+      const token = generateAdminToken(admin._id!);
+      
+      res.json({
+        token,
+        admin: {
+          id: admin._id,
+          username: admin.username,
+          email: admin.email,
+          role: admin.role,
+          permissions: admin.permissions,
+        },
+      });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/admin/auth/register", async (req, res) => {
+    try {
+      const adminData = insertAdminSchema.parse(req.body);
+      
+      // Check if admin already exists
+      const existingAdmin = await storage.getAdminByUsername(adminData.username);
+      if (existingAdmin) {
+        return res.status(400).json({ message: "Admin already exists" });
+      }
+      
+      // Hash password
+      const hashedPassword = await bcrypt.hash(adminData.password, 10);
+      
+      // Create admin
+      const admin = await storage.createAdmin({
+        ...adminData,
+        password: hashedPassword,
+      });
+      
+      const token = generateAdminToken(admin._id!);
+      
+      res.json({
+        token,
+        admin: {
+          id: admin._id,
+          username: admin.username,
+          email: admin.email,
+          role: admin.role,
+          permissions: admin.permissions,
+        },
+      });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Admin Dashboard Routes
+  app.get("/api/admin/dashboard/stats", authenticateAdmin, async (req: AdminAuthRequest, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      const accounts = await storage.getAllAccounts();
+      const transactions = await storage.getAllTransactions();
+      const transfers = await storage.getAllTransfers();
+      const cards = await storage.getAllCards();
+      const cryptoHoldings = await storage.getAllCryptoHoldings();
+
+      // Calculate total balances
+      const totalBalance = accounts.reduce((sum, account) => sum + parseFloat(account.balance), 0);
+      const totalTransactionAmount = transactions.reduce((sum, tx) => sum + Math.abs(parseFloat(tx.amount)), 0);
+
+      res.json({
+        stats: {
+          totalUsers: users.length,
+          totalAccounts: accounts.length,
+          totalTransactions: transactions.length,
+          totalTransfers: transfers.length,
+          totalCards: cards.length,
+          totalCryptoHoldings: cryptoHoldings.length,
+          totalBalance: totalBalance.toFixed(2),
+          totalTransactionVolume: totalTransactionAmount.toFixed(2),
+          activeUsers: users.filter(u => u.isVerified).length,
+          activeCards: cards.filter(c => c.isActive).length,
+        }
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Admin User Management Routes
+  app.get("/api/admin/users", authenticateAdmin, requirePermission('manage_users'), async (req: AdminAuthRequest, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      res.json(users);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/admin/users/:id", authenticateAdmin, requirePermission('manage_users'), async (req: AdminAuthRequest, res) => {
+    try {
+      const userId = req.params.id;
+      const { isVerified, isAdmin } = req.body;
+      
+      const updatedUser = await storage.updateUser(userId, { isVerified, isAdmin });
+      res.json(updatedUser);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/admin/users/:id", authenticateAdmin, requirePermission('manage_users'), async (req: AdminAuthRequest, res) => {
+    try {
+      const userId = req.params.id;
+      const deleted = await storage.deleteUser(userId);
+      
+      if (deleted) {
+        res.json({ message: "User deleted successfully" });
+      } else {
+        res.status(404).json({ message: "User not found" });
+      }
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Admin Account Management Routes
+  app.get("/api/admin/accounts", authenticateAdmin, requirePermission('manage_accounts'), async (req: AdminAuthRequest, res) => {
+    try {
+      const accounts = await storage.getAllAccounts();
+      res.json(accounts);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/admin/accounts/:id/balance", authenticateAdmin, requirePermission('manage_accounts'), async (req: AdminAuthRequest, res) => {
+    try {
+      const accountId = req.params.id;
+      const { balance, reason } = req.body;
+      
+      const account = await storage.getAccount(accountId);
+      if (!account) {
+        return res.status(404).json({ message: "Account not found" });
+      }
+
+      const updatedAccount = await storage.updateAccount(accountId, { balance });
+      
+      // Create transaction record for balance adjustment
+      await storage.createTransaction({
+        accountId,
+        type: 'deposit',
+        amount: balance,
+        description: `Admin balance adjustment: ${reason}`,
+        status: 'completed',
+      });
+
+      res.json(updatedAccount);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Admin Transaction Management Routes
+  app.get("/api/admin/transactions", authenticateAdmin, requirePermission('view_transactions'), async (req: AdminAuthRequest, res) => {
+    try {
+      const transactions = await storage.getAllTransactions();
+      res.json(transactions);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/admin/transactions/:id", authenticateAdmin, requirePermission('manage_transactions'), async (req: AdminAuthRequest, res) => {
+    try {
+      const transactionId = req.params.id;
+      const deleted = await storage.deleteTransaction(transactionId);
+      
+      if (deleted) {
+        res.json({ message: "Transaction deleted successfully" });
+      } else {
+        res.status(404).json({ message: "Transaction not found" });
+      }
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Admin Card Management Routes
+  app.get("/api/admin/cards", authenticateAdmin, requirePermission('manage_cards'), async (req: AdminAuthRequest, res) => {
+    try {
+      const cards = await storage.getAllCards();
+      res.json(cards);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/admin/cards/:id", authenticateAdmin, requirePermission('manage_cards'), async (req: AdminAuthRequest, res) => {
+    try {
+      const cardId = req.params.id;
+      const { isActive, dailyLimit, monthlyLimit } = req.body;
+      
+      const updatedCard = await storage.updateCard(cardId, { isActive, dailyLimit, monthlyLimit });
+      res.json(updatedCard);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/admin/cards/:id", authenticateAdmin, requirePermission('manage_cards'), async (req: AdminAuthRequest, res) => {
+    try {
+      const cardId = req.params.id;
+      const deleted = await storage.deleteCard(cardId);
+      
+      if (deleted) {
+        res.json({ message: "Card deleted successfully" });
+      } else {
+        res.status(404).json({ message: "Card not found" });
+      }
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Admin Crypto Management Routes
+  app.get("/api/admin/crypto", authenticateAdmin, requirePermission('manage_crypto'), async (req: AdminAuthRequest, res) => {
+    try {
+      const cryptoHoldings = await storage.getAllCryptoHoldings();
+      res.json(cryptoHoldings);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Admin Notification Management Routes
+  app.get("/api/admin/notifications", authenticateAdmin, requirePermission('manage_notifications'), async (req: AdminAuthRequest, res) => {
+    try {
+      const notifications = await storage.getAllNotifications();
+      res.json(notifications);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/admin/notifications/broadcast", authenticateAdmin, requirePermission('manage_notifications'), async (req: AdminAuthRequest, res) => {
+    try {
+      const { title, message, type } = req.body;
+      const users = await storage.getAllUsers();
+      
+      const notifications = await Promise.all(
+        users.map(user => storage.createNotification({
+          userId: user._id!,
+          title,
+          message,
+          type,
+        }))
+      );
+      
+      res.json({ message: `Broadcast sent to ${users.length} users`, notifications });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;
