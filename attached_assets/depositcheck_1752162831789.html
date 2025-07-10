@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deposit Check</title>
+  <style>
+    :root {
+      --primary-color: #2563eb;
+      --text-color: #334155;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      background: #f9fafb;
+      padding: 2rem;
+      box-sizing: border-box;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      animation: fadeInUp 0.6s ease;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--primary-color);
+      font-size: calc(1.5rem + 1vw);
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      font-weight: 600;
+      color: var(--text-color);
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    input[type="file"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+    }
+
+    button {
+      background: var(--primary-color);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button:hover {
+      background: #1e40af;
+    }
+
+    .back-arrow {
+      color: var(--primary-color);
+      cursor: pointer;
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      display: inline-block;
+    }
+
+    .preview-img {
+      width: 100%;
+      max-width: 300px;
+      height: auto;
+      margin-bottom: 1rem;
+      border-radius: 0.5rem;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2563eb;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      display: none;
+      animation: fadeIn 0.5s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 1rem;
+      }
+      h1 {
+        font-size: calc(1.2rem + 2vw);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="back-arrow" onclick="history.back()">&lt; Back</div>
+    <h1>Deposit Check</h1>
+    
+    <!-- Step 1: Upload Images -->
+    <label for="check-front">Upload Front of Check:</label>
+    <input type="file" id="check-front" accept="image/*" />
+    <img id="preview-front" class="preview-img" alt="Front Preview" style="display:none;">
+
+    <label for="check-back">Upload Back of Check:</label>
+    <input type="file" id="check-back" accept="image/*" />
+    <img id="preview-back" class="preview-img" alt="Back Preview" style="display:none;">
+
+    <!-- Step 2: Deposit Details -->
+    <label for="deposit-amount">Deposit Amount ($):</label>
+    <input type="number" id="deposit-amount" min="0" step="0.01" />
+
+    <label for="account-select">Select Account:</label>
+    <select id="account-select"></select>
+
+    <label for="memo">Memo (Optional):</label>
+    <textarea id="memo" rows="3"></textarea>
+
+    <!-- Step 3: Submit -->
+    <button id="submit-btn">Submit Deposit</button>
+  </div>
+
+  <div class="toast" id="toast">Deposit Successful!</div>
+
+  <script>
+    // Mock dynamic accounts
+    const accountSelect = document.getElementById('account-select');
+    const accounts = [
+      { id: 'acc1', name: 'Checking Account ****1234' },
+      { id: 'acc2', name: 'Savings Account ****5678' },
+      { id: 'acc3', name: 'Business Account ****9012' }
+    ];
+    accounts.forEach(acc => {
+      const option = document.createElement('option');
+      option.value = acc.id;
+      option.textContent = acc.name;
+      accountSelect.appendChild(option);
+    });
+
+    // Image preview handlers
+    function handleImagePreview(inputId, previewId) {
+      const input = document.getElementById(inputId);
+      const preview = document.getElementById(previewId);
+      input.addEventListener('change', () => {
+        const file = input.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    handleImagePreview('check-front', 'preview-front');
+    handleImagePreview('check-back', 'preview-back');
+
+    // Toast Notification
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
+    }
+
+    // Submit handler
+    document.getElementById('submit-btn').addEventListener('click', () => {
+      showToast('Deposit Submitted!');
+      setTimeout(() => {
+        window.location.href = 'deposit-status.html'; // Redirect
+      }, 3500);
+    });
+  </script>
+</body>
+</html>

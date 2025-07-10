@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Limits & Permissions — Improved Slider</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9fafb;
+      padding: 2rem;
+      font-size: 1rem;
+      line-height: 1.4;
+    }
+
+    .main-container {
+      max-width: 600px;
+      margin: auto;
+      width: 90%;
+      /* allow container to shrink on small screens */
+    }
+
+    /* Header with back arrow */
+    .header-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #1e3a8a;
+      cursor: pointer;
+      user-select: none;
+      margin-bottom: 0.5rem;
+      width: 100%;
+    }
+
+    .header-bar:hover {
+      color: #2563eb;
+    }
+
+    /* Verification status */
+    .verification-status {
+      background: #e0f2fe;
+      border: 1px solid #7dd3fc;
+      color: #0369a1;
+      padding: 0.5rem 1rem;
+      border-radius: 0.75rem;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .container {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      margin-bottom: 2rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      text-align: center;
+      color: #1e3a8a;
+      margin-bottom: 1.5rem;
+      font-size: calc(1.25rem + 0.5vw);
+    }
+
+    /* Updated slider-container to flex horizontally */
+    .slider-container {
+      margin: 2rem 0;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap; /* allow wrap on small screens */
+    }
+
+    /* Wrapper to hold label and slider stacked */
+    .slider-label-input-wrapper {
+      flex: 1 1 60%; /* grow and shrink, base 60% */
+      display: flex;
+      flex-direction: column;
+      min-width: 200px;
+    }
+
+    .slider-label {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #334155;
+      font-size: 1rem;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 0.5rem;
+      background: linear-gradient(90deg, #2563eb 0%, #93c5fd 100%);
+      border-radius: 0.3125rem;
+      outline: none;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 1.375rem;
+      width: 1.375rem;
+      background: #2563eb;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0.125rem 0.375rem rgba(37,99,235,0.5);
+      transition: background 0.3s ease;
+      margin-top: -0.44rem; /* to center thumb vertically */
+      position: relative;
+      z-index: 2;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      background: #1e40af;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      height: 1.375rem;
+      width: 1.375rem;
+      background: #2563eb;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0.125rem 0.375rem rgba(37,99,235,0.5);
+      border: none;
+    }
+
+    input[type="range"]::-moz-range-thumb:hover {
+      background: #1e40af;
+    }
+
+    /* Slider value box inline */
+    .slider-value {
+      background: #2563eb;
+      color: white;
+      padding: 0.3rem 0.7rem;
+      border-radius: 0.5rem;
+      font-size: 0.95rem;
+      white-space: nowrap;
+      box-shadow: 0 0.25rem 0.625rem rgba(37,99,235,0.3);
+      pointer-events: none;
+      min-width: 4.375rem;
+      text-align: center;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    /* Container for value + button */
+    .slider-value-button-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 1 1 30%; /* base 30% */
+      min-width: 100px;
+    }
+
+    .set-limit-btn {
+      padding: 0.5rem 1rem;
+      background-color: #2563eb;
+      border: none;
+      border-radius: 0.5rem;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 1rem;
+      width: 100%;
+      max-width: 150px;
+      box-sizing: border-box;
+      transition: background-color 0.3s ease;
+    }
+
+    .set-limit-btn:hover {
+      background-color: #1e40af;
+    }
+
+    /* Toggle Switch Styles */
+    .permissions-container {
+      margin-top: 2rem;
+    }
+
+    .toggle-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f1f5f9;
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      font-weight: 500;
+      color: #334155;
+      font-size: 1rem;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 3.125rem;
+      height: 1.625rem;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 1.625rem;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 1.25rem;
+      width: 1.25rem;
+      left: 0.1875rem;
+      bottom: 0.1875rem;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #2563eb;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(1.5rem);
+    }
+
+    input:disabled + .slider {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    input:disabled + .slider:before {
+      background-color: #eee;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      body {
+        padding: 1.5rem;
+      }
+
+      .main-container {
+        width: 95%;
+        max-width: 100%;
+      }
+
+      .container {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      h1 {
+        font-size: calc(1.125rem + 1vw);
+        margin-bottom: 1rem;
+      }
+
+      .slider-container {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .slider-label-input-wrapper,
+      .slider-value-button-wrapper {
+        flex: 1 1 100%;
+        min-width: auto;
+        width: 100%;
+      }
+
+      .slider-value {
+        min-width: 3.5rem;
+        font-size: 0.9rem;
+        padding: 0.25rem 0.5rem;
+      }
+
+      .set-limit-btn {
+        max-width: 100%;
+        font-size: 0.95rem;
+      }
+
+      .toggle-label {
+        font-size: 0.95rem;
+        padding: 0.6rem 0.8rem;
+      }
+
+      .toggle-switch {
+        width: 2.75rem;
+        height: 1.5rem;
+      }
+
+      .slider:before {
+        height: 1.125rem;
+        width: 1.125rem;
+        left: 0.15rem;
+        bottom: 0.15rem;
+      }
+
+      input:checked + .slider:before {
+        transform: translateX(1.25rem);
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 1rem;
+        font-size: 0.9rem;
+      }
+
+      h1 {
+        font-size: calc(1rem + 1vw);
+      }
+
+      .slider-label {
+        font-size: 0.9rem;
+      }
+
+      .set-limit-btn {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.8rem;
+      }
+
+      .toggle-label {
+        font-size: 0.9rem;
+      }
+    }
+
+    .upgrade-btn {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+  margin: 1.5rem auto 0 auto; /* top margin and center horizontally */
+  padding: 0.75rem 1.5rem;
+  font-size: calc(1rem + 0.3vw);
+  font-weight: 700;
+  color: white;
+   background-color: #3120c9;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  box-shadow: 0 0.75rem 1.5rem rgba(4, 27, 77, 0.6);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  user-select: none;
+}
+
+.upgrade-btn:hover,
+.upgrade-btn:focus {
+  background-color: #0a034d; /* red-700 */
+  box-shadow: 0 0.75rem 1.5rem rgba(4, 27, 77, 0.6);
+  outline: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .upgrade-btn {
+    max-width: 100%;
+    font-size: 1rem;
+    padding: 0.65rem 1.2rem;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <div class="header-bar" onclick="history.back()">
+      <span>&lt;</span> Limits & Permissions
+    </div>
+    <div class="verification-status">
+      Current Verification: <strong>Level 2 - Verified</strong>
+    </div>
+
+    <div class="container">
+      <h1>Daily Limit</h1>
+      <div class="slider-container">
+        <div class="slider-label-input-wrapper">
+          <label class="slider-label" for="daily-limit-range">Daily Limit ($)</label>
+          <input
+            type="range"
+            id="daily-limit-range"
+            name="daily-limit-range"
+            min="0"
+            max="10000"
+            step="50"
+            value="1000"
+            aria-valuemin="0"
+            aria-valuemax="10000"
+            aria-valuenow="1000"
+          />
+        </div>
+        <div class="slider-value-button-wrapper">
+          <div class="slider-value" id="daily-slider-value">$1,000</div>
+          <button class="set-limit-btn" id="set-daily-limit-btn" type="button">Set Limit</button>
+        </div>
+      </div>
+
+      <h1>Weekly Limit</h1>
+      <div class="slider-container">
+        <div class="slider-label-input-wrapper">
+          <label class="slider-label" for="weekly-limit-range">Weekly Limit ($)</label>
+          <input
+            type="range"
+            id="weekly-limit-range"
+            name="weekly-limit-range"
+            min="500"
+            max="100000"
+            step="50"
+            value="5000"
+            aria-valuemin="500"
+            aria-valuemax="100000"
+            aria-valuenow="5000"
+          />
+        </div>
+        <div class="slider-value-button-wrapper">
+          <div class="slider-value" id="weekly-slider-value">$5,000</div>
+          <button class="set-limit-btn" id="set-weekly-limit-btn" type="button">Set Limit</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <h1>Permissions</h1>
+      <div class="permissions-container">
+        <div class="toggle-group">
+          <label class="toggle-label">
+            Enable 2FA
+            <div class="toggle-switch">
+              <input type="checkbox" disabled>
+              <span class="slider"></span>
+            </div>
+          </label>
+          <label class="toggle-label">
+            Crypto Payments
+            <div class="toggle-switch">
+              <input type="checkbox" id="crypto-toggle">
+              <span class="slider"></span>
+            </div>
+          </label>
+          <label class="toggle-label">
+            Bank Transfers
+            <div class="toggle-switch">
+              <input type="checkbox" id="bank-toggle">
+              <span class="slider"></span>
+            </div>
+          </label>
+          <label class="toggle-label">
+            Incoming Transactions
+            <div class="toggle-switch">
+              <input type="checkbox" id="incoming-toggle">
+              <span class="slider"></span>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+    
+  </div>
+
+  <script>
+    // Daily slider
+    const dailyRange = document.getElementById('daily-limit-range');
+    const dailyValueLabel = document.getElementById('daily-slider-value');
+
+    function updateDailySliderValue() {
+      const val = dailyRange.value;
+      dailyValueLabel.textContent = `$${parseInt(val).toLocaleString()}`;
+      dailyRange.setAttribute('aria-valuenow', val);
+    }
+
+    dailyRange.addEventListener('input', updateDailySliderValue);
+    window.addEventListener('load', updateDailySliderValue);
+
+    // Weekly slider
+    const weeklyRange = document.getElementById('weekly-limit-range');
+    const weeklyValueLabel = document.getElementById('weekly-slider-value');
+
+    function updateWeeklySliderValue() {
+      const val = weeklyRange.value;
+      weeklyValueLabel.textContent = `$${parseInt(val).toLocaleString()}`;
+      weeklyRange.setAttribute('aria-valuenow', val);
+    }
+
+    weeklyRange.addEventListener('input', updateWeeklySliderValue);
+    window.addEventListener('load', updateWeeklySliderValue);
+
+    // Permissions toggles
+    document.getElementById('crypto-toggle').addEventListener('change', (e) => {
+      console.log(`Crypto Payments: ${e.target.checked ? 'Enabled' : 'Disabled'}`);
+    });
+
+    document.getElementById('bank-toggle').addEventListener('change', (e) => {
+      console.log(`Bank Transfers: ${e.target.checked ? 'Allowed' : 'Blocked'}`);
+    });
+
+    document.getElementById('incoming-toggle').addEventListener('change', (e) => {
+      console.log(`Incoming Transactions: ${e.target.checked ? 'Allowed' : 'Blocked'}`);
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+<!-- 
+Backend Notes:
+
+1. Daily Limit:
+   - Endpoint to update user's daily limit should accept a value between 0 and 10,000.
+   - Validate that the value is a multiple of 50.
+   - Save the new limit securely and ensure it reflects in the user's spending limits.
+   - Respond with success or error message for UI feedback.
+
+2. Weekly Limit:
+   - Endpoint to update user's weekly limit should accept a value between 500 and 100,000.
+   - Validate step increments of 50.
+   - Persist the weekly limit and enforce spending limits accordingly.
+
+3. Permissions:
+   - Crypto Payments toggle should update user's preferences for crypto transactions.
+   - Bank Transfers toggle should enable or disable bank transfer functionality for the user.
+   - Incoming Transactions toggle controls whether incoming transfers are allowed.
+   - 'Enable 2FA' is disabled in UI; backend should track 2FA status independently.
+
+4. Security:
+   - All requests should be authenticated.
+   - Limit changes should be logged for auditing.
+   - Changes to permissions may require confirmation or 2FA verification.
+
+5. Frontend-Backend Integration:
+   - Connect "Set Limit" buttons to trigger API calls to update limits.
+   - On success, update UI to reflect new limits or show error messages.
+   - Permissions toggles should instantly send preference changes via API.
+
+-->

@@ -1,0 +1,728 @@
+
+
+/* ============================= */
+/* Global Variables & Resets     */
+/* ============================= */
+
+:root {
+  --primary: #0066cc;
+  --light-bg: #f4f8fc;
+  --text: #333;
+  --radius: 1em;
+  --padding: 1.5em;
+  --font-size-base: calc(0.9rem + 0.3vw);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  font-size: var(--font-size-base);
+  background: var(--light-bg);
+  color: var(--text);
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+/* Utility helpers */
+.hidden {
+  display: none !important;
+}
+.error {
+  color: #e03e2f;
+  font-size: 0.9em;
+  margin-top: 0.25em;
+  display: block;
+}
+
+/* ============================= */
+/* Navbar                        */
+/* ============================= */
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: var(--padding);
+  box-shadow: 0 0.1em 0.5em rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 2000;
+}
+
+.logo {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.back-link {
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.9em;
+}
+.back-link:hover {
+  color: var(--primary);
+}
+
+/* ============================= */
+/* Layout Container              */
+/* ============================= */
+
+.container {
+  display: flex;
+  gap: 2em;
+  padding: var(--padding);
+  flex-wrap: wrap;  /* add this */
+}
+
+
+/* ============================= */
+/* Main Content (Transfer Form)  */
+/* ============================= */
+
+.main-content {
+  flex: 2;
+}
+
+.main-content h1 {
+  font-size: 2em;
+  margin-bottom: 1em;
+  color: var(--primary);
+}
+
+/* Transfer Form */
+.transfer-form {
+  background: white;
+  padding: var(--padding);
+  border-radius: var(--radius);
+  box-shadow: 0 0.2em 0.4em rgba(0,0,0,0.05);
+}
+
+.transfer-form label {
+  display: block;
+  margin-top: 1em;
+  font-weight: 500;
+}
+
+.transfer-form select,
+.transfer-form input[type="text"],
+.transfer-form input[type="number"],
+.transfer-form input[type="date"],
+.transfer-form textarea {
+  
+
+
+  width: 100%;
+  padding: 0.6em 0.8em;
+  margin-top: 0.4em;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  border-radius: 0.5em;
+  font-size: 1em;
+}
+
+.transfer-form textarea {
+  resize: vertical;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  margin-top: 0.4em;
+}
+
+.currency-symbol {
+  background: #eee;
+  padding: 0.6em 0.8em;
+  border: 1px solid #ccc;
+  border-right: none;
+  border-top-left-radius: 0.5em;
+  border-bottom-left-radius: 0.5em;
+  font-size: 1em;
+}
+
+.transfer-form .input-group input {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left: none;
+  flex: 1;
+}
+
+/* Transfer Type */
+.transfer-type {
+  margin-top: 1em;
+  border: none;
+  padding: 0;
+}
+.transfer-type legend {
+  font-weight: 500;
+}
+.transfer-type label {
+  margin-right: 1em;
+  cursor: pointer;
+}
+.transfer-type input {
+  margin-right: 0.3em;
+}
+
+/* Schedule Options */
+#schedule-options {
+  margin-top: 1em;
+  padding-left: 1em;
+  border-left: 3px solid var(--primary);
+}
+#schedule-options label {
+  margin-top: 0.8em;
+}
+#schedule-options select {
+  margin-top: 0.4em;
+}
+#schedule-options input[type="date"] {
+  margin-top: 0.4em;
+}
+
+/* Notes */
+#transfer-notes {
+  margin-top: 0.4em;
+}
+
+/* Buttons */
+.transfer-form button {
+  display: block;
+  margin: 1.5em auto 0;
+  background: var(--primary);
+  color: white;
+  padding: 0.8em 1.2em;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.transfer-form button:hover {
+  background: #004999;
+}
+
+/* ============================= */
+/* Review & Confirm Modal        */
+/* ============================= */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5000;
+}
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: white;
+  padding: var(--padding);
+  border-radius: var(--radius);
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 0.3em 0.6em rgba(0,0,0,0.2);
+}
+
+.modal-content h2 {
+  margin-bottom: 1em;
+  color: var(--primary);
+}
+
+.modal-content dl {
+  margin-bottom: 1.5em;
+}
+.modal-content dt {
+  font-weight: 600;
+  margin-top: 0.5em;
+}
+.modal-content dd {
+  margin-left: 0;
+  margin-bottom: 0.5em;
+}
+
+/* Modal Buttons */
+#confirm-transfer,
+#cancel-transfer {
+  padding: 0.6em 1em;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 1em;
+  margin-right: 0.5em;
+}
+#confirm-transfer {
+  background: var(--primary);
+  color: white;
+}
+#confirm-transfer:hover {
+  background: #004999;
+}
+#cancel-transfer {
+  background: #eee;
+  color: var(--text);
+}
+#cancel-transfer:hover {
+  background: #ddd;
+}
+
+/* ============================= */
+/* Transfer Feedback (Toast)     */
+/* ============================= */
+
+.feedback {
+  margin-top: 1em;
+  padding: 0.8em 1em;
+  border-radius: var(--radius);
+  font-weight: 500;
+  text-align: center;
+}
+.feedback.success {
+  background: #e1f5e1;
+  color: #2d7f2d;
+}
+.feedback.error {
+  background: #fde2e2;
+  color: #c0392b;
+}
+
+/* ============================= */
+/* Sidebar: Recent Transfers     */
+/* ============================= */
+
+.sidebar {
+  background: #ffffff; /* pure white for a clean banking look */
+  border-left: 4px solid #007bff;
+  padding: 24px;
+  max-width: 320px;
+  width: 100%;
+  border-radius: 10px;
+  font-family: 'Georgia', serif;
+  color: #444;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* subtle shadow for depth */
+}
+
+.sidebar h2 {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.recent-transfers li {
+  padding: 12px 0;
+  border-bottom: 1px dashed #ccc;
+  font-size: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.recent-transfers li:last-child {
+  border-bottom: none;
+}
+
+.view-all {
+  font-style: italic;
+  font-size: 0.95rem;
+  color: #007bff;
+  text-decoration: none;
+  display: inline-block;
+  padding: 6px 12px;  /* added a bit of padding for a button-like feel */
+  border-radius: 6px; /* optional rounded edges */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.view-all:hover {
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+}
+.recent-transfers li:hover {
+  background-color: #e6f0ff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+
+
+
+/* ============================= */
+/* Responsive Breakpoints        */
+/* ============================= */
+
+@media (max-width: 1024px) {
+  .container {
+    flex-direction: column;
+  }
+  .sidebar {
+    margin-top: 2em;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .transfer-form select,
+  .transfer-form input,
+  .transfer-form textarea {
+    font-size: 0.9em;
+  }
+  .container {
+    padding: 1em;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    max-width: 100%;
+    padding: 16px;
+    border-left: none;
+    border-top: 4px solid #007bff;
+    border-radius: 0 0 10px 10px;
+    font-size: 0.9rem;
+  }
+
+  .recent-transfers li {
+    font-size: 0.9rem;
+    padding: 8px 0;
+  }
+
+  .view-all {
+    font-size: 0.9rem;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+/* Modal overlay and content */
+#review-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.3s ease;
+}
+#review-modal.hidden {
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 1.5rem 2rem;
+  max-width: 400px;
+  width: 90%;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  position: relative;
+  outline: none;
+}
+
+/* Form errors */
+.error-message {
+  color: #d33;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  height: 1rem; /* reserve space */
+}
+
+/* Feedback messages */
+.feedback {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 5px;
+  font-weight: 600;
+  transition: opacity 0.3s ease;
+}
+.feedback.success {
+  background: #d4edda;
+  color: #155724;
+}
+.feedback.error {
+  background: #f8d7da;
+  color: #721c24;
+}
+.feedback.hidden {
+  opacity: 0;
+  visibility: hidden;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* External bank details section toggle */
+#external-details.hidden {
+  display: none;
+}
+
+/* Schedule and recurrence options */
+#schedule-options.hidden,
+#recurrence-frequency.hidden {
+  display: none;
+}
+
+/* Buttons */
+button {
+  cursor: pointer;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  padding: 0.5rem 1.2rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+}
+button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+/* Recent transfers list */
+.recent-transfers {
+  list-style: none;
+  padding-left: 0;
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+.recent-transfers li {
+  padding: 0.3rem 0.5rem;
+  border-bottom: 1px solid #eee;
+  font-size: 0.9rem;
+}
+.recent-transfers li:last-child {
+  border-bottom: none;
+}
+
+/* PIN Modal Styling */
+#pin-modal .modal-content {
+  max-width: 320px;
+  padding: 2rem 1.5rem 1.5rem;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  position: relative;
+}
+
+#pin-modal .modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  color: #444;
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.lock-icon {
+  width: 28px;
+  height: 28px;
+  stroke: #4a90e2;
+  flex-shrink: 0;
+}
+
+#pin-input {
+  width: 100%;
+  font-size: 2rem;
+  letter-spacing: 0.5rem;
+  padding: 0.5rem 0;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  text-align: center;
+  font-family: monospace, monospace;
+  outline-offset: 2px;
+  transition: border-color 0.3s;
+}
+
+#pin-input:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 8px rgba(74, 144, 226, 0.4);
+}
+
+.error-text {
+  color: #e03e2f;
+  margin: 0.5rem 0 0 0;
+  font-weight: 500;
+  font-size: 0.9rem;
+  min-height: 1.2em;
+}
+
+.modal-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.modal-actions button {
+  padding: 0.6rem 1.4rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+#pin-cancel {
+  background: #eee;
+  color: #333;
+}
+
+#pin-cancel:hover,
+#pin-cancel:focus {
+  background: #ddd;
+}
+
+#pin-confirm {
+  background: #4a90e2;
+  color: white;
+}
+
+#pin-confirm:hover,
+#pin-confirm:focus {
+  background: #357abd;
+}
+
+/* Modal overlay (already in your modal class presumably, but in case) */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Hidden class to toggle modal */
+.hidden {
+  display: none !important;
+}
+
+
+/* Notification container */
+.notification {
+  position: fixed;
+  top: 50%; /* vertical center */
+  left: 50%; /* horizontal center */
+  transform: translate(-50%, -50%); /* center exactly */
+  min-width: 320px;
+  max-width: 90vw;
+  padding: 15px 25px;
+  border-radius: 8px;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  z-index: 1050;
+  transition: opacity 0.5s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Show panel: fade in */
+.notification.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Background colors */
+.notification.success {
+  background-color: #007bff; /* bootstrap blue */
+}
+
+.notification.error {
+  background-color: #dc3545; /* bootstrap red */
+}
+
+/* Message text spacing */
+.notification .message {
+  margin-left: 15px;
+}
+
+/* SVG icon sizes */
+.notification svg {
+  width: 30px;
+  height: 30px;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke: white;
+  fill: none;
+}
+
+/* Tick circle and check path */
+.check-circle {
+  stroke-dasharray: 157; /* 2*pi*radius */
+  stroke-dashoffset: 157;
+  animation: dash-circle 0.6s forwards ease-in-out;
+}
+
+.check-check {
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+  animation: dash-check 0.4s 0.6s forwards ease-in-out;
+}
+
+/* Cross circle */
+.cross-circle {
+  stroke-dasharray: 157;
+  stroke-dashoffset: 157;
+  animation: dash-circle 0.6s forwards ease-in-out;
+}
+
+/* Cross lines */
+.cross-line {
+  stroke-dasharray: 28;
+  stroke-dashoffset: 28;
+  animation: dash-cross 0.4s 0.6s forwards ease-in-out;
+}
+
+/* Animations */
+@keyframes dash-circle {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes dash-check {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes dash-cross {
+  to { stroke-dashoffset: 0; }
+}
+

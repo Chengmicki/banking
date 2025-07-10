@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profile Settings</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container {
+      background-color: #fff;
+      width: 90%;
+      max-width: 1100px;
+      padding: 40px 50px;
+      border-radius: 20px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      background-color: #e0e0e0;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-bottom: 20px;
+      transition: background-color 0.3s;
+    }
+
+    .back-button:hover {
+      background-color: #d0d0d0;
+    }
+
+    .back-button svg {
+      margin-right: 8px;
+      width: 16px;
+      height: 16px;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    p.description {
+      color: #666;
+      margin-bottom: 30px;
+      line-height: 1.5;
+    }
+
+    .section {
+      margin-bottom: 30px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      margin-bottom: 12px;
+      border-bottom: 2px solid #007bff;
+      display: inline-block;
+      padding-bottom: 4px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    input:focus {
+      border-color: #007bff;
+      outline: none;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .save-btn, .cancel-btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .save-btn {
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    .save-btn:hover {
+      background-color: #0056b3;
+    }
+
+    .cancel-btn {
+      background-color: #ccc;
+      color: #333;
+    }
+
+    .cancel-btn:hover {
+      background-color: #999;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 30px 20px;
+      }
+
+      .buttons {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .save-btn, .cancel-btn {
+        width: 100%;
+      }
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #fff;
+      color: #333;
+      padding: 16px 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-20px);
+      border-left: 4px solid #28a745;
+      min-width: 250px;
+      z-index: 1000;
+      font-size: 16px;
+    }
+
+    .toast.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+      transition: opacity 0.5s, transform 0.5s;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toast" id="toast">Your profile has been updated</div>
+
+  <div class="container" id="profile-container">
+    <button class="back-button" onclick="goBack()">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+      </svg>
+      Back
+    </button>
+
+    <h1>Profile Settings</h1>
+    <p class="description">Update your personal information and contact details. Manage your account details securely and efficiently.</p>
+
+    <form id="profileForm">
+      <div class="section">
+        <div class="section-title">Basic Information</div>
+        <label for="name">Name</label>
+        <input type="text" id="name" value="John Doe">
+
+        <label for="dob">Date of Birth</label>
+        <input type="date" id="dob" value="1990-01-01">
+      </div>
+
+      <div class="section">
+        <div class="section-title">Contact Details</div>
+        <label for="email">Email</label>
+        <input type="email" id="email" value="joh***@mail.com">
+
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" value="***-***-1234">
+
+        <label for="address">Address</label>
+        <input type="text" id="address" value="Street, City, State, ZIP Code">
+      </div>
+
+      <div class="section">
+        <div class="section-title">Security</div>
+        <button type="button" class="save-btn" onclick="changePassword()">Change Password</button>
+      </div>
+
+      <div class="buttons">
+        <button type="button" class="save-btn" onclick="saveChanges()">Save Changes</button>
+        <button type="button" class="cancel-btn" onclick="cancelChanges()">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      anime({
+        targets: '#profile-container',
+        opacity: [0, 1],
+        translateY: [20, 0],
+        duration: 800,
+        easing: 'easeOutQuad'
+      });
+    });
+
+    function goBack() {
+      anime({
+        targets: '#profile-container',
+        opacity: [1, 0],
+        translateY: [0, 20],
+        duration: 500,
+        easing: 'easeInQuad',
+        complete: () => {
+          window.history.back();
+        }
+      });
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    function saveChanges() {
+      anime({
+        targets: '.save-btn',
+        scale: [1, 1.05, 1],
+        duration: 400,
+        easing: 'easeInOutQuad'
+      });
+      showToast('Your profile has been updated');
+    }
+
+    function cancelChanges() {
+      anime({
+        targets: '#profile-container',
+        opacity: [1, 0],
+        translateY: [0, 20],
+        duration: 500,
+        easing: 'easeInQuad',
+        complete: () => {
+          window.history.back();
+        }
+      });
+    }
+
+    function changePassword() {
+      anime({
+        targets: '.save-btn',
+        scale: [1, 1.05, 1],
+        duration: 400,
+        easing: 'easeInOutQuad'
+      });
+      alert('Redirecting to password change...');
+    }
+  </script>
+</body>
+</html>

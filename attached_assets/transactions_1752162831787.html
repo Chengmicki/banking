@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Transactions</title>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="css/transactions.css" />
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  integrity="sha512-..."
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+/>
+
+
+</head>
+<body>
+  <header class="header">
+    <h1>Transactions</h1>
+    
+    <div class="filters">
+      <input type="text" id="searchInput" placeholder="Search by ID or note..." />
+      <select id="typeFilter">
+        <option value="">All Types</option>
+        <option value="deposit">Deposit</option>
+        <option value="withdrawal">Withdrawal</option>
+        <option value="transfer">Transfer</option>
+      </select>
+      <select id="statusFilter">
+        <option value="">All Statuses</option>
+        <option value="completed">Completed</option>
+        <option value="pending">Pending</option>
+        <option value="failed">Failed</option>
+      </select>
+    </div>
+  </header>
+
+  <section class="summary">
+    <div class="summary-item">
+      <i class="fas fa-list"></i>
+      <div>
+        <span class="label">Total Transactions</span>
+        <span class="value" id="totalTransactions">0</span>
+      </div>
+    </div>
+    <div class="summary-item">
+      <i class="fas fa-arrow-down"></i>
+      <div>
+        <span class="label">Total Inflows</span>
+        <span class="value inflow" id="totalInflows">$0.00</span>
+      </div>
+    </div>
+    <div class="summary-item">
+      <i class="fas fa-arrow-up"></i>
+      <div>
+        <span class="label">Total Outflows</span>
+        <span class="value outflow" id="totalOutflows">$0.00</span>
+      </div>
+    </div>
+    <div class="summary-item">
+      <i class="fas fa-balance-scale"></i>
+      <div>
+        <span class="label">Net Balance</span>
+        <span class="value" id="netBalance">$0.00</span>
+      </div>
+    </div>
+  </section>
+
+  <main class="transactions-container" id="transactionsContainer">
+    <!-- Transactions will be dynamically loaded here -->
+    <!-- Example transaction card:
+    <div class="transaction-card" data-transaction-id="TX1234">
+      <div class="card-header">
+        <span class="type deposit">Deposit</span>
+        <span class="status completed">Completed</span>
+      </div>
+      <div class="card-body">
+        <div class="amount">+ $250.00</div>
+        <div class="date">2025-06-01 14:30</div>
+        <div class="notes">Salary Payment</div>
+      </div>
+    </div>
+    -->
+  </main>
+
+  <div class="empty-state" id="emptyState">
+    <i class="fas fa-folder-open"></i>
+    <p>No transactions to display.</p>
+  </div>
+
+  <!-- Transaction Modal -->
+<div id="transactionModal" class="modal">
+  <div class="modal-content">
+    <span class="close-button">&times;</span>
+    <div class="modal-header">
+      <h2>Everstead Bank</h2>
+      <h3>Transaction Receipt</h3>
+    </div>
+    <div class="modal-body">
+      <p><strong>Transaction ID:</strong> <span id="modalTransactionId"></span></p>
+      <p><strong>Date:</strong> <span id="modalTransactionDate"></span></p>
+      <p><strong>Type:</strong> <span id="modalTransactionType"></span></p>
+      <p><strong>Status:</strong> <span id="modalTransactionStatus"></span></p>
+      <p><strong>Amount:</strong> <span id="modalTransactionAmount"></span></p>
+      <p><strong>Notes:</strong> <span id="modalTransactionNotes"></span></p>
+      <p><strong>Account Number:</strong> ****1234</p>
+      <p><strong>Account Holder:</strong> John Doe</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#" id="downloadPdf" class="download-link">Download PDF</a>
+    </div>
+  </div>
+</div>
+<a href="dashboard.html" class="back-link">
+  <i class="fas fa-arrow-left"></i> Back to Dashboard
+</a>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+
+
+  <script src="js/transactions.js"></script>
+</body>
+</html>

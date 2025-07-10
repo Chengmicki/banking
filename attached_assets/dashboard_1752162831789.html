@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Everstead Banking Dashboard</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<header class="navbar">
+  <a href="#" class="logo" aria-label="Everstead Bank home">EBank</a>
+  
+  <input type="text" class="search-bar" placeholder="Search..." />
+  <div class="nav-icons">
+    <button id="menu-toggle" type="button" aria-label="Toggle Menu" aria-expanded="false" aria-controls="sidebar">☰</button>
+
+    <!-- Notification wrapper with badge and dropdown -->
+    <div class="notification-wrapper" tabindex="0" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">
+      <button id="notification-button" type="button" aria-label="Show notifications" aria-expanded="false">
+        🔔 <span class="badge" id="notification-count" aria-live="polite">0</span>
+      </button>
+      <div class="notification-dropdown" id="notification-dropdown" aria-live="polite" aria-relevant="additions" hidden>
+        <ul id="notification-list" role="list">
+          <!-- Notifications injected here by JS -->
+        </ul>
+        <button class="view-all-notifications" type="button">View All</button>
+      </div>
+    </div>
+
+    <div class="user-status" role="button" aria-label="User Profile & Verification Level" tabindex="0" onclick="openVerificationModal()" onkeypress="if(event.key==='Enter') openVerificationModal()">
+      <span class="profile-icon" role="img" aria-hidden="true">👤</span>
+      <span class="verification-badge" id="verificationBadge">🛡️ Verified</span>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <aside class="sidebar" id="sidebar" aria-label="Main Navigation">
+    <nav role="navigation">
+      <ul role="list">
+        <li><a href="#">🏠 Dashboard</a></li>
+        <li><a href="accounts.html">💼 Accounts</a></li>
+        <li><a href="transactions.html">📄 Transactions</a></li>
+        <li><a href="transfer.html">💸 Transfer</a></li>
+        <li><a href="cards.html">💳 Cards</a></li>
+        <li><a href="loans.html">🏦 Loans</a></li>
+        <li><a href="settings.html">⚙️ Settings</a></li>
+        <li><a href="support.html">❓ Support</a></li>
+        <li><a href="logout.html">🚪 Logout</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    <section class="account-summary">
+      <div class="card checking" tabindex="0" aria-label="Checking account balance">
+        <h2>Checking</h2>
+        <p>$12,450.00</p>
+      </div>
+      <div class="card savings" tabindex="0" aria-label="Savings account balance">
+        <h2>Savings</h2>
+        <p>$8,320.50</p>
+      </div>
+      <div class="card credit" tabindex="0" aria-label="Credit account balance">
+        <h2>Credit</h2>
+        <p>-$1,250.00</p>
+      </div>
+    </section>
+
+    <section class="quick-actions" aria-label="Quick actions">
+      <button type="button" onclick="window.location.href='transfer.html'">➕ Transfer</button>
+       <button onclick="window.location.href='accounts.html'">🧾 Pay Bill</button>
+      
+      <button type="button" onclick="window.location.href='depositcheck.html'">📷 Deposit Check</button>
+    </section>
+
+    <section class="transactions" aria-live="polite" aria-label="Recent transactions">
+      <h3>Recent Transactions</h3>
+      <ul role="list">
+        <li><span>📥 Deposit</span><span>$1,000</span><span>May 25</span></li>
+        <li><span>📤 Transfer</span><span>-$250</span><span>May 24</span></li>
+        <li><span>🧾 Bill Payment</span><span>-$100</span><span>May 23</span></li>
+      </ul>
+      <button class="view-all" type="button">View All</button>
+    </section>
+  </main>
+</div>
+
+<!-- Verification Modal -->
+<div id="verificationModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+  <div class="modal-content">
+    <button class="close-button" aria-label="Close" onclick="closeVerificationModal()">&times;</button>
+    <h2 id="modalTitle">Your Verification Level</h2>
+    <p>You are currently <strong id="currentLevel">Verified</strong>.</p>
+
+    <h3>Upgrade Options:</h3>
+    <ul class="verification-levels" role="list">
+      <li><span class="level-icon">🔰</span> <strong>Basic:</strong> View only access</li>
+      <li><span class="level-icon">🛡️</span> <strong>Verified:</strong> Full account access</li>
+      <li><span class="level-icon">💳</span> <strong>Gold:</strong> Higher transfer limits</li>
+      <li><span class="level-icon">💎</span> <strong>Platinum:</strong> Priority support and rewards</li>
+    </ul>
+
+    <button class="upgrade-button" onclick="upgradeLevel()">Upgrade Now</button>
+  </div>
+</div>
+
+<div id="preloader">
+  <div class="loader-logo" aria-hidden="true">
+    <svg width="40" height="40" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+      <!-- Abstract E shape -->
+      <path fill="none" stroke="var(--primary)" stroke-width="10" stroke-linecap="round" d="M20 20 L80 20 L20 50 L80 50 L20 80 L80 80"/>
+    </svg>
+    <span>Everstead Bank</span>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+  // --- Verification modal open/close functions ---
+  function openVerificationModal() {
+    document.getElementById('verificationModal').hidden = false;
+  }
+  function closeVerificationModal() {
+    document.getElementById('verificationModal').hidden = true;
+  }
+
+  // Upgrade button action
+  function upgradeLevel() {
+    alert('Redirecting to upgrade page...');
+    // window.location.href = "/upgrade"; // Uncomment and set actual upgrade URL
+  }
+
+  // Example: Load verification status dynamically from backend/API (replace with real data fetch)
+  // You could fetch or get this on page load, for example:
+  // fetch('/api/user/verification')
+  //   .then(res => res.json())
+  //   .then(data => {
+  //     document.getElementById('verificationBadge').textContent = getIcon(data.level) + " " + data.level;
+  //     document.getElementById('currentLevel').textContent = data.level;
+  //   });
+
+  // Helper to get icon by level name
+  function getIcon(level) {
+    const icons = {
+      Basic: "🔰",
+      Verified: "🛡️",
+      Gold: "💳",
+      Platinum: "💎"
+    };
+    return icons[level] || "🛡️";
+  }
+</script>
+<script>
+  const token = localStorage.getItem("token");
+  if (!token) {
+    // 🔐 If no token, redirect to login
+    window.location.href = "login.html";
+  }
+</script>
+<script src="js/auth-check.js"></script>
+
+
+
+</body>
+</html>

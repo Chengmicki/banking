@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Support & Chat — Everstead Bank</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <!-- Page-specific styles -->
+  <style>
+    /* Container */
+    .support-container {
+      max-width: 800px;
+      margin: 2em auto;
+      padding: 0 1em;
+    }
+    .support-container h1 {
+      font-size: 2em;
+      margin-bottom: 0.5em;
+      color: var(--primary);
+    }
+
+    /* FAQ Accordion */
+    .faq-item {
+      border-bottom: 1px solid #ddd;
+    }
+    .faq-question {
+      padding: 1em 0;
+      cursor: pointer;
+      font-weight: 600;
+      position: relative;
+    }
+    .faq-question::after {
+      content: '+';
+      position: absolute;
+      right: 0;
+      font-size: 1.2em;
+      transition: transform 0.2s ease;
+    }
+    .faq-question.open::after {
+      content: '–';
+      transform: rotate(180deg);
+    }
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      padding-left: 1em;
+      color: #555;
+    }
+
+    /* Support Ticket Form */
+    .ticket-form {
+      margin-top: 2em;
+      background: white;
+      padding: 1.5em;
+      border-radius: var(--radius);
+      box-shadow: 0 0.2em 0.4em rgba(0,0,0,0.05);
+    }
+    .ticket-form label {
+      display: block;
+      margin: 0.8em 0 0.4em;
+      font-weight: 500;
+    }
+    .ticket-form input,
+    .ticket-form select,
+    .ticket-form textarea {
+      width: 100%;
+      padding: 0.6em 0.8em;
+      border: 1px solid #ccc;
+      border-radius: 0.5em;
+      font-size: 1em;
+    }
+    .ticket-form button {
+      margin-top: 1em;
+      background: var(--primary);
+      color: white;
+      padding: 0.8em 1.2em;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 1em;
+      transition: background 0.2s ease;
+    }
+    .ticket-form button:hover {
+      background: #004999;
+    }
+    #ticket-success {
+      margin-top: 1em;
+      color: green;
+      display: none;
+    }
+
+    /* Chat Widget */
+    #chat-widget {
+      position: fixed;
+      bottom: 1.5em;
+      right: 1.5em;
+      width: 3.5em;
+      height: 3.5em;
+      background: var(--primary);
+      border-radius: 50%;
+      color: white;
+      font-size: 1.8em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 0.3em 0.6em rgba(0,0,0,0.2);
+      z-index: 5000;
+    }
+    #chat-window {
+      position: fixed;
+      bottom: 5.5em;
+      right: 1.5em;
+      width: 300px;
+      max-height: 400px;
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: 0 0.3em 0.6em rgba(0,0,0,0.2);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 5000;
+    }
+    #chat-window header {
+      background: var(--primary);
+      color: white;
+      padding: 0.8em;
+      font-weight: 600;
+    }
+    #chat-window .messages {
+      flex: 1;
+      padding: 0.8em;
+      overflow-y: auto;
+      font-size: 0.9em;
+      color: #333;
+    }
+    #chat-window .input {
+      display: flex;
+      border-top: 1px solid #eee;
+    }
+    #chat-window .input input {
+      flex: 1;
+      border: none;
+      padding: 0.6em;
+    }
+    #chat-window .input button {
+      background: var(--primary);
+      border: none;
+      color: white;
+      padding: 0 1em;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <a href="#" class="logo">EBank</a>
+  </header>
+
+  <!-- Support & Chat Main Container -->
+  <div class="support-container">
+
+    <!-- Page Title -->
+    <h1>Support & Chat</h1>
+
+    <!-- FAQ Section -->
+    <section class="faqs">
+      <div class="faq-item">
+        <div class="faq-question">How do I reset my password?</div>
+        <div class="faq-answer">
+          <p>To reset your password, go to Settings → Security → Reset Password, then follow the instructions sent to your email.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">How can I view my monthly statements?</div>
+        <div class="faq-answer">
+          <p>Navigate to Accounts → [Select Account] → Statements. You can download PDFs for any month.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">What are your customer support hours?</div>
+        <div class="faq-answer">
+          <p>Our live support is available Monday–Friday, 8 AM–8 PM. Tickets submitted via the form are reviewed 24/7.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Support Ticket Form -->
+    <section class="ticket-form">
+      <h2>Submit a Support Ticket</h2>
+      <label for="ticket-subject">Subject</label>
+      <input id="ticket-subject" type="text" placeholder="Brief summary" />
+
+      <label for="ticket-category">Category</label>
+      <select id="ticket-category">
+        <option>Account</option>
+        <option>Transactions</option>
+        <option>Cards</option>
+        <option>Loans</option>
+        <option>Other</option>
+      </select>
+
+      <label for="ticket-desc">Description</label>
+      <textarea id="ticket-desc" rows="4" placeholder="Describe your issue..."></textarea>
+
+      <button id="ticket-submit" type="button">Submit Ticket</button>
+      <div id="ticket-success" role="alert">
+        Your ticket has been submitted!
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Chat Widget & Window -->
+  <div id="chat-widget" title="Chat with us">💬</div>
+  <div id="chat-window">
+    <header>Live Chat</header>
+    <div class="messages">
+      <p><em>Chat coming soon…</em></p>
+    </div>
+    <div class="input">
+      <input type="text" placeholder="Type a message…" disabled />
+      <button disabled>Send</button>
+    </div>
+  </div>
+
+  <!-- Footer Link -->
+  <footer style="text-align:center; margin:2em 0;">
+    <a href="dashboard.html" style="color: var(--primary);">← Back to Dashboard</a>
+  </footer>
+
+  <!-- Page-specific scripts -->
+  <script>
+    // FAQ accordion behavior
+    document.querySelectorAll('.faq-question').forEach(q => {
+      q.addEventListener('click', () => {
+        q.classList.toggle('open');
+        const answer = q.nextElementSibling;
+        answer.style.maxHeight = q.classList.contains('open')
+          ? answer.scrollHeight + 'px'
+          : '0';
+      });
+    });
+
+    // Ticket form submit simulation
+    document.getElementById('ticket-submit').addEventListener('click', () => {
+      const success = document.getElementById('ticket-success');
+      success.style.display = 'block';
+      setTimeout(() => success.style.display = 'none', 3000);
+    });
+
+    // Chat widget toggle
+    const chatWidget = document.getElementById('chat-widget');
+    const chatWindow = document.getElementById('chat-window');
+    chatWidget.addEventListener('click', () => {
+      chatWindow.style.display = chatWindow.style.display === 'flex' ? 'none' : 'flex';
+    });
+  </script>
+
+</body>
+</html>

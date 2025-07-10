@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Cards</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f7f9fb;
+    }
+
+    .back-link {
+      display: block;
+      margin: 1rem auto;
+      text-align: center;
+      font-weight: 600;
+      text-decoration: none;
+      color: #007bff;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    .cards-section {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .cards-section h2 {
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: #222;
+      text-align: center;
+    }
+
+    .cards-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.5rem;
+    }
+
+    .card {
+      position: relative;
+      width: 336px;
+      height: 212px;
+      background: linear-gradient(135deg, #004080, #007bff);
+      color: #fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      padding: 1.5rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+      cursor: pointer;
+    }
+
+    .card header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-icon {
+      font-size: 1.8rem;
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #ffd700;
+      margin: 0;
+    }
+
+    .balance {
+      font-size: 1.6rem;
+      font-weight: bold;
+      margin: 0.5rem 0 0.25rem 0;
+    }
+
+    .card-number,
+    .expiry {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.85);
+      margin: 0.1rem 0;
+      letter-spacing: 0.08em;
+    }
+
+    .btn-details {
+      align-self: flex-start;
+      background-color: rgba(0,0,0,0.3);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-details:hover {
+      background-color: rgba(0,0,0,0.5);
+      cursor: pointer;
+    }
+
+    .card.disabled::after {
+      content: "DISABLED";
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: bold;
+      padding: 0.25rem 0.75rem;
+      border-bottom-left-radius: 20px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .card::before {
+      content: "VISA";
+      position: absolute;
+      bottom: 1rem;
+      right: 1.5rem;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.6);
+      transform: rotate(-10deg);
+      pointer-events: none;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.6);
+    }
+
+    .modal-content {
+      background-color: #fff;
+      color: #333;
+      margin: 10% auto;
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      position: relative;
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #007bff;
+    }
+
+    .modal-content p {
+      margin: 1rem 0;
+      font-size: 1rem;
+    }
+
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #999;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .close:hover {
+      color: #333;
+    }
+
+    @media (max-width: 400px) {
+      .card {
+        width: 90%;
+        height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+
+  <section class="cards-section" aria-label="Your bank cards">
+    <h2>Your Cards</h2>
+    <div class="cards-grid">
+      <article class="card checking disabled" tabindex="0" aria-label="Checking account card">
+        <header>
+          <span class="card-icon" aria-hidden="true">🏦</span>
+          <h3>Checking</h3>
+        </header>
+        <p class="balance">$12,450.00</p>
+        <p class="card-number">**** **** **** 1234</p>
+        <p class="expiry">Expires 12/28</p>
+        <button class="btn-details">View Details</button>
+      </article>
+
+      <article class="card savings disabled" tabindex="0" aria-label="Savings account card">
+        <header>
+          <span class="card-icon" aria-hidden="true">💰</span>
+          <h3>Savings</h3>
+        </header>
+        <p class="balance">$8,320.50</p>
+        <p class="card-number">**** **** **** 5678</p>
+        <p class="expiry">Expires 08/27</p>
+        <button class="btn-details">View Details</button>
+      </article>
+
+      <article class="card credit disabled" tabindex="0" aria-label="Credit account card">
+        <header>
+          <span class="card-icon" aria-hidden="true">💳</span>
+          <h3>Credit</h3>
+        </header>
+        <p class="balance">-$1,250.00</p>
+        <p class="card-number">**** **** **** 9012</p>
+        <p class="expiry">Expires 03/26</p>
+        <button class="btn-details">View Details</button>
+      </article>
+    </div>
+  </section>
+
+  <div id="disabledModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h3>Card Disabled</h3>
+      <p>This card is currently disabled and cannot be used.</p>
+    </div>
+  </div>
+
+  <script>
+    const disabledCards = document.querySelectorAll('.card.disabled');
+    const modal = document.getElementById('disabledModal');
+    const closeModal = document.querySelector('.modal .close');
+
+    disabledCards.forEach(card => {
+      card.addEventListener('click', () => {
+        modal.style.display = 'block';
+      });
+    });
+
+    closeModal.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+
+    window.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+  </script>
+
+</body>
+</html>

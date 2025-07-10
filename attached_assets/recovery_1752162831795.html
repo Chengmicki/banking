@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Account Recovery</title>
+  <style>
+    :root {
+      --primary-color: #2563eb;
+      --secondary-color: #1e3a8a;
+      --background: #f9fafb;
+      --white: #ffffff;
+      --success: #16a34a;
+      --error: #dc2626;
+      --border-radius: 1rem;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--background);
+      color: #334155;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      background: var(--white);
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 400px;
+      animation: fadeInUp 0.6s ease;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 1.5rem;
+      color: var(--secondary-color);
+      margin-bottom: 1rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .header:hover {
+      color: var(--primary-color);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="number"] {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      border: 1px solid #cbd5e1;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: var(--secondary-color);
+    }
+
+    .recovery-methods {
+      margin-bottom: 1rem;
+    }
+
+    .method-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f1f5f9;
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .method-option:hover {
+      background: #e2e8f0;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--secondary-color);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 2rem;
+      font-size: 0.9rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(-10px);
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .container {
+        padding: 1.5rem;
+        width: 95%;
+      }
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header" onclick="window.history.back()">
+      &lt; Account Recovery
+    </div>
+    <h1>Account Recovery</h1>
+
+    <!-- Step 1: Email/Username -->
+    <div id="step1">
+      <label for="username">Enter your email or username:</label>
+      <input type="text" id="username" placeholder="email@example.com">
+      <button onclick="goToStep2()">Next</button>
+    </div>
+
+    <!-- Step 2: Choose Recovery Method -->
+    <div id="step2" class="hidden">
+      <label>Select a recovery method:</label>
+      <div class="recovery-methods">
+        <div class="method-option" onclick="selectMethod('email')">
+          Email: ***@example.com
+        </div>
+        <div class="method-option" onclick="selectMethod('sms')">
+          SMS: +1 234 ****6789
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Verification -->
+    <div id="step3" class="hidden">
+      <label for="otp">Enter the code sent:</label>
+      <input type="number" id="otp" placeholder="123456">
+      <button onclick="verifyCode()">Submit</button>
+    </div>
+
+    <!-- Step 4: Reset Password -->
+    <div id="step4" class="hidden">
+      <label for="new-password">New Password:</label>
+      <input type="password" id="new-password">
+      <label for="confirm-password">Confirm Password:</label>
+      <input type="password" id="confirm-password">
+      <button onclick="resetPassword()">Reset Password</button>
+    </div>
+
+    <!-- Step 5: Success -->
+    <div id="step5" class="hidden">
+      <h2>Password reset successfully!</h2>
+      <button onclick="window.location.href='login.html'">Go to Login</button>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const steps = ['step1', 'step2', 'step3', 'step4', 'step5'];
+    let selectedMethod = '';
+
+    function showStep(stepId) {
+      steps.forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+      });
+      document.getElementById(stepId).classList.remove('hidden');
+    }
+
+    function showToast(message, success=true) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.style.background = success ? 'var(--success)' : 'var(--error)';
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    function goToStep2() {
+      const username = document.getElementById('username').value;
+      if (!username) {
+        showToast('Please enter your email or username.', false);
+        return;
+      }
+      showToast('Recovery method loaded.');
+      showStep('step2');
+    }
+
+    function selectMethod(method) {
+      selectedMethod = method;
+      showToast(`Selected ${method.toUpperCase()} recovery.`);
+      showStep('step3');
+    }
+
+    function verifyCode() {
+      const otp = document.getElementById('otp').value;
+      if (otp === '123456') { // Placeholder logic
+        showToast('Verification successful.');
+        showStep('step4');
+      } else {
+        showToast('Invalid code. Try again.', false);
+      }
+    }
+
+    function resetPassword() {
+      const newPassword = document.getElementById('new-password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      if (newPassword !== confirmPassword || newPassword.length < 6) {
+        showToast('Passwords do not match or too short.', false);
+        return;
+      }
+      showToast('Password reset successfully!');
+      showStep('step5');
+    }
+  </script>
+</body>
+</html>

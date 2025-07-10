@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Accounts Overview</title>
+  <link rel="stylesheet" href="css/accounts.css" />
+</head>
+<body>
+  <!-- Back Icon -->
+  <header class="header">
+    <button class="back-button" onclick="window.history.back()">
+      &#8592; Back
+    </button>
+    <h1>Accounts Overview</h1>
+  </header>
+<!-- Tabs -->
+<nav class="tabs">
+  <button class="tab active" onclick="openTab('accounts')">Accounts</button>
+  <button class="tab" onclick="openTab('crypto')">Crypto</button>
+</nav>
+
+<!-- Main Content -->
+<main>
+  <!-- Accounts Tab -->
+  <section id="accounts" class="tab-content active">
+    <div class="cards-container">
+      <!-- Checking Account -->
+      <div class="account-card">
+        <div class="card-header">
+          <h2>Checking Account</h2>
+          <span class="account-number">•••• 1234</span>
+        </div>
+        <div class="card-balance">$12,345.67</div>
+        <div class="card-actions">
+          <button onclick="window.location.href='transfer.html'">Transfer</button>
+          <button onclick="openModal('deposit')">Deposit</button>
+          <button onclick="openPayBillsModal()">Pay Bills</button>
+        </div>
+      </div>
+
+      <!-- Savings Account -->
+      <div class="account-card">
+        <div class="card-header">
+          <h2>Savings Account</h2>
+          <span class="account-number">•••• 5678</span>
+        </div>
+        <div class="card-balance">$8,910.11</div>
+        <div class="card-actions">
+          <button onclick="window.location.href='transfer.html'">Transfer</button>
+          <button onclick="openModal('deposit')">Deposit</button>
+          <button onclick="openPayBillsModal()">Pay Bills</button>
+        </div>
+      </div>
+
+      <!-- Credit Account -->
+      <div class="account-card">
+        <div class="card-header">
+          <h2>Credit Account</h2>
+          <span class="account-number">•••• 9012</span>
+        </div>
+        <div class="card-balance">-$2,345.67</div>
+        <div class="card-actions">
+          <button onclick="window.location.href='transfer.html'">Transfer</button>
+          <button onclick="openModal('deposit')">Deposit</button>
+          <button onclick="openPayBillsModal()">Pay Bills</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Pay Bills Modal -->
+<div id="pay-bills-modal" class="modal">
+  <div class="modal-content">
+    <span class="close-button" onclick="closePayBillsModal()">&times;</span>
+    <h2>Pay Bills</h2>
+
+    <!-- Tabs for Bill Categories -->
+    <div class="bill-tabs">
+      <button class="bill-tab active" onclick="showBillCategory('utilities')">Utilities</button>
+      <button class="bill-tab" onclick="showBillCategory('communication')">Communication</button>
+      <button class="bill-tab" onclick="showBillCategory('housing')">Housing</button>
+      <button class="bill-tab" onclick="showBillCategory('transportation')">Transportation</button>
+      <button class="bill-tab" onclick="showBillCategory('financial')">Financial</button>
+      <button class="bill-tab" onclick="showBillCategory('healthcare')">Healthcare</button>
+      <button class="bill-tab" onclick="showBillCategory('education')">Education</button>
+      <button class="bill-tab" onclick="showBillCategory('other')">Other</button>
+    </div>
+
+    <!-- Bills List Container -->
+    <div id="bill-list" class="bill-list-container">
+
+
+
+      <!-- Utilities --> 
+       <div id="utilities" class="bill-category">
+        <div class="bill-item" >
+          <span class="bill-name">Electricity</span>
+          <span class="bill-details">Account #: 709988</span>
+          <button class="pay-now-btn" onclick="openPaymentForm('Electricity')">Pay Now</button>
+        </div>
+       
+
+        <div class="bill-item">
+          <span class="bill-name">Water</span>
+          <span class="bill-details">Account #: 789012</span>
+          <button class="pay-now-btn" onclick="openPaymentForm('Water')">Pay Now</button>
+        </div>
+        <div class="bill-item">
+          <span class="bill-name">Gas</span>
+          <span class="bill-details">Account #: 345678</span>
+          <button class="pay-now-btn" onclick="openPaymentForm('Gas')">Pay Now</button>
+        </div>
+        <div class="bill-item">
+          <span class="bill-name">Trash Collection</span>
+          <span class="bill-details">Account #: 901234</span>
+          <button class="pay-now-btn" onclick="openPaymentForm('Trash Collection')">Pay Now</button>
+        </div>
+      </div>
+      
+
+
+      <!-- Communication -->
+      <div id="communication" class="bill-category">
+        <div class="bill-item">
+          <span class="bill-name">Mobile Phone</span>
+          <span class="bill-details">Account #: 123456</span>
+          <button class="pay-now-btn" onclick="openPaymentForm('Mobile Phone')">Pay Now</button>
+        </div>
+        <div class="bill-item">
+          <span class="bill-name">Internet/Wi-Fi</span>
+          <span class="bill-details">Account #: 789012</span>
+          <button class="pay-now-btn" onclick="openPaymentForm('Internet/Wi-Fi')">Pay Now</button>
+        </div>
+        <div class="bill-item">
+          <span class="bill-name">Cable TV</span>
+          <span class="bill-details">Account #: 345678</span>
+          <button class="pay-now-btn" onclick="openPaymentForm('Cable TV')">Pay Now</button>
+        </div>
+        <div class="bill-item">
+          <span class="bill-name">Landline</span>
+          <span class="bill-details">Account #: 901234</span>
+          <button class="pay-now-btn" onclick="openPaymentForm('Landline')">Pay Now</button>
+        </div>
+      </div>
+
+     
+
+      <!-- Housing -->
+      <div id="housing" class="bill-category">
+        <div class="bill-item">
+          <span class="bill-name">Rent</span>
+          <span class="bill-details">Account #: 123456</span>
+          <button class="pay-now-btn" onclick="openPaymentForm('Rent')">Pay Now</button>
+        </div>
+        <div class="bill-item">
+          <span class="bill-name">Mortgage</span>
+          <span class="bill-details">Account #: 789012</span>
+          <button class="pay-now-btn" onclick="openPaymentForm('Mortgage')">Pay Now</button>
+        </div>
+        <div class="bill-item">
+          <span class="bill-name">Property Tax</span>
+          <span class="bill-details">Account #: 345678</span>
+          <button class="pay-now-btn" onclick="openPaymentForm('Property Tax')">Pay Now</button>
+        </div>
+      </div>
+
+      <!-- Transportation -->
+      <div id="transportation" class="bill-category">
+        <div class="bill-item">
+          <span class="bill-name">Car Loan</span>
+          <span class="bill-details">Account #: 123456</span>
+          <button class="pay-now-btn" onclick="openPaymentForm('Car Loan')">Pay Now</button>
+        </div>
+        <div class="bill-item">
+          <span class="bill-name">Car Insurance</span>
+          <span class="bill-details">Account #: 789012</span>
+          <button class="pay-now-btn" onclick="openPaymentForm('Car Insurance')">Pay Now</button>
+        </div>
+        <div class="bill-item">
+          <span class="bill-name">Public Transport Pass</span>
+          <span class="bill-details">Account #: 345678</span>
+          <button class="pay-now-btn" onclick="openPaymentForm('Public Transport Pass')">Pay Now</button>
+        </div>
+      </div>
+
+      <!-- Financial -->
+      <div id="financial" class="bill-category">
+        <div class="bill-item">
+          <span class="bill-name">Credit Card</span>
+          <span class="bill-details">Account #: 123456</span>
+          <button class="pay-now-btn" onclick="openPaymentForm('Credit Card')">Pay Now</button>
+        </div>
+        <div class="bill-item">
+          <span class="bill-name">Loan Payment</span>
+          <span class="bill-details">Account #: 789012</span>
+          <button class="pay-now-btn" onclick="openPaymentForm('Loan Payment')">Pay Now</button>
+        </div>
+      </div>
+
+      <!-- Healthcare -->
+      <div id="healthcare" class="bill-category">
+        <div class="bill-item">
+          <span class="bill-name">Health Insurance</span>
+          <span class="bill-details">Account #: 123456</span>
+          <button class="pay-now-btn" onclick="openPaymentForm('Health Insurance')">Pay Now</button>
+        </div>
+        <div class="bill-item">
+          <span class="bill-name">Medical Bills</span>
+          <span class="bill-details">Account #: 789012</span>
+          <button class="pay-now-btn" onclick="openPaymentForm('Medical Bills')">Pay Now</button>
+        </div>
+      </div>
+
+      <!-- Education -->
+      <div id="education" class="bill-category">
+        <div class="bill-item">
+          <span class="bill-name">Tuition Fees</span>
+          <span class="bill-details">Account #: 123456</span>
+          <button class="pay-now-btn" onclick="openPaymentForm('Tuition Fees')">Pay Now</button>
+        </div>
+        <div class="bill-item">
+          <span class="bill-name">School Fees</span>
+          <span class="bill-details">Account #: 789012</span>
+          <button class="pay-now-btn" onclick="openPaymentForm('School Fees')">Pay Now</button>
+        </div>
+      </div>
+
+      <!-- Other -->
+      <div id="other" class="bill-category">
+        <div class="bill-item">
+          <span class="bill-name">Subscriptions</span>
+          <span class="bill-details">Account #: 123456</span>
+          <button class="pay-now-btn" onclick="openPaymentForm('Subscriptions')">Pay Now</button>
+        </div>
+        <div class="bill-item">
+          <span class="bill-name">Memberships</span>
+          <span class="bill-details">Account #: 789012</span>
+          <button class="pay-now-btn" onclick="openPaymentForm('Memberships')">Pay Now</button>
+        </div>
+        <div class="bill-item">
+          <span class="bill-name">Donations</span>
+          <span class="bill-details">Account #: 345678</span>
+          <button class="pay-now-btn" onclick="openPaymentForm('Donations')">Pay Now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<!-- Payment Modal -->
+<div id="payment-modal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <span id="closeModal" class="close">&times;</span>
+    
+    <div id="step1">
+      <h2>Enter Payment Code</h2>
+      <input type="text" id="paymentCodeInput" placeholder="Enter payment code" />
+      <button id="validateCodeBtn">Validate</button>
+      <p id="errorMsg" style="color: red;"></p>
+    </div>
+    
+    <div id="step2" style="display:none;">
+      <h3>Payment Details</h3>
+      <p><strong>Company:</strong> <span id="companyName"></span></p>
+      <p><strong>Amount:</strong> $<span id="paymentAmount"></span></p>
+      <button id="proceedBtn" style="background-color:green; color:white;">Proceed</button>
+      <button id="cancelBtn" style="background-color:red; color:white;">Cancel</button>
+    </div>
+
+    <!-- Payment Success must be inside modal-content -->
+    <div id="paymentSuccess" style="display: none;">
+      <div class="success-icon">
+        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+          <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+          <path class="checkmark__check" fill="none" d="M14 27l7 7 16-16"/>
+        </svg>
+      </div>
+      <h3>Payment Successful!</h3>
+      <p>Your transaction has been completed successfully.</p>
+    </div>
+
+  </div>
+</div>
+
+
+
+
+</main>
+
+    <!-- Crypto Tab -->
+
+<section id="crypto" class="tab-content">
+  <div class="crypto-header">
+    <h2>Crypto Wallet</h2>
+  </div>
+  <div class="crypto-cards">
+    <div class="crypto-card">
+      <div class="crypto-name">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Bitcoin.svg" alt="BTC" width="32" height="32" />
+        <span>BTC</span>
+      </div>
+      <div class="crypto-balance">
+        <span id="btc-balance">0.00 BTC</span>
+        <span id="btc-usd">$0.00</span>
+      </div>
+      <div class="crypto-actions">
+        <button onclick="openNewBuyCryptoModal()">Buy</button>
+        <button onclick="openNewSellCryptoModal('sell')">Sell</button>
+       <button onclick="openModalswap()">Receive</button>
+
+      </div>
+    </div>
+  </div> <!-- ✅ Closing .crypto-cards -->
+
+  <!-- New Buy Crypto Modal -->
+
+<div id="newBuyCryptoModal" class="buy-crypto-modal" style="display: none;">
+  <div class="buy-crypto-content">
+    <h2>Buy BTC</h2>
+    
+    <label for="newUsdAmount">Amount in USD:</label>
+    <input type="number" id="newUsdAmount" placeholder="Enter amount" min="0" step="0.01">
+
+    <div class="buy-crypto-summary">
+      <p>Fee (5%): <span id="newFeeAmount">0.00</span> USD</p>
+      <p>BTC You'll Get: <span id="newBtcAmount">0.00000000</span> </p>
+    </div>
+
+    <label for="newAccountSelect">Choose Account:</label>
+    <select id="newAccountSelect">
+      <option value="">-- Select --</option>
+      <option value="checking">Checking ($5,000)</option>
+      <option value="savings">Savings ($10,000)</option>
+      <option value="credit">Credit ($2,000)</option>
+    </select>
+
+    <div class="buy-crypto-buttons">
+      <button id="confirmBuyBtn">Buy BTC</button>
+      <button id="closeBuyModalBtn" onclick="closeBuyModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+  <!-- Insufficient Funds Popup -->
+  <div id="insufficientFundsPopup" class="popup" style="display:none;">
+    <div class="popup-content warning">
+      <p>Insufficient funds to complete the purchase.</p>
+    </div>
+  </div>
+
+
+
+
+
+  <!-- New Sell Crypto Modal -->
+<div id="newSellCryptoModal" class="sell-crypto-modal" style="display: none;">
+  <div class="sell-crypto-content">
+    <h2>Sell BTC</h2>
+    
+    <label for="newSellBtcAmount">Amount in BTC:</label>
+    <input type="number" id="newSellBtcAmount" placeholder="Enter amount" min="0" step="0.00000001">
+
+    <div class="sell-crypto-summary">
+      <p>Fee (5%): <span id="newSellFeeAmount">0.00</span> USD</p>
+      <p>USD You'll Get: <span id="newSellUsdAmount">0.00</span> </p>
+    </div>
+
+    <label for="newSellAccountSelect">Choose Account:</label>
+    <select id="newSellAccountSelect">
+      <option value="">-- Select --</option>
+      <option value="checking">Checking ($5,000)</option>
+      <option value="savings">Savings ($10,000)</option>
+      <option value="credit">Credit ($2,000)</option>
+    </select>
+
+    <div class="sell-crypto-buttons">
+      <button id="confirmSellBtn">Sell BTC</button>
+      <button id="closeSellModalBtn" onclick="closeSellModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Insufficient Funds Popup (Sell) -->
+<div id="insufficientFundsSellPopup" class="popup" style="display:none;">
+  <div class="popup-content warning">
+    <p>Insufficient funds to complete the sale.</p>
+  </div>
+</div>
+
+
+<div id="swapNotification" class="notification">
+  <p>
+  <strong>BTC</strong>: <span id="btc-address">bc1q03ggdrww7essye4h58xyf09yeamsagqwhpdxfw</span>
+  <button onclick="copyBTCAddress()" style="margin-left:8px;">Copy</button>
+</p>
+<div style="margin-top:1em;">
+  <img id="btc-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=bc1q03ggdrww7essye4h58xyf09yeamsagqwhpdxfw" alt="BTC QR Code">
+</div>
+<script>
+function copyBTCAddress() {
+  const address = document.getElementById('btc-address').textContent;
+  navigator.clipboard.writeText(address).then(function() {
+    showToast('BTC address copied!');
+  });
+}
+</script>
+  <button onclick="closeSwapNotification()">Close</button>
+</div>
+
+
+
+
+
+  
+       
+    </div>
+  </div>
+</section>
+
+  </main>
+
+  <!-- Recent Transactions -->
+  <section class="transactions">
+    <h2>Recent Transactions</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Description</th>
+          <th>Amount</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="transactions-body">
+       
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Modals -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close-button" onclick="closeMainModal()">&times;</span>
+      <div id="modal-body">
+      
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+<div id="toast" class="toast"></div>
+
+  <script src="js/accounts.js"></script>
+
+</body>
+</html>

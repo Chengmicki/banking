@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KYC Verification</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #ffffff;
+      color: #333;
+    }
+
+    .kyc-container {
+      max-width: 90%;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1);
+    }
+
+    .kyc-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .kyc-title {
+      font-size: 2rem;
+      color: #007bff;
+    }
+
+    .back-button {
+      background: white;
+      color: #007bff;
+      border: 2px solid #007bff;
+      border-radius: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .back-button:hover {
+      background: #007bff;
+      color: white;
+    }
+
+    form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    label {
+      font-weight: bold;
+      margin-bottom: 0.25rem;
+      display: block;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="date"],
+    input[type="file"],
+    select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      box-sizing: border-box;
+      transition: border-color 0.2s ease;
+    }
+
+    input:invalid {
+      border-color: rgb(11, 34, 104);
+    }
+
+    input:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+
+    .full-width {
+      flex: 1 1 100%;
+    }
+
+    .half-width {
+      flex: 1 1 48%;
+    }
+
+    button[type="submit"],
+    .dev-button {
+      padding: 0.75rem 1.5rem;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    button[type="submit"]:hover,
+    .dev-button:hover {
+      background: #0056b3;
+    }
+
+    @media screen and (max-width: 768px) {
+      .half-width {
+        flex: 1 1 100%;
+      }
+
+      .kyc-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .kyc-title {
+        margin-bottom: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="kyc-container">
+    <div class="kyc-header">
+      <button type="button" class="back-button" onclick="history.back()">← Back</button>
+      <h1 class="kyc-title">🔐 KYC Verification</h1>
+    </div>
+
+    <form id="kyc-form" onsubmit="return validateForm(event)">
+      <div class="half-width">
+        <label for="fullName">Full Name</label>
+        <input type="text" id="fullName" name="fullName" required />
+      </div>
+      <div class="half-width">
+        <label for="dob">Date of Birth</label>
+        <input type="date" id="dob" name="dob" required />
+      </div>
+      <div class="half-width">
+        <label for="nationality">Nationality/Citizenship</label>
+        <input type="text" id="nationality" name="nationality" required />
+      </div>
+      <div class="full-width">
+        <label for="address">Street Address</label>
+        <input type="text" id="address" name="address" required />
+      </div>
+      <div class="half-width">
+        <label for="city">City</label>
+        <input type="text" id="city" name="city" required />
+      </div>
+      <div class="half-width">
+        <label for="state">State/Province</label>
+        <input type="text" id="state" name="state" required />
+      </div>
+      <div class="half-width">
+        <label for="zip">Zip/Postal Code</label>
+        <input type="text" id="zip" name="zip" required />
+      </div>
+      <div class="half-width">
+        <label for="phone">Phone Number</label>
+        <input type="text" id="phone" name="phone" required />
+      </div>
+      <div class="half-width">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required />
+      </div>
+      <div class="half-width">
+        <label for="ssn">SSN/Tax ID</label>
+        <input type="text" id="ssn" name="ssn" required />
+      </div>
+      <div class="half-width">
+        <label for="occupation">Occupation/Employment Status</label>
+        <input type="text" id="occupation" name="occupation" required />
+      </div>
+      <div class="full-width">
+        <label for="sourceOfFunds">Source of Funds</label>
+        <input type="text" id="sourceOfFunds" name="sourceOfFunds" required />
+      </div>
+      <div class="full-width">
+        <label for="pep">Are you a Politically Exposed Person (PEP)?</label>
+        <select id="pep" name="pep" required>
+          <option value="">Select...</option>
+          <option value="no">No</option>
+          <option value="yes">Yes</option>
+        </select>
+      </div>
+      <div class="full-width">
+        <label for="idDocument">Upload ID Document</label>
+        <input type="file" id="idDocument" name="idDocument" accept=".jpg,.jpeg,.png,.pdf" required />
+      </div>
+      <div class="full-width">
+        <label>
+          <input type="checkbox" name="agree" required />
+          I agree to the terms and conditions
+        </label>
+      </div>
+      <div class="full-width">
+        <button type="submit">Submit Verification</button>
+        <button type="button" class="dev-button" onclick="devBypass()">Dev Bypass</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    function validateForm(event) {
+      event.preventDefault();
+      const form = document.getElementById('kyc-form');
+      if (form.checkValidity()) {
+        window.location.href = 'verification-pending.html';
+      } else {
+        alert('Please complete all required fields.');
+      }
+    }
+
+    function devBypass() {
+      window.location.href = 'verification-pending.html';
+    }
+  </script>
+</body>
+</html>

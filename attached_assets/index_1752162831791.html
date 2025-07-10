@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>Everstead Bank - Modern Online Banking in Bonaire</title>
+  <meta name="description" content="Everstead Bank: Secure, modern online banking in Bonaire. Manage your USD accounts with confidence. 24/7 support, advanced security, and seamless experience.">
+  <meta name="keywords" content="Everstead Bank, Bonaire, USD, online banking, secure banking, digital bank, financial services">
+  <meta property="og:title" content="Everstead Bank - Modern Online Banking in Bonaire">
+  <meta property="og:description" content="Experience secure, modern banking in Bonaire with Everstead Bank. USD accounts, 24/7 support, and advanced security.">
+  <meta property="og:image" content="images/logo.png">
+  <meta property="og:type" content="website">
+  <style>
+    :root {
+      --brand-blue: #1769aa;
+      --brand-blue-dark: #0d3c61;
+      --brand-blue-light: #eaf4fb;
+      --brand-white: #fff;
+      --brand-accent: #0099ff;
+      --shadow: 0 8px 32px 0 rgba(23,105,170,0.10);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, var(--brand-blue-light) 0%, #fafdff 100%);
+      color: var(--brand-blue-dark);
+      min-height: 100vh;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    /* Navbar */
+    .navbar {
+      width: 100%;
+      background: var(--brand-white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      padding: 0.7rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(23,105,170,0.06);
+    }
+    .navbar-content {
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .navbar-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+    .navbar-logo img {
+      height: 44px;
+      width: 44px;
+      border-radius: 8px;
+      background: var(--brand-white);
+      box-shadow: 0 2px 8px #0001;
+    }
+    .navbar-logo span {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: var(--brand-blue-dark);
+      letter-spacing: 1px;
+    }
+    .navbar-links {
+      display: flex;
+      gap: 2.5rem;
+    }
+    .navbar-links a {
+      color: var(--brand-blue-dark);
+      font-weight: 600;
+      font-size: 1.08rem;
+      text-decoration: none;
+      padding: 0.3rem 0.7rem;
+      border-radius: 4px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .navbar-links a.active,
+    .navbar-links a:hover,
+    .navbar-links a:focus {
+      background: var(--brand-blue-light);
+      color: var(--brand-accent);
+    }
+    .navbar-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      margin-left: 1rem;
+    }
+    .navbar-toggle span {
+      width: 26px;
+      height: 3px;
+      background: var(--brand-blue-dark);
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+    @media (max-width: 900px) {
+      .navbar-content { padding: 0 1rem; }
+      .navbar-links { gap: 1.2rem; }
+    }
+    @media (max-width: 700px) {
+      .navbar-content { flex-direction: row; }
+      .navbar-links {
+        display: none;
+        flex-direction: column;
+        background: var(--brand-white);
+        position: absolute;
+        top: 60px;
+        right: 0;
+        width: 100%;
+        padding: 1rem 0;
+        box-shadow: 0 4px 16px #0002;
+      }
+      .navbar-links.open { display: flex; }
+      .navbar-toggle { display: flex; }
+    }
+
+    /* Hero/Main Section */
+    .hero {
+      width: 100%;
+      background: linear-gradient(120deg, var(--brand-blue) 60%, var(--brand-blue-light) 100%);
+      padding: 0;
+      margin: 0;
+    }
+    .hero-content {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2.5rem;
+      padding: 4.5rem 2rem 3.5rem 2rem;
+    }
+    .hero-text {
+      flex: 1.2;
+      color: var(--brand-white);
+      z-index: 2;
+    }
+    .hero-text h1 {
+      font-size: 2.8rem;
+      font-weight: 900;
+      margin-bottom: 1.1rem;
+      letter-spacing: 1px;
+      line-height: 1.1;
+      color: var(--brand-white);
+      text-shadow: 0 2px 16px #111a;
+    }
+    .hero-text p {
+      font-size: 1.25rem;
+      line-height: 1.7;
+      margin-bottom: 2.2rem;
+      color: #eaf4fb;
+      max-width: 520px;
+    }
+    .hero-btns {
+      display: flex;
+      gap: 1.2rem;
+      margin-bottom: 1.5rem;
+    }
+    .hero-btns a {
+      text-decoration: none;
+    }
+    .hero-btn {
+      background: var(--brand-white);
+      color: var(--brand-blue-dark);
+      font-weight: 700;
+      font-size: 1.13rem;
+      border-radius: 0.5em;
+      padding: 0.9em 2.2em;
+      border: none;
+      transition: background 0.2s, color 0.2s;
+      box-shadow: 0 2px 8px #1769aa22;
+      cursor: pointer;
+    }
+    .hero-btn:hover, .hero-btn:focus {
+      background: var(--brand-accent);
+      color: var(--brand-white);
+    }
+    .hero-image {
+      flex: 1;
+      min-width: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hero-image img {
+      width: 340px;
+      max-width: 100%;
+      border-radius: 1.2em;
+      box-shadow: var(--shadow);
+      border: 6px solid var(--brand-white);
+      background: var(--brand-blue-light);
+    }
+    @media (max-width: 900px) {
+      .hero-content { flex-direction: column; text-align: center; gap: 2rem; }
+      .hero-image { justify-content: center; }
+      .hero-text { color: var(--brand-white); }
+    }
+    @media (max-width: 600px) {
+      .hero-content { padding: 2.5rem 0.7rem 2rem 0.7rem; }
+      .hero-image img { width: 90vw; }
+      .hero-text h1 { font-size: 2rem; }
+    }
+
+    /* Features */
+    .features-section {
+      background: var(--brand-white);
+      box-shadow: var(--shadow);
+      border-radius: 1em;
+      max-width: 1100px;
+      margin: -3rem auto 2.5rem auto;
+      padding: 2.5rem 2rem 2rem 2rem;
+      position: relative;
+      z-index: 2;
+    }
+    .features-list {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .features-list li {
+      flex: 1 1 220px;
+      background: var(--brand-blue-light);
+      border-radius: 0.7em;
+      margin-bottom: 1.5rem;
+      padding: 1.5rem 1.2rem;
+      font-size: 1.08rem;
+      color: var(--brand-blue-dark);
+      box-shadow: 0 2px 8px #1769aa11;
+      border-left: 4px solid var(--brand-blue);
+      opacity: 0;
+      transform: translateY(30px);
+      animation-fill-mode: forwards;
+      min-width: 220px;
+      max-width: 320px;
+    }
+    .features-list li.visible { animation: fadeSlideUp 0.6s ease forwards; }
+    .features-list li:nth-child(1) { animation-delay: 0.2s; }
+    .features-list li:nth-child(2) { animation-delay: 0.4s; }
+    .features-list li:nth-child(3) { animation-delay: 0.6s; }
+    .features-list li:nth-child(4) { animation-delay: 0.8s; }
+    @keyframes fadeSlideUp {
+      to { opacity: 1; transform: translateY(0);}
+    }
+    @media (max-width: 900px) {
+      .features-list { flex-direction: column; gap: 0; align-items: center; }
+      .features-list li { width: 100%; max-width: 100%; }
+    }
+
+    /* FAQ Section */
+    #faq {
+      background: var(--brand-blue-light);
+      padding: 3rem 1rem 2rem 1rem;
+      margin-top: 3rem;
+      border-radius: 1em 1em 0 0;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: var(--shadow);
+    }
+    #faq h2 {
+      color: var(--brand-blue);
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      font-weight: 800;
+    }
+    .faq-list {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    .faq-item {
+      background: var(--brand-white);
+      border-radius: 0.5em;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 2px 8px #1769aa11;
+      overflow: hidden;
+      border-left: 4px solid var(--brand-blue);
+    }
+    .faq-question {
+      cursor: pointer;
+      padding: 1.1rem 1.2rem;
+      font-weight: 700;
+      color: var(--brand-blue-dark);
+      background: var(--brand-blue-light);
+      border: none;
+      width: 100%;
+      text-align: left;
+      font-size: 1.1rem;
+      outline: none;
+      transition: background 0.2s;
+    }
+    .faq-question:hover, .faq-question:focus {
+      background: #d0e6f7;
+    }
+    .faq-answer {
+      padding: 1rem 1.2rem 1.2rem 1.2rem;
+      color: #2d3e50;
+      display: none;
+      font-size: 1rem;
+      background: var(--brand-white);
+    }
+    .faq-item.open .faq-answer {
+      display: block;
+      animation: fadeSlideUp 0.4s;
+    }
+
+    /* About Section */
+    #about {
+      background: var(--brand-white);
+      padding: 2.5rem 1rem 2rem 1rem;
+      max-width: 900px;
+      margin: 3rem auto 0 auto;
+      border-radius: 1em;
+      box-shadow: var(--shadow);
+    }
+    #about h2 {
+      color: var(--brand-blue);
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    #about p {
+      color: #2d3e50;
+      font-size: 1.1rem;
+      line-height: 1.7;
+      text-align: center;
+      margin: 0 auto;
+      max-width: 700px;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--brand-blue);
+      color: var(--brand-white);
+      text-align: center;
+      padding: 2rem 1rem 1rem 1rem;
+      margin-top: 3rem;
+      position: relative;
+    }
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.7rem;
+      margin-bottom: 0.5rem;
+    }
+    .footer-logo img {
+      height: 36px;
+      width: 36px;
+      border-radius: 8px;
+      background: var(--brand-white);
+      box-shadow: 0 2px 8px #0001;
+    }
+    .footer-logo span {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--brand-white);
+      letter-spacing: 1px;
+    }
+    .footer-copy {
+      font-size: 0.98rem;
+      color: #eaf4fb;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="navbar-content">
+      <div class="navbar-logo">
+        <img src="images/logo.png" alt="Everstead Bank Logo" />
+        <span>Everstead Bank</span>
+      </div>
+      <div class="navbar-toggle" id="navbar-toggle" aria-label="Open navigation" tabindex="0">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="navbar-links" id="navbar-links">
+        <a href="signup.html">Signup</a>
+        <a href="login.html">Login</a>
+        <a href="#faq">FAQ</a>
+        <a href="#about">About</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1>Modern Banking for Bonaire</h1>
+        <p>
+          Welcome to Everstead Bank—your trusted partner for secure, seamless USD banking in Bonaire. Enjoy instant access, advanced security, and dedicated support, all in one place.
+        </p>
+        <div class="hero-btns">
+          <a href="signup.html"><button class="hero-btn">Sign Up</button></a>
+          <a href="login.html"><button class="hero-btn" style="background:var(--brand-accent);color:var(--brand-white);">Login</button></a>
+        </div>
+      </div>
+      <div class="hero-image">
+        <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=800&q=80" alt="Modern Banking" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <ul class="features-list" id="features-list">
+      <li>✔ Instant USD account access from any device</li>
+      <li>✔ Real-time transaction alerts & smart insights</li>
+      <li>✔ Advanced security with biometric & 2FA login</li>
+      <li>✔ 24/7 expert support from our Bonaire-based team</li>
+    </ul>
+  </section>
+
+  <!-- FAQ Section -->
+  <section id="faq" aria-label="Frequently Asked Questions">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">How do I open an account with Everstead Bank?</button>
+        <div class="faq-answer">
+          Opening an account is easy! Click "Signup" at the top, fill out your details, and verify your identity. Your USD account will be ready in minutes.
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">Is my money safe with Everstead Bank?</button>
+        <div class="faq-answer">
+          Absolutely. We use advanced encryption, biometric authentication, and two-factor security. Your funds are protected and insured as per Bonaire banking regulations.
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">Can I access my account from outside Bonaire?</button>
+        <div class="faq-answer">
+          Yes! Everstead Bank is fully online. Access your USD account securely from anywhere in the world, 24/7.
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">What currencies do you support?</button>
+        <div class="faq-answer">
+          We operate in USD, the official currency of Bonaire, making your banking seamless for local and international transactions.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" aria-label="About Everstead Bank">
+    <h2>About Everstead Bank</h2>
+    <p>
+      Everstead Bank is a modern, digital-first financial institution proudly based in Bonaire. We are dedicated to empowering individuals and businesses with secure, convenient, and innovative banking solutions. Our platform is tailored for the Bonaire community, operating exclusively in USD for seamless local and international transactions.<br><br>
+      With a focus on customer service, advanced security, and financial empowerment, Everstead Bank is your trusted partner for the future. Join us and experience banking reimagined for the Caribbean.
+    </p>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-logo">
+      <img src="images/logo.png" alt="Everstead Bank Logo" />
+      <span>Everstead Bank</span>
+    </div>
+    <div class="footer-copy">
+      &copy; 2025 Everstead Bank. All rights reserved. | Based in Bonaire | USD Accounts
+    </div>
+  </footer>
+
+  <script>
+    // Navbar mobile toggle
+    const toggle = document.getElementById('navbar-toggle');
+    const links = document.getElementById('navbar-links');
+    if (toggle) {
+      toggle.addEventListener('click', () => {
+        links.classList.toggle('open');
+      });
+      toggle.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          links.classList.toggle('open');
+        }
+      });
+    }
+
+    // Animate features on scroll and on load, with IntersectionObserver fallback
+    function revealFeatures() {
+      const features = document.querySelectorAll('#features-list li');
+      features.forEach(feature => {
+        const rect = feature.getBoundingClientRect();
+        if (rect.top < window.innerHeight - 80) {
+          feature.classList.add('visible');
+        }
+      });
+    }
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.2 });
+      document.querySelectorAll('#features-list li').forEach(li => observer.observe(li));
+    } else {
+      window.addEventListener('scroll', revealFeatures);
+      window.addEventListener('load', revealFeatures);
+    }
+
+    // FAQ accordion
+    document.querySelectorAll('.faq-question').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const item = this.parentElement;
+        const expanded = this.getAttribute('aria-expanded') === 'true';
+        document.querySelectorAll('.faq-item').forEach(i => {
+          i.classList.remove('open');
+          i.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+        });
+        if (!expanded) {
+          item.classList.add('open');
+          this.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+
+    // Scroll to FAQ if #faq in URL
+    if (window.location.hash === "#faq") {
+      setTimeout(() => {
+        document.getElementById('faq').scrollIntoView({ behavior: "smooth" });
+      }, 300);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security & Verification</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
+    }
+
+    .security-settings {
+      max-width: 90%;
+      margin: 2rem auto;
+      padding: 1.5rem;
+      background: #f9f9f9;
+      border-radius: 1rem;
+      box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1);
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: calc(1.5rem + 1vw);
+      margin-bottom: 1.5rem;
+    }
+
+    .back-button {
+      display: inline-block;
+      margin-bottom: 1rem;
+      padding: 0.5rem 1.2rem;
+      background: #007bff;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: background 0.2s ease;
+    }
+
+    .back-button:hover {
+      background: #0056b3;
+    }
+
+    .security-option {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,0.05);
+      transition: transform 0.2s ease;
+    }
+
+    .security-option:hover {
+      transform: translateY(-0.25rem);
+    }
+
+    .icon {
+      font-size: 2rem;
+      margin-right: 1rem;
+      flex-shrink: 0;
+    }
+
+    .content h3 {
+      font-size: calc(1rem + 0.5vw);
+      margin: 0 0 0.5rem 0;
+    }
+
+    .content p {
+      font-size: calc(0.9rem + 0.3vw);
+      margin: 0 0 0.5rem 0;
+      color: #555;
+    }
+
+    button {
+      padding: 0.5em 1.2em;
+      font-size: calc(0.9rem + 0.3vw);
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    @media screen and (max-width: 768px) {
+      .security-option {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .icon {
+        margin-bottom: 0.5rem;
+      }
+
+      .back-button {
+        display: block;
+        text-align: center;
+        margin: 0 auto 1rem auto;
+      }
+    }
+
+    @media screen and (max-width: 480px) {
+      .security-settings {
+        padding: 1rem;
+      }
+
+      .section-title {
+        font-size: 1.5rem;
+      }
+
+      .content h3 {
+        font-size: 1.2rem;
+      }
+
+      .content p {
+        font-size: 1rem;
+      }
+
+      button {
+        font-size: 1rem;
+        padding: 0.6em 1.5em;
+      }
+    }
+
+    /* Toast Notification Styles */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #fff;
+      color: #333;
+      padding: 16px 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-20px);
+      border-left: 4px solid #28a745; /* green accent for success */
+      min-width: 250px;
+      z-index: 1000;
+      font-size: 16px;
+      transition: opacity 0.5s, transform 0.5s;
+    }
+
+    .toast.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <section class="security-settings">
+    <a href="dashboard.html" class="back-button">⬅️ Back to Dashboard</a>
+    <h2 class="section-title">🔐 Security & Verification</h2>
+
+    <div class="security-option" id="kyc">
+      <div class="icon">🆔</div>
+      <div class="content">
+        <h3>KYC Verification</h3>
+        <p>Verify your identity to unlock all features and ensure account security.</p>
+        <button onclick="startKYC()">Verify Now</button>
+      </div>
+    </div>
+
+    <div class="security-option" id="two-fa">
+      <div class="icon">📱</div>
+      <div class="content">
+        <h3>Two-Factor Authentication (2FA)</h3>
+        <p>Enhance your security with 2FA — add an extra layer of protection.</p>
+        <button onclick="setup2FA()">Set Up</button>
+      </div>
+    </div>
+
+    <div class="security-option" id="devices">
+      <div class="icon">💻</div>
+      <div class="content">
+        <h3>Device Management</h3>
+        <p>Manage and review all devices that have accessed your account.</p>
+        <button onclick="manageDevices()">View Devices</button>
+      </div>
+    </div>
+
+    <div class="security-option" id="linked-accounts">
+      <div class="icon">🔗</div>
+      <div class="content">
+        <h3>Linked Accounts</h3>
+        <p>Manage external accounts linked to your profile for easier payments and transfers.</p>
+        <button onclick="manageLinkedAccounts()">Manage Accounts</button>
+      </div>
+    </div>
+
+    <div class="security-option" id="profile">
+      <div class="icon">👤</div>
+      <div class="content">
+        <h3>Profile</h3>
+        <p>Update your personal information and contact details.</p>
+        <button onclick="updateProfile()">Update Profile</button>
+      </div>
+    </div>
+
+    <div class="security-option" id="limits">
+      <div class="icon">⚖️</div>
+      <div class="content">
+        <h3>Limits & Permissions</h3>
+        <p>Set transaction limits and manage app permissions for extra control.</p>
+        <button onclick="setLimits()">Adjust Settings</button>
+      </div>
+    </div>
+
+    <div class="security-option" id="notifications">
+      <div class="icon">🔔</div>
+      <div class="content">
+        <h3>Security Alerts</h3>
+        <p>Get notified about suspicious activities and security-related events.</p>
+        <button onclick="manageAlerts()">Manage Alerts</button>
+      </div>
+    </div>
+
+    <div class="security-option" id="recovery">
+      <div class="icon">🛡️</div>
+      <div class="content">
+        <h3>Account Recovery</h3>
+        <p>Set up backup methods to recover your account in case of loss or compromise.</p>
+        <button onclick="setupRecovery()">Set Up Recovery</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Toast Notification Container -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // Placeholder JavaScript functions
+    function startKYC() {
+      window.location.href = "kyc.html";
+    }
+
+    function setup2FA() {
+      showToast("2FA is currently unavailable");
+    }
+
+    function manageDevices() {
+      showToast("No linked devices found");
+    }
+
+    function manageLinkedAccounts() {
+      showToast("No linked accounts found");
+    }
+
+    function updateProfile() {
+      window.location.href = "profile.html";
+    }
+
+    function setLimits() {
+      window.location.href = "limits.html";
+    }
+
+    function manageAlerts() {
+       window.location.href = "security.html";
+    }
+
+    function setupRecovery() {
+      window.location.href = "recovery.html";
+    }
+
+    // Toast Notification Function
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

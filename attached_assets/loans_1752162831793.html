@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Loan Overview</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f6f8;
+      color: #333;
+    }
+
+    header {
+      background: #004080;
+      color: #fff;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .back-button {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      margin-right: 1rem;
+    }
+
+    header h1 {
+      font-size: 1.2rem;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .container:hover {
+      transform: rotateX(3deg) rotateY(3deg);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .loan-summary {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .loan-summary h2 {
+      font-size: 1.5rem;
+      color: #004080;
+      margin: 0;
+    }
+
+    .loan-summary p {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #28a745;
+      color: #fff;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.8rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .actions button {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .actions button:hover {
+      background: #0056b3;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.5rem;
+    }
+
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background: #f0f0f0;
+    }
+
+    .loan-calculator {
+      background: #f9f9f9;
+      padding: 1rem;
+      border-radius: 6px;
+    }
+
+    .loan-calculator h3 {
+      margin-top: 0;
+      color: #004080;
+    }
+
+    .loan-calculator label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .loan-calculator input {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .progress {
+      background: #e0e0e0;
+      border-radius: 4px;
+      overflow: hidden;
+      height: 20px;
+      margin-bottom: 1rem;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: #28a745;
+      width: 30%;
+      text-align: center;
+      color: #fff;
+      font-size: 0.8rem;
+      line-height: 20px;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .modal-content h4 {
+      margin-top: 0;
+    }
+
+    .modal-content button.close-btn {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .modal-content button.close-btn:hover {
+      background: #0056b3;
+    }
+
+    .modal-content form label {
+      display: block;
+      margin: 1rem 0 0.5rem 0;
+      font-weight: 600;
+      text-align: left;
+    }
+
+    .modal-content form select,
+    .modal-content form input {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      font-size: 1rem;
+    }
+
+    .modal-content form button.submit-btn {
+      margin-top: 1.5rem;
+      background: #28a745;
+      border: none;
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0.75rem;
+      border-radius: 6px;
+      width: 100%;
+      font-size: 1.1rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .modal-content form button.submit-btn:hover {
+      background: #1e7e34;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 0.85rem;
+      margin-top: 0.25rem;
+      text-align: left;
+      display: none;
+    }
+
+    /* Table overdue row style */
+    .overdue {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <button class="back-button" onclick="window.location.href='dashboard.html'">&#8592;</button>
+    <h1>Loan Overview</h1>
+  </header>
+
+  <div class="container">
+    <div class="loan-summary">
+      <h2>Personal Loan</h2>
+      <p><strong>Balance:</strong> $<span id="loanBalance">25000.00</span></p>
+      <p><strong>Interest Rate:</strong> 5.5%</p>
+      <p><strong>Term:</strong> 36 months left</p>
+      <span class="badge">Active</span>
+    </div>
+
+    <div class="progress">
+      <div class="progress-bar" style="width: 30%;">30% Paid</div>
+    </div>
+
+    <div class="actions">
+      <button onclick="openModal('payment')">Make Payment</button>
+      <button onclick="openModal('statement')">Request Statement</button>
+      <button onclick="openModal('agreement')">View Agreement</button>
+      <button onclick="openModal('refinance')">Refinance</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Due Date</th>
+          <th>Principal</th>
+          <th>Interest</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>June 15, 2025</td>
+          <td>$500</td>
+          <td>$25</td>
+          <td>Upcoming</td>
+        </tr>
+        <tr>
+          <td>May 15, 2025</td>
+          <td>$500</td>
+          <td>$27</td>
+          <td style="color: green;">Paid</td>
+        </tr>
+        <tr>
+          <td>April 15, 2025</td>
+          <td>$500</td>
+          <td>$28</td>
+          <td style="color: green;">Paid</td>
+        </tr>
+        <tr>
+          <td>March 15, 2025</td>
+          <td>$500</td>
+          <td>$30</td>
+          <td class="overdue">Overdue</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="loan-calculator">
+      <h3>Loan Calculator</h3>
+      <label for="loanAmount">Loan Amount ($):</label>
+      <input id="loanAmount" type="number" value="25000" min="0" />
+      <label for="interestRate">Interest Rate (%):</label>
+      <input id="interestRate" type="number" value="5.5" step="0.1" min="0" />
+      <label for="loanTerm">Term (months):</label>
+      <input id="loanTerm" type="number" value="36" min="1" />
+      <button onclick="calculateLoan()">Calculate</button>
+      <p id="calcResult"></p>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDesc">
+      <h4 id="modalTitle"></h4>
+      <div id="modalDesc"></div>
+      <button class="close-btn" aria-label="Close modal" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+
+  <script>
+    // Account balances (simulated)
+    const accounts = {
+      checking: { name: "Checking •••• 1234", balance: 5000.00 },
+      savings: { name: "Savings •••• 5678", balance: 15000.00 },
+      credit: { name: "Credit •••• 9012", balance: 3000.00 }
+    };
+
+    // Loan balance
+    let loanBalance = 25000.00;
+
+    // Open modal with specific content
+    function openModal(type) {
+      const modal = document.getElementById('modal');
+      const title = document.getElementById('modalTitle');
+      const desc = document.getElementById('modalDesc');
+
+      title.textContent = '';
+      desc.innerHTML = '';
+      clearErrors();
+
+      if (type === 'payment') {
+        title.textContent = 'Make Payment';
+        desc.innerHTML = `
+          <form id="paymentForm" novalidate>
+            <label for="from-account">From Account</label>
+            <select id="from-account" name="from-account" required aria-required="true" aria-describedby="error-from-account">
+              <option value="">Select account</option>
+              <option value="checking">${accounts.checking.name} ($${accounts.checking.balance.toFixed(2)})</option>
+              <option value="savings">${accounts.savings.name} ($${accounts.savings.balance.toFixed(2)})</option>
+              <option value="credit">${accounts.credit.name} ($${accounts.credit.balance.toFixed(2)})</option>
+            </select>
+            <div id="error-from-account" class="error-message">Please select an account.</div>
+
+            <label for="pay-amount" style="margin-top:1rem;">Amount to Pay</label>
+            <input id="pay-amount" name="pay-amount" type="number" min="0.01" step="0.01" placeholder="Enter amount" required aria-required="true" aria-describedby="error-pay-amount" />
+            <div id="error-pay-amount" class="error-message">Enter a valid amount less than or equal to your account balance.</div>
+
+            <button type="submit" class="submit-btn">Submit Payment</button>
+          </form>
+        `;
+
+        // Add form submit listener
+        const form = desc.querySelector('#paymentForm');
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          clearErrors();
+
+          const fromAccount = form['from-account'].value;
+          const amountStr = form['pay-amount'].value;
+          const amount = parseFloat(amountStr);
+
+          let valid = true;
+
+          if (!fromAccount) {
+            showError('error-from-account');
+            valid = false;
+          }
+          if (isNaN(amount) || amount <= 0) {
+            showError('error-pay-amount', 'Please enter a positive amount.');
+            valid = false;
+          } else if (fromAccount && amount > accounts[fromAccount].balance) {
+            showError('error-pay-amount', 'Amount exceeds account balance.');
+            valid = false;
+          } else if (amount > loanBalance) {
+            showError('error-pay-amount', 'Amount exceeds loan balance.');
+            valid = false;
+          }
+
+          if (!valid) return;
+
+          // Deduct amount from selected account balance
+          accounts[fromAccount].balance -= amount;
+
+          // Deduct from loan balance
+          loanBalance -= amount;
+
+          // Update UI
+          updateBalances();
+
+          alert(`Payment of $${amount.toFixed(2)} made from ${accounts[fromAccount].name}.`);
+
+          closeModal();
+        });
+
+      } else if (type === 'statement') {
+        title.textContent = 'Request Statement';
+        desc.innerHTML = '<p>Your statement request has been submitted.</p>';
+      } else if (type === 'agreement') {
+        title.textContent = 'Loan Agreement';
+        desc.innerHTML = '<p>Your loan agreement document.</p>';
+      } else if (type === 'refinance') {
+        title.textContent = 'Refinance Loan';
+        desc.innerHTML = '<p>Refinance options will be available soon.</p>';
+      }
+
+      modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('modal');
+      modal.style.display = 'none';
+    }
+
+    function showError(id, message = null) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (message) el.textContent = message;
+      el.style.display = 'block';
+    }
+
+    function clearErrors() {
+      document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+    }
+
+    // Update loan balance and accounts displayed on page and modal if open
+    function updateBalances() {
+      document.getElementById('loanBalance').textContent = loanBalance.toFixed(2);
+
+      // If modal is open and payment form present, update account balances in dropdown options
+      const modal = document.getElementById('modal');
+      if (modal.style.display === 'flex') {
+        const select = modal.querySelector('#from-account');
+        if (select) {
+          for (const option of select.options) {
+            if (accounts[option.value]) {
+              option.textContent = `${accounts[option.value].name} ($${accounts[option.value].balance.toFixed(2)})`;
+            }
+          }
+        }
+      }
+    }
+
+    // Loan Calculator logic (just basic demo)
+    function calculateLoan() {
+      const loanAmount = parseFloat(document.getElementById('loanAmount').value);
+      const interestRate = parseFloat(document.getElementById('interestRate').value);
+      const loanTerm = parseInt(document.getElementById('loanTerm').value, 10);
+
+      if (isNaN(loanAmount) || loanAmount <= 0 ||
+          isNaN(interestRate) || interestRate <= 0 ||
+          isNaN(loanTerm) || loanTerm <= 0) {
+        alert('Please enter valid loan parameters.');
+        return;
+      }
+
+      // Simple monthly payment calculation (not accounting for compounding)
+      const monthlyInterestRate = interestRate / 100 / 12;
+      const monthlyPayment = (loanAmount * monthlyInterestRate) / (1 - Math.pow(1 + monthlyInterestRate, -loanTerm));
+      const totalPayment = monthlyPayment * loanTerm;
+
+      document.getElementById('calcResult').textContent = `Estimated monthly payment: $${monthlyPayment.toFixed(2)} | Total payment: $${totalPayment.toFixed(2)}`;
+    }
+
+    // Close modal if user clicks outside content
+    window.addEventListener('click', e => {
+      const modal = document.getElementById('modal');
+      if (e.target === modal) closeModal();
+    });
+
+  </script>
+</body>
+</html>

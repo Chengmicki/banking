@@ -1,0 +1,794 @@
+/* Reset & Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: #f5f7fa;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Header */
+.header {
+  background: #ffffff;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.back-button {
+  margin-right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #007bff;
+}
+
+h1 {
+  font-size: 1.5rem;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #ddd;
+  background: #ffffff;
+}
+
+.tab {
+  flex: 1;
+  padding: 1rem;
+  background: #ffffff;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  text-align: center;
+  transition: background 0.3s;
+}
+
+.tab:hover,
+.tab.active {
+  background: #e9ecef;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+main {
+  padding: 1rem;
+}
+
+/* Cards */
+.cards-container,
+.crypto-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.account-card,
+.crypto-card {
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 1rem;
+  flex: 1 1 250px;
+  transition: transform 0.2s;
+}
+
+.account-card:hover,
+.crypto-card:hover {
+  transform: translateY(-5px);
+}
+
+.card-header,
+.crypto-name {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-balance {
+  font-size: 1.5rem;
+  margin: 1rem 0;
+  font-weight: bold;
+}
+
+.card-actions button,
+.crypto-actions button {
+  margin-right: 0.5rem;
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.card-actions button:hover,
+.crypto-actions button:hover {
+  background: #0056b3;
+}
+
+.crypto-name img {
+  width: 24px;
+  height: 24px;
+  margin-right: 0.5rem;
+}
+
+.crypto-balance {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 0.5rem;
+}
+
+#btc-balance,
+#btc-usd {
+  font-weight: bold;
+}
+
+#btc-usd {
+  font-size: 0.9rem;
+  font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  color: #228B22;
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Transactions Table */
+.transactions {
+  margin: 2rem 1rem;
+}
+
+.transactions table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.transactions th,
+.transactions td {
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.transactions th {
+  background: #f8f9fa;
+}
+
+/* Modal Styles */
+.modal {
+  display: none; 
+  position: fixed; 
+  z-index: 1000; 
+  padding-top: 100px; 
+  left: 0;
+  top: 0;
+  width: 100%; 
+  height: 100%; 
+  overflow: auto; 
+  background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  position: relative;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+#pay-bills-modal,
+#payment-modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content,
+#modal-body,
+#pay-bills-modal .modal-content,
+#payment-modal .modal-content {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  position: relative;
+  text-align: left;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.close-button,
+.pay-bills-modal header button,
+#pay-bills-modal .close-button,
+#payment-modal .close-button {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: #333;
+}
+
+#modal-body h2,
+#pay-bills-modal h2,
+#payment-modal h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 8px;
+}
+
+/* Account Details */
+.account-details p {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 12px 0;
+  font-size: 1rem;
+  background-color: #f9f9f9;
+  padding: 8px 12px;
+  border-radius: 6px;
+  box-shadow: inset 0 0 2px rgba(0,0,0,0.05);
+}
+
+.account-details strong {
+  flex: 0 0 40%;
+  font-weight: 600;
+  color: #333;
+}
+
+.account-details span {
+  flex: 1;
+  text-align: right;
+  color: #555;
+  margin-right: 8px;
+}
+
+.copy-btn {
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  padding: 4px 8px;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.copy-btn:hover {
+  background-color: #2980b9;
+}
+
+/* Form Placeholder */
+.form-placeholder {
+  margin-top: 24px;
+  padding: 16px;
+  background-color: #f5f5f5;
+  border-radius: 6px;
+  color: #777;
+  text-align: center;
+  font-style: italic;
+}
+
+/* Bill Tabs & Items */
+.bill-tabs {
+  display: flex;
+  overflow-x: auto;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  margin: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.bill-tab {
+  flex: 0 0 auto;
+  padding: 0.6rem 1rem;
+  background: #f0f0f0;
+  color: #555;
+  font-size: 0.95rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+  border: none;
+  user-select: none;
+}
+
+.bill-tab.active,
+.bill-tab:hover {
+  background: #007bff;
+  color: #fff;
+}
+
+.bill-list-container {
+  margin: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.bill-category {
+  display: none;
+  flex-direction: column;
+  gap: 1rem;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.bill-category.active {
+  display: flex;
+}
+
+.bill-item {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  transition: transform 0.2s;
+  border: 1px solid #ccc;
+}
+
+.bill-item:hover {
+  transform: translateY(-2px);
+}
+
+.bill-name {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #333;
+  flex: 1 1 100%;
+}
+
+.bill-details {
+  font-size: 0.85rem;
+  color: #888;
+  margin-top: 0.25rem;
+  flex: 1 1 100%;
+}
+
+/* Make sure pay-now-btn and generic buttons inside bill-item share styles */
+.pay-now-btn,
+.bill-item button {
+  background: #28a745;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-top: 0.5rem;
+  text-align: center;
+  user-select: none;
+}
+
+.pay-now-btn:hover,
+.bill-item button:hover {
+  background: #218838;
+}
+
+/* New class for Hide Companies button */
+.hide-btn {
+  background: #dc3545; /* bootstrap red */
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.hide-btn:hover {
+  background: #b02a37; /* darker red */
+}
+
+
+
+/* Modal Actions */
+.modal-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.modal-actions button {
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  user-select: none;
+}
+
+#confirm-payment {
+  background: #007bff;
+  color: white;
+}
+
+#cancel-payment {
+  background: #6c757d;
+  color: white;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .cards-container,
+  .crypto-cards {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  #modal-body,
+  .modal-content {
+    padding: 16px;
+  }
+  .account-details p {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .account-details span {
+    text-align: left;
+    margin-right: 0;
+  }
+}
+
+@media (min-width: 600px) {
+  .bill-category.active {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .bill-item {
+    width: calc(50% - 1rem);
+  }
+}
+
+@media (min-width: 900px) {
+  .bill-item {
+    width: calc(33.333% - 1rem);
+  }
+}
+
+
+/* Modal Styles */
+#payment-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+}
+
+/* Modal Header Close Button */
+#closeModal {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #555;
+}
+
+/* Payment Steps */
+#step1, #step2, #paymentSuccess {
+  text-align: center;
+}
+
+/* Success Icon Animation */
+.success-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  background-color: #4CAF50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pop-in 0.3s ease;
+}
+
+@keyframes pop-in {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Checkmark SVG Styles */
+.checkmark {
+  width: 50px;
+  height: 50px;
+  stroke: white;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  animation: draw 0.5s ease forwards;
+}
+
+.checkmark__circle {
+  stroke: white;
+  stroke-width: 4;
+  stroke-dasharray: 157;
+  stroke-dashoffset: 157;
+  animation: circle-animate 0.6s ease-out forwards;
+}
+
+.checkmark__check {
+  stroke-dasharray: 50;
+  stroke-dashoffset: 50;
+  animation: check-animate 0.4s ease forwards;
+  animation-delay: 0.6s;
+}
+
+@keyframes circle-animate {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes check-animate {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Headings */
+#paymentSuccess h3 {
+  color: #4CAF50;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+/* Buttons Styling */
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 5px;
+}
+
+#validateCodeBtn {
+  background-color: #007BFF;
+  color: white;
+}
+
+#proceedBtn {
+  background-color: green;
+  color: white;
+}
+
+#cancelBtn {
+  background-color: red;
+  color: white;
+}
+
+
+.buy-crypto-modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.buy-crypto-content {
+  background: #1e1e2f;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 350px;
+  color: white;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+}
+
+.buy-crypto-content h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+}
+
+.buy-crypto-content label,
+.buy-crypto-content input,
+.buy-crypto-content select {
+  display: block;
+  width: 100%;
+  margin: 0.5rem 0;
+}
+
+.buy-crypto-summary {
+  margin: 1rem 0;
+}
+
+.buy-crypto-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+
+.sell-crypto-modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.sell-crypto-content {
+  background: #1e1e2f;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 350px;
+  color: white;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+}
+
+.sell-crypto-content h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+}
+
+.sell-crypto-content label,
+.sell-crypto-content input,
+.sell-crypto-content select {
+  display: block;
+  width: 100%;
+  margin: 0.5rem 0;
+}
+
+.sell-crypto-summary {
+  margin: 1rem 0;
+}
+
+.sell-crypto-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+
+.notification {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: white;
+  color: #333;
+  padding: 20px 30px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  font-family: Arial, sans-serif;
+  text-align: center;
+  display: none;
+  max-width: 300px;
+  z-index: 9999;
+}
+
+.notification p {
+  margin: 0 0 10px;
+  font-size: 16px;
+}
+
+.notification button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.notification button:hover {
+  background-color: #0056b3;
+}
+
+
+.toast {
+  visibility: hidden;
+  min-width: 260px;
+  max-width: 90vw;
+  background: #1769aa;
+  color: #fff;
+  text-align: center;
+  border-radius: 8px;
+  padding: 1em 2em;
+  position: fixed;
+  left: 50%;
+  bottom: 2em;
+  transform: translateX(-50%);
+  z-index: 9999;
+  font-size: 1.1em;
+  opacity: 0;
+  transition: opacity 0.4s, visibility 0.4s;
+  box-shadow: 0 4px 24px rgba(23,105,170,0.18);
+}
+.toast.show {
+  visibility: visible;
+  opacity: 1;
+}
+
+#swapNotification {
+  max-width: 95vw;
+}
+
+#btc-address {
+  display: inline-block;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+  font-family: monospace;
+  font-size: 1.05em;
+}

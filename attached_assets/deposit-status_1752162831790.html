@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Deposit Status - Everstead Bank</title>
+  <style>
+    :root {
+      --primary: #1769aa;
+      --primary-dark: #0e3e68;
+      --accent: #0099ff;
+      --bg: #f4f8fb;
+      --white: #fff;
+      --shadow: 0 4px 24px rgba(23,105,170,0.10);
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .status-container {
+      background: var(--white);
+      border-radius: 1.2em;
+      box-shadow: var(--shadow);
+      padding: 2.5em 2em 2em 2em;
+      max-width: 350px;
+      width: 95vw;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .loader {
+      margin-bottom: 1.5em;
+      width: 70px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    /* Animated SVG loader */
+    .loader svg {
+      width: 70px;
+      height: 70px;
+      display: block;
+    }
+    .loader-circle {
+      stroke: var(--primary);
+      stroke-width: 7;
+      fill: none;
+      stroke-linecap: round;
+      stroke-dasharray: 220;
+      stroke-dashoffset: 0;
+      animation: spin 1.2s linear infinite;
+      transform-origin: 50% 50%;
+    }
+    .loader-dot {
+      fill: var(--accent);
+      animation: bounce 1.2s infinite alternate;
+    }
+    @keyframes spin {
+      100% { stroke-dashoffset: 440; transform: rotate(360deg);}
+    }
+    @keyframes bounce {
+      0% { transform: scale(1);}
+      100% { transform: scale(1.3);}
+    }
+    .status-title {
+      font-size: 1.3em;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 0.5em;
+    }
+    .status-message {
+      color: #333;
+      font-size: 1.05em;
+      margin-bottom: 2em;
+    }
+    .go-back-btn {
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      border-radius: 2em;
+      padding: 0.8em 2.2em;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(23,105,170,0.10);
+      transition: background 0.2s;
+    }
+    .go-back-btn:hover, .go-back-btn:focus {
+      background: var(--accent);
+      outline: none;
+    }
+    @media (max-width: 500px) {
+      .status-container {
+        padding: 1.2em 0.5em 1.2em 0.5em;
+        max-width: 98vw;
+      }
+      .loader {
+        width: 50px;
+        height: 50px;
+      }
+      .loader svg {
+        width: 50px;
+        height: 50px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="status-container">
+    <div class="loader" aria-label="Processing">
+      <svg viewBox="0 0 70 70">
+        <circle class="loader-circle" cx="35" cy="35" r="30"/>
+        <circle class="loader-dot" cx="60" cy="35" r="5"/>
+      </svg>
+    </div>
+    <div class="status-title">Deposit Check Processing</div>
+    <div class="status-message">
+      Your deposit check is currently being processed.<br>
+      Please wait while we verify your transaction.
+    </div>
+    <button class="go-back-btn" onclick="goBack()">Go Back</button>
+  </div>
+  <script>
+    function goBack() {
+      window.location.href = "accounts.html";
+    }
+    // Optionally, you could auto-refresh or update status here in the future
+  </script>
+</body>
+</html>

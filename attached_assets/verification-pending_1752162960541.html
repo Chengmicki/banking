@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Verification Pending</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #ffffff;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1rem;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .container {
+      position: relative;
+      text-align: center;
+      max-width: 600px;
+      width: 100%;
+      padding: 2rem;
+      background: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1);
+    }
+
+    .back-icon {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      font-size: 1.5rem;
+      color: #007bff;
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    .back-icon:hover {
+      color: #0056b3;
+    }
+
+    .container h1 {
+      font-size: 2rem;
+      color: #007bff;
+      margin-bottom: 1rem;
+    }
+
+    .spinner {
+      margin: 2rem auto;
+      width: 80px;
+      height: 80px;
+    }
+
+    .hourglass {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      border: 4px solid #007bff;
+      border-radius: 40px;
+      box-sizing: border-box;
+      animation: spin 2s linear infinite;
+    }
+
+    .hourglass::before,
+    .hourglass::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 12px;
+      height: 24px;
+      background: #007bff;
+      border-radius: 6px;
+    }
+
+    .hourglass::before {
+      top: 12px;
+      height: 20px;
+    }
+
+    .hourglass::after {
+      bottom: 12px;
+      height: 20px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .message {
+      font-size: 1.1rem;
+      color: #555;
+      line-height: 1.6;
+      text-align: justify;
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1.5rem;
+      }
+
+      .container h1 {
+        font-size: 1.5rem;
+      }
+
+      .message {
+        font-size: 1rem;
+      }
+
+     .back-icon {
+        position: relative;
+        display: inline-block;
+        text-decoration: none;
+        color: #000;
+        font-size: 20px; /* size of the "x" icon */
+}
+
+.hover-text {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 110%; /* change this to move the text beside the "x" */
+        transform: translateY(-50%);
+        background-color: #f1f1f1;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+       
+        }
+
+.back-icon:hover .hover-text {
+        display: inline-block;
+}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="dashboard.html" class="back-icon">
+        <span class= "icon">❌</span>
+        <span class="hover-text">Close Page</span>
+    </a>
+    <h1>🔍 Verification in Progress</h1>
+    <div class="spinner">
+      <div class="hourglass"></div>
+    </div>
+    <p class="message">
+      Thank you for submitting your KYC details. Our compliance team is currently reviewing your information to ensure full adherence to international regulatory standards and to maintain the security and integrity of our platform.
+      <br><br>
+      This verification process is a critical step in protecting your account and meeting global security requirements. Please allow a few minutes while we complete this review.
+      <br><br>
+      You will be notified by email once the verification process is successfully completed.
+    </p>
+  </div>
+</body>
+</html>

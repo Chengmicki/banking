@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Signup</title>
+
+  <!-- ✅ Toastify Local CSS (CSP safe) -->
+  <link rel="stylesheet" href="/assets/toastify/toastify.min.css" />
+  <!-- ✅ Your App CSS -->
+  <link rel="stylesheet" href="/css/signup.css" />
+</head>
+<body>
+
+  <div class="signup-container">
+    <div class="signup-left">
+      <h2>Welcome!</h2>
+      <p>Sign up to start your journey with us.</p>
+    </div>
+    <div class="signup-right">
+      <form class="signup-form" id="signupForm">
+        <div class="form-group">
+          <label for="fullname">Full Name</label>
+          <input type="text" id="fullname" required />
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" required />
+        </div>
+        <div class="form-group password-wrapper">
+          <label for="password">Password</label>
+          <input type="password" id="password" required />
+          <button type="button" class="toggle-password" data-target="password">Show</button>
+        </div>
+        <div class="form-group password-wrapper">
+          <label for="confirm-password">Confirm Password</label>
+          <input type="password" id="confirm-password" required />
+          <button type="button" class="toggle-password" data-target="confirm-password">Show</button>
+        </div>
+        <button type="submit">Create Account</button>
+        <div class="go-back">
+          <a href="index.html">← Go Back</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ✅ Toastify Local JS (CSP safe) -->
+  <script src="/assets/toastify/toastify.min.js"></script>
+  <!-- ✅ Your App JS -->
+  <script src="/js/signup.js"></script>
+</body>
+</html>
