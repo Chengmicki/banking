@@ -20,14 +20,14 @@ import {
 } from "lucide-react";
 
 interface Account {
-  id: number;
+  _id: string;
   accountNumber: string;
   accountType: string;
   balance: string;
 }
 
 interface CryptoHolding {
-  id: number;
+  _id: string;
   symbol: string;
   name: string;
   amount: string;
@@ -139,7 +139,7 @@ export default function Crypto() {
     buyMutation.mutate({
       symbol: selectedCrypto,
       amount: cryptoAmount,
-      accountId: parseInt(paymentAccount),
+      accountId: paymentAccount,
     });
   };
 
@@ -212,7 +212,7 @@ export default function Crypto() {
                   const crypto = supportedCryptos.find(c => c.symbol === holding.symbol);
                   
                   return (
-                    <div key={holding.id} className="flex items-center justify-between p-3 bg-white/10 rounded-lg">
+                    <div key={holding._id} className="flex items-center justify-between p-3 bg-white/10 rounded-lg">
                       <div className="flex items-center space-x-3">
                         <div className={`w-10 h-10 bg-white/20 rounded-full flex items-center justify-center font-bold ${crypto?.color}`}>
                           {crypto?.icon || holding.symbol.charAt(0)}
@@ -307,7 +307,7 @@ export default function Crypto() {
                     </SelectTrigger>
                     <SelectContent>
                       {accounts?.map((account) => (
-                        <SelectItem key={account.id} value={account.id.toString()}>
+                        <SelectItem key={account._id} value={account._id}>
                           {account.accountType.charAt(0).toUpperCase() + account.accountType.slice(1)} Account (****{account.accountNumber.slice(-4)})
                         </SelectItem>
                       ))}

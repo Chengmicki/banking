@@ -1,11 +1,13 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { storage } from "../storage";
+import { PostgresStorage } from "../storage-postgres";
+
+const storage = new PostgresStorage();
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
 export interface AuthRequest extends Request {
-  userId?: number;
+  userId?: string;
 }
 
 export const authenticateToken = async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -17,7 +19,7 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: number };
+    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
     const user = await storage.getUser(decoded.userId);
     
     if (!user) {
@@ -31,6 +33,6 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
   }
 };
 
-export const generateToken = (userId: number): string => {
+export const generateToken = (userId: string): string => {
   return jwt.sign({ userId }, JWT_SECRET, { expiresIn: '24h' });
 };

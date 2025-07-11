@@ -1,25 +1,25 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { CreditCard, Trash2, Edit, Eye, EyeOff } from "lucide-react";
+import { CreditCard, Edit, Trash2, DollarSign, Eye, EyeOff } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import { format } from "date-fns";
 
-interface CardInfo {
+interface Card {
   _id: string;
-  userId: any;
-  accountId: any;
+  userId: string;
+  accountId: string;
   cardNumber: string;
   cardType: string;
   expiryDate: string;
   cvv: string;
-  cardholderName: string;
   isActive: boolean;
   dailyLimit: string;
   monthlyLimit: string;
@@ -29,11 +29,14 @@ interface CardInfo {
 export default function AdminCardManagement() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [selectedCard, setSelectedCard] = useState<CardInfo | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [dailyLimit, setDailyLimit] = useState("");
-  const [monthlyLimit, setMonthlyLimit] = useState("");
-  const [showSensitiveData, setShowSensitiveData] = useState<{[key: string]: boolean}>({});
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [showCardNumbers, setShowCardNumbers] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    dailyLimit: "",
+    monthlyLimit: "",
+    isActive: true,
+  });
 
   const { data: cards, isLoading } = useQuery({
     queryKey: ["/api/admin/cards"],
@@ -54,7 +57,8 @@ export default function AdminCardManagement() {
         title: "Card Updated",
         description: "Card has been updated successfully.",
       });
-      setIsDialogOpen(false);
+      setIsEditDialogOpen(false);
+      setSelectedCard(null);
     },
     onError: (error: any) => {
       toast({
@@ -86,10 +90,22 @@ export default function AdminCardManagement() {
     },
   });
 
-  const handleActiveToggle = (cardId: string, currentValue: boolean) => {
+  const handleEditCard = (card: Card) => {
+    setSelectedCard(card);
+    setEditFormData({
+      dailyLimit: card.dailyLimit,
+      monthlyLimit: card.monthlyLimit,
+      isActive: card.isActive,
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const handleUpdateCard = () => {
+    if (!selectedCard) return;
+
     updateCardMutation.mutate({
-      cardId,
-      data: { isActive: !currentValue },
+      cardId: selectedCard._id,
+      data: editFormData,
     });
   };
 
@@ -99,35 +115,21 @@ export default function AdminCardManagement() {
     }
   };
 
-  const openEditDialog = (card: CardInfo) => {
-    setSelectedCard(card);
-    setDailyLimit(card.dailyLimit);
-    setMonthlyLimit(card.monthlyLimit);
-    setIsDialogOpen(true);
+  const maskCardNumber = (cardNumber: string) => {
+    return showCardNumbers 
+      ? cardNumber 
+      : `**** **** **** ${cardNumber.slice(-4)}`;
   };
 
-  const handleUpdateLimits = () => {
-    if (!selectedCard) return;
-
-    updateCardMutation.mutate({
-      cardId: selectedCard._id,
-      data: {
-        dailyLimit,
-        monthlyLimit,
-      },
-    });
-  };
-
-  const toggleSensitiveData = (cardId: string) => {
-    setShowSensitiveData(prev => ({
-      ...prev,
-      [cardId]: !prev[cardId]
-    }));
-  };
-
-  const maskCardNumber = (cardNumber: string, show: boolean) => {
-    if (show) return cardNumber;
-    return cardNumber.slice(0, 4) + ' **** **** ' + cardNumber.slice(-4);
+  const getCardTypeColor = (cardType: string) => {
+    switch (cardType.toLowerCase()) {
+      case "debit":
+        return "bg-blue-100 text-blue-800";
+      case "credit":
+        return "bg-purple-100 text-purple-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
   };
 
   if (isLoading) {
@@ -143,85 +145,75 @@ export default function AdminCardManagement() {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Card Management</h2>
-          <p className="text-gray-600">Manage customer credit and debit cards</p>
+          <p className="text-gray-600">Manage customer cards and limits</p>
         </div>
-        <Badge variant="secondary">
-          {cards?.length} Total Cards
-        </Badge>
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowCardNumbers(!showCardNumbers)}
+            >
+              {showCardNumbers ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
+              {showCardNumbers ? "Hide" : "Show"} Card Numbers
+            </Button>
+          </div>
+          <Badge variant="secondary">
+            {cards?.length} Total Cards
+          </Badge>
+        </div>
       </div>
 
+      {/* Cards Grid */}
       <div className="grid gap-4">
-        {cards?.map((card: CardInfo) => (
-          <Card key={card._id}>
+        {cards?.map((card: Card) => (
+          <Card key={card._id} className={`${!card.isActive ? 'opacity-60' : ''}`}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <div className="flex-shrink-0">
-                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <CreditCard className="w-5 h-5 text-blue-600" />
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                      <CreditCard className="w-6 h-6 text-white" />
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 mb-1">
                       <h3 className="text-lg font-medium text-gray-900">
-                        {card.cardholderName}
+                        {maskCardNumber(card.cardNumber)}
                       </h3>
-                      <Badge variant={card.cardType === 'credit' ? 'destructive' : 'default'}>
-                        {card.cardType.charAt(0).toUpperCase() + card.cardType.slice(1)}
+                      <Badge className={getCardTypeColor(card.cardType)}>
+                        {card.cardType}
                       </Badge>
                       {!card.isActive && (
-                        <Badge variant="outline">Inactive</Badge>
+                        <Badge variant="destructive">Inactive</Badge>
                       )}
                     </div>
-                    <div className="space-y-1">
-                      <div className="flex items-center text-sm text-gray-500 space-x-4">
-                        <span className="font-mono">
-                          {maskCardNumber(card.cardNumber, showSensitiveData[card._id])}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => toggleSensitiveData(card._id)}
-                        >
-                          {showSensitiveData[card._id] ? (
-                            <EyeOff className="w-4 h-4" />
-                          ) : (
-                            <Eye className="w-4 h-4" />
-                          )}
-                        </Button>
-                      </div>
-                      {showSensitiveData[card._id] && (
-                        <div className="text-sm text-gray-500 space-x-4">
-                          <span>Expiry: {card.expiryDate}</span>
-                          <span>CVV: {card.cvv}</span>
-                        </div>
-                      )}
-                      <div className="text-sm text-gray-500 space-x-4">
-                        <span>Daily: ${parseFloat(card.dailyLimit).toFixed(2)}</span>
-                        <span>Monthly: ${parseFloat(card.monthlyLimit).toFixed(2)}</span>
-                      </div>
-                      <div className="text-xs text-gray-400">
-                        <span>Account: {card.accountId?.accountNumber || 'Unknown'}</span>
-                        <span className="ml-4">Owner: {card.userId?.fullName || 'Unknown'}</span>
-                      </div>
-                    </div>
+                    <p className="text-sm text-gray-500">
+                      Expires: {card.expiryDate}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Created: {format(new Date(card.createdAt), "MMM d, yyyy")}
+                    </p>
                   </div>
                 </div>
-
                 <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      checked={card.isActive}
-                      onCheckedChange={() => handleActiveToggle(card._id, card.isActive)}
-                    />
-                    <span className="text-sm text-gray-600">Active</span>
+                  <div className="text-right">
+                    <p className="text-sm text-gray-500">Daily Limit</p>
+                    <p className="text-lg font-semibold text-gray-900">
+                      ${parseFloat(card.dailyLimit).toFixed(2)}
+                    </p>
                   </div>
-
-                  <div className="flex space-x-2">
+                  <div className="text-right">
+                    <p className="text-sm text-gray-500">Monthly Limit</p>
+                    <p className="text-lg font-semibold text-gray-900">
+                      ${parseFloat(card.monthlyLimit).toFixed(2)}
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => openEditDialog(card)}
+                      onClick={() => handleEditCard(card)}
                     >
                       <Edit className="w-4 h-4" />
                     </Button>
@@ -229,7 +221,7 @@ export default function AdminCardManagement() {
                       variant="outline"
                       size="sm"
                       onClick={() => handleDeleteCard(card._id)}
-                      disabled={deleteCardMutation.isPending}
+                      className="text-red-600 hover:text-red-700"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -242,57 +234,66 @@ export default function AdminCardManagement() {
       </div>
 
       {cards?.length === 0 && (
-        <Card>
-          <CardContent className="text-center py-8">
-            <CreditCard className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No cards found</h3>
-            <p className="text-gray-600">No cards have been issued yet.</p>
-          </CardContent>
-        </Card>
+        <div className="text-center py-12">
+          <CreditCard className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <p className="text-gray-500">No cards found.</p>
+        </div>
       )}
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
+      {/* Edit Card Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Edit Card Limits</DialogTitle>
+            <DialogTitle>Edit Card</DialogTitle>
             <DialogDescription>
-              Update spending limits for {selectedCard?.cardholderName}'s card
+              Update card limits and status for {selectedCard?.cardNumber ? maskCardNumber(selectedCard.cardNumber) : ""}
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="dailyLimit">Daily Limit</Label>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="dailyLimit" className="text-right">
+                Daily Limit
+              </Label>
               <Input
                 id="dailyLimit"
                 type="number"
                 step="0.01"
-                placeholder="Enter daily limit"
-                value={dailyLimit}
-                onChange={(e) => setDailyLimit(e.target.value)}
+                value={editFormData.dailyLimit}
+                onChange={(e) => setEditFormData(prev => ({ ...prev, dailyLimit: e.target.value }))}
+                className="col-span-3"
               />
             </div>
-            <div>
-              <Label htmlFor="monthlyLimit">Monthly Limit</Label>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="monthlyLimit" className="text-right">
+                Monthly Limit
+              </Label>
               <Input
                 id="monthlyLimit"
                 type="number"
                 step="0.01"
-                placeholder="Enter monthly limit"
-                value={monthlyLimit}
-                onChange={(e) => setMonthlyLimit(e.target.value)}
+                value={editFormData.monthlyLimit}
+                onChange={(e) => setEditFormData(prev => ({ ...prev, monthlyLimit: e.target.value }))}
+                className="col-span-3"
               />
             </div>
-            <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button 
-                onClick={handleUpdateLimits}
-                disabled={updateCardMutation.isPending}
-              >
-                {updateCardMutation.isPending ? "Updating..." : "Update Limits"}
-              </Button>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="isActive" className="text-right">
+                Active
+              </Label>
+              <Switch
+                id="isActive"
+                checked={editFormData.isActive}
+                onCheckedChange={(checked) => setEditFormData(prev => ({ ...prev, isActive: checked }))}
+              />
             </div>
+          </div>
+          <div className="flex justify-end space-x-2">
+            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleUpdateCard} disabled={updateCardMutation.isPending}>
+              {updateCardMutation.isPending ? "Updating..." : "Update Card"}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

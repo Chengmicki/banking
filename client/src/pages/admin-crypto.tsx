@@ -1,12 +1,18 @@
-import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent } from "@/components/ui/card";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bitcoin, TrendingUp, DollarSign } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import { Bitcoin, TrendingUp, TrendingDown, DollarSign, Search, BarChart } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import { format } from "date-fns";
 
 interface CryptoHolding {
   _id: string;
-  userId: any;
+  userId: string;
   symbol: string;
   name: string;
   amount: string;
@@ -16,6 +22,11 @@ interface CryptoHolding {
 }
 
 export default function AdminCryptoManagement() {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [symbolFilter, setSymbolFilter] = useState("all");
+
   const { data: cryptoHoldings, isLoading } = useQuery({
     queryKey: ["/api/admin/crypto"],
     queryFn: async () => {
@@ -23,6 +34,49 @@ export default function AdminCryptoManagement() {
       return response.json();
     },
   });
+
+  const getCryptoIcon = (symbol: string) => {
+    switch (symbol.toUpperCase()) {
+      case "BTC":
+        return <Bitcoin className="w-5 h-5 text-orange-500" />;
+      case "ETH":
+        return <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">Ξ</div>;
+      default:
+        return <DollarSign className="w-5 h-5 text-gray-500" />;
+    }
+  };
+
+  const getSymbolColor = (symbol: string) => {
+    switch (symbol.toUpperCase()) {
+      case "BTC":
+        return "bg-orange-100 text-orange-800";
+      case "ETH":
+        return "bg-blue-100 text-blue-800";
+      case "ADA":
+        return "bg-purple-100 text-purple-800";
+      case "DOT":
+        return "bg-pink-100 text-pink-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const filteredHoldings = cryptoHoldings?.filter((holding: CryptoHolding) => {
+    const matchesSearch = holding.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         holding.symbol.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSymbol = symbolFilter === "all" || holding.symbol === symbolFilter;
+    return matchesSearch && matchesSymbol;
+  });
+
+  const uniqueSymbols = [...new Set(cryptoHoldings?.map((h: CryptoHolding) => h.symbol) || [])];
+
+  const totalValue = filteredHoldings?.reduce((sum: number, holding: CryptoHolding) => {
+    return sum + (parseFloat(holding.amount) * parseFloat(holding.averageCost));
+  }, 0) || 0;
+
+  const totalAmount = filteredHoldings?.reduce((sum: number, holding: CryptoHolding) => {
+    return sum + parseFloat(holding.amount);
+  }, 0) || 0;
 
   if (isLoading) {
     return (
@@ -32,98 +86,136 @@ export default function AdminCryptoManagement() {
     );
   }
 
-  const totalValue = cryptoHoldings?.reduce((sum: number, holding: CryptoHolding) => {
-    return sum + (parseFloat(holding.amount) * parseFloat(holding.averageCost));
-  }, 0) || 0;
-
-  const groupedHoldings = cryptoHoldings?.reduce((acc: {[key: string]: CryptoHolding[]}, holding: CryptoHolding) => {
-    if (!acc[holding.symbol]) {
-      acc[holding.symbol] = [];
-    }
-    acc[holding.symbol].push(holding);
-    return acc;
-  }, {}) || {};
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Crypto Management</h2>
-          <p className="text-gray-600">Monitor cryptocurrency holdings across all users</p>
+          <h2 className="text-2xl font-bold text-gray-900">Crypto Holdings Management</h2>
+          <p className="text-gray-600">Monitor customer cryptocurrency portfolios</p>
         </div>
-        <div className="text-right">
+        <div className="flex items-center space-x-2">
           <Badge variant="secondary">
-            {cryptoHoldings?.length} Total Holdings
+            {filteredHoldings?.length} Holdings
           </Badge>
-          <p className="text-sm text-gray-600 mt-1">
+          <Badge variant="outline">
             Total Value: ${totalValue.toFixed(2)}
-          </p>
+          </Badge>
         </div>
       </div>
 
-      {/* Summary by Symbol */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {Object.entries(groupedHoldings).map(([symbol, holdings]) => {
-          const totalAmount = holdings.reduce((sum, h) => sum + parseFloat(h.amount), 0);
-          const totalCost = holdings.reduce((sum, h) => sum + (parseFloat(h.amount) * parseFloat(h.averageCost)), 0);
-          const avgCost = totalCost / totalAmount || 0;
-
-          return (
-            <Card key={symbol}>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Bitcoin className="w-5 h-5 text-orange-500" />
-                    <div>
-                      <h3 className="font-medium">{symbol}</h3>
-                      <p className="text-sm text-gray-600">{holdings[0].name}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-medium">{totalAmount.toFixed(8)}</p>
-                    <p className="text-sm text-gray-600">${totalCost.toFixed(2)}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Holdings</CardTitle>
+            <BarChart className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{filteredHoldings?.length || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              Across {uniqueSymbols.length} different cryptocurrencies
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Value</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">${totalValue.toFixed(2)}</div>
+            <p className="text-xs text-muted-foreground">
+              Combined portfolio value
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Amount</CardTitle>
+            <Bitcoin className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{totalAmount.toFixed(8)}</div>
+            <p className="text-xs text-muted-foreground">
+              Total cryptocurrency units
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Individual Holdings */}
+      {/* Filters */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder="Search by name or symbol..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        <Select value={symbolFilter} onValueChange={setSymbolFilter}>
+          <SelectTrigger>
+            <SelectValue placeholder="Filter by cryptocurrency" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Cryptocurrencies</SelectItem>
+            {uniqueSymbols.map((symbol) => (
+              <SelectItem key={symbol} value={symbol}>
+                {symbol.toUpperCase()}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Holdings List */}
       <div className="grid gap-4">
-        {cryptoHoldings?.map((holding: CryptoHolding) => (
+        {filteredHoldings?.map((holding: CryptoHolding) => (
           <Card key={holding._id}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <div className="flex-shrink-0">
-                    <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                      <Bitcoin className="w-5 h-5 text-orange-600" />
+                    <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                      {getCryptoIcon(holding.symbol)}
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 mb-1">
                       <h3 className="text-lg font-medium text-gray-900">
-                        {holding.name} ({holding.symbol})
+                        {holding.name}
                       </h3>
-                      <Badge variant="outline">{holding.symbol}</Badge>
+                      <Badge className={getSymbolColor(holding.symbol)}>
+                        {holding.symbol.toUpperCase()}
+                      </Badge>
                     </div>
-                    <div className="flex items-center text-sm text-gray-500 space-x-4">
-                      <span className="flex items-center">
-                        <TrendingUp className="w-4 h-4 mr-1" />
-                        {parseFloat(holding.amount).toFixed(8)} {holding.symbol}
-                      </span>
-                      <span className="flex items-center">
-                        <DollarSign className="w-4 h-4 mr-1" />
-                        Avg Cost: ${parseFloat(holding.averageCost).toFixed(2)}
-                      </span>
-                    </div>
-                    <div className="text-xs text-gray-400 space-x-4">
-                      <span>Owner: {holding.userId?.fullName || holding.userId?.email || 'Unknown'}</span>
-                      <span>Total Value: ${(parseFloat(holding.amount) * parseFloat(holding.averageCost)).toFixed(2)}</span>
-                      <span>Last Updated: {new Date(holding.updatedAt).toLocaleDateString()}</span>
-                    </div>
+                    <p className="text-sm text-gray-500">
+                      User ID: {holding.userId}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Last Updated: {format(new Date(holding.updatedAt), "MMM d, yyyy 'at' h:mm a")}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-6">
+                  <div className="text-right">
+                    <p className="text-sm text-gray-500">Amount</p>
+                    <p className="text-lg font-semibold text-gray-900">
+                      {parseFloat(holding.amount).toFixed(8)}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-gray-500">Avg Cost</p>
+                    <p className="text-lg font-semibold text-gray-900">
+                      ${parseFloat(holding.averageCost).toFixed(2)}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-gray-500">Total Value</p>
+                    <p className="text-lg font-semibold text-green-600">
+                      ${(parseFloat(holding.amount) * parseFloat(holding.averageCost)).toFixed(2)}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -132,14 +224,11 @@ export default function AdminCryptoManagement() {
         ))}
       </div>
 
-      {cryptoHoldings?.length === 0 && (
-        <Card>
-          <CardContent className="text-center py-8">
-            <Bitcoin className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No crypto holdings found</h3>
-            <p className="text-gray-600">No cryptocurrency has been purchased yet.</p>
-          </CardContent>
-        </Card>
+      {filteredHoldings?.length === 0 && (
+        <div className="text-center py-12">
+          <Bitcoin className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <p className="text-gray-500">No crypto holdings found matching your criteria.</p>
+        </div>
       )}
     </div>
   );

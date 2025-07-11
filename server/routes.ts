@@ -2,10 +2,12 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import bcrypt from "bcryptjs";
 import Stripe from "stripe";
-import { storage } from "./storage";
+import { PostgresStorage } from "./storage-postgres";
+
+const storage = new PostgresStorage();
 import { authenticateToken, generateToken, type AuthRequest } from "./middleware/auth";
 import { authenticateAdmin, generateAdminToken, requirePermission, type AdminAuthRequest } from "./middleware/admin-auth";
-// import { cryptoService } from "./services/crypto";
+import { cryptoService } from "./services/crypto";
 // import { emailService } from "./services/email";
 import { 
   insertUserSchema, insertAccountSchema, insertTransactionSchema, insertTransferSchema,
@@ -510,6 +512,130 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin Management Routes
+  app.get("/api/admin/users", authenticateAdmin, async (req: AdminAuthRequest, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      res.json(users);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/admin/accounts", authenticateAdmin, async (req: AdminAuthRequest, res) => {
+    try {
+      const accounts = await storage.getAllAccounts();
+      res.json(accounts);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/admin/transactions", authenticateAdmin, async (req: AdminAuthRequest, res) => {
+    try {
+      const transactions = await storage.getAllTransactions();
+      res.json(transactions);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/admin/transactions/:id", authenticateAdmin, async (req: AdminAuthRequest, res) => {
+    try {
+      const transactionId = req.params.id;
+      const deleted = await storage.deleteTransaction(transactionId);
+      if (!deleted) {
+        return res.status(404).json({ message: "Transaction not found" });
+      }
+      res.json({ message: "Transaction deleted successfully" });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/admin/cards", authenticateAdmin, async (req: AdminAuthRequest, res) => {
+    try {
+      const cards = await storage.getAllCards();
+      res.json(cards);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/admin/cards/:id", authenticateAdmin, async (req: AdminAuthRequest, res) => {
+    try {
+      const cardId = req.params.id;
+      const updateData = req.body;
+      const updatedCard = await storage.updateCard(cardId, updateData);
+      if (!updatedCard) {
+        return res.status(404).json({ message: "Card not found" });
+      }
+      res.json(updatedCard);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/admin/cards/:id", authenticateAdmin, async (req: AdminAuthRequest, res) => {
+    try {
+      const cardId = req.params.id;
+      const deleted = await storage.deleteCard(cardId);
+      if (!deleted) {
+        return res.status(404).json({ message: "Card not found" });
+      }
+      res.json({ message: "Card deleted successfully" });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/admin/crypto", authenticateAdmin, async (req: AdminAuthRequest, res) => {
+    try {
+      const cryptoHoldings = await storage.getAllCryptoHoldings();
+      res.json(cryptoHoldings);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/admin/notifications", authenticateAdmin, async (req: AdminAuthRequest, res) => {
+    try {
+      const notifications = await storage.getAllNotifications();
+      res.json(notifications);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/admin/notifications/broadcast", authenticateAdmin, async (req: AdminAuthRequest, res) => {
+    try {
+      const { title, message, type } = req.body;
+      
+      if (!title || !message) {
+        return res.status(400).json({ message: "Title and message are required" });
+      }
+
+      // Get all users and create notifications for each
+      const users = await storage.getAllUsers();
+      const notifications = [];
+
+      for (const user of users) {
+        const notification = await storage.createNotification({
+          userId: user._id,
+          title,
+          message,
+          type: type || "info",
+          isRead: false
+        });
+        notifications.push(notification);
+      }
+
+      res.json({ message: "Broadcast sent successfully", count: notifications.length });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Admin Dashboard Routes
   app.get("/api/admin/dashboard/stats", authenticateAdmin, async (req: AdminAuthRequest, res) => {
     try {
@@ -519,6 +645,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const transfers = await storage.getAllTransfers();
       const cards = await storage.getAllCards();
       const cryptoHoldings = await storage.getAllCryptoHoldings();
+      const notifications = await storage.getAllNotifications();
 
       // Calculate total balances
       const totalBalance = accounts.reduce((sum, account) => sum + parseFloat(account.balance), 0);

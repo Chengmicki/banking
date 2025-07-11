@@ -2,6 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 // import { connectDB } from "./db-mongo";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { seedAdmin } from "./seed-admin";
 
 const app = express();
 app.use(express.json());
@@ -38,8 +39,11 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // Using in-memory storage for now
-  console.log("Using in-memory storage");
+  // Using PostgreSQL database for production
+  console.log("Using PostgreSQL database");
+  
+  // Seed admin data on startup
+  await seedAdmin();
   
   const server = await registerRoutes(app);
 

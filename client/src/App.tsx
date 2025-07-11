@@ -21,6 +21,12 @@ import Settings from "@/pages/settings";
 import AdminLogin from "@/pages/admin-login";
 import AdminRegister from "@/pages/admin-register";
 import AdminDashboard from "@/pages/admin-dashboard";
+import AdminUsers from "@/pages/admin-users";
+import AdminAccounts from "@/pages/admin-accounts";
+import AdminTransactions from "@/pages/admin-transactions";
+import AdminCards from "@/pages/admin-cards";
+import AdminCrypto from "@/pages/admin-crypto";
+import AdminNotifications from "@/pages/admin-notifications";
 import NotFound from "@/pages/not-found";
 
 const pageTitle: Record<string, string> = {
@@ -107,6 +113,13 @@ function AppRouter() {
     <Switch>
       <Route path="/admin/login" component={AdminLogin} />
       <Route path="/admin/register" component={AdminRegister} />
+      <Route path="/admin/dashboard" component={AdminDashboard} />
+      <Route path="/admin/users" component={AdminUsers} />
+      <Route path="/admin/accounts" component={AdminAccounts} />
+      <Route path="/admin/transactions" component={AdminTransactions} />
+      <Route path="/admin/cards" component={AdminCards} />
+      <Route path="/admin/crypto" component={AdminCrypto} />
+      <Route path="/admin/notifications" component={AdminNotifications} />
       <Route path="/admin/*" component={AdminDashboard} />
       {isAuthenticated ? (
         <Route component={AuthenticatedApp} />

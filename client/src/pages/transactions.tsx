@@ -8,8 +8,8 @@ import { Search, Plus, Minus, ArrowLeftRight, ShoppingCart } from "lucide-react"
 import { authService } from "@/lib/auth";
 
 interface Transaction {
-  id: number;
-  accountId: number;
+  _id: string;
+  accountId: string;
   type: string;
   amount: string;
   description: string;
@@ -179,7 +179,7 @@ export default function Transactions() {
             {filteredTransactions.length ? (
               filteredTransactions.map((transaction) => (
                 <div
-                  key={transaction.id}
+                  key={transaction._id}
                   className="transaction-item flex items-center justify-between p-4 border-b border-gray-200 last:border-b-0"
                 >
                   <div className="flex items-center space-x-4">

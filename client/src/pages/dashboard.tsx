@@ -155,10 +155,10 @@ export default function Dashboard() {
               const Icon = action.icon;
               return (
                 <Link key={index} href={action.href}>
-                  <a className="flex flex-col items-center p-4 border-2 border-gray-200 rounded-lg hover:border-primary hover:bg-blue-50 transition-colors">
+                  <div className="flex flex-col items-center p-4 border-2 border-gray-200 rounded-lg hover:border-primary hover:bg-blue-50 transition-colors cursor-pointer">
                     <Icon className={`${action.color} text-2xl mb-2`} />
                     <span className="text-sm font-medium text-gray-700">{action.label}</span>
-                  </a>
+                  </div>
                 </Link>
               );
             })}

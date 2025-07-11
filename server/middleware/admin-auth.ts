@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { storage } from "../storage";
+import { PostgresStorage } from "../storage-postgres";
+
+const storage = new PostgresStorage();
 
 export interface AdminAuthRequest extends Request {
   adminId?: string;

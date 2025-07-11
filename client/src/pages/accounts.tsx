@@ -6,7 +6,7 @@ import { Wallet, PiggyBank, CreditCard } from "lucide-react";
 import { authService } from "@/lib/auth";
 
 interface Account {
-  id: number;
+  _id: string;
   accountNumber: string;
   accountType: string;
   balance: string;
@@ -76,7 +76,7 @@ export default function Accounts() {
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {accounts?.map((account) => (
-          <Card key={account.id} className="account-card shadow-hover">
+          <Card key={account._id} className="account-card shadow-hover">
             <CardHeader className="flex items-center justify-between space-y-0 pb-4">
               <CardTitle className="text-lg font-semibold">
                 {getAccountTitle(account.accountType)}
