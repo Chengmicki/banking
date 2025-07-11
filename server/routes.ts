@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import bcrypt from "bcryptjs";
 import Stripe from "stripe";
-import { PostgresStorage } from "./storage-postgres";
+import { PostgresStorage } from "./storage-clean";
 
 const storage = new PostgresStorage();
 import { authenticateToken, generateToken, type AuthRequest } from "./middleware/auth";
@@ -13,7 +13,7 @@ import {
   insertUserSchema, insertAccountSchema, insertTransactionSchema, insertTransferSchema,
   insertPayeeSchema, insertBillPaymentSchema, insertCardSchema, insertCryptoHoldingSchema,
   insertAdminSchema
-} from "@shared/mongodb-schema";
+} from "@shared/schema";
 
 // Initialize Stripe if secret key is provided
 let stripe: Stripe | null = null;
@@ -47,7 +47,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create default checking account
       await storage.createAccount({
-        userId: user._id!,
+        userId: user.id,
         accountNumber: `CHK${Date.now()}${Math.floor(Math.random() * 1000)}`,
         accountType: 'checking',
         balance: '0.00',
@@ -55,18 +55,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create default savings account
       await storage.createAccount({
-        userId: user._id!,
+        userId: user.id,
         accountNumber: `SAV${Date.now()}${Math.floor(Math.random() * 1000)}`,
         accountType: 'savings',
         balance: '0.00',
       });
       
-      const token = generateToken(user._id!);
+      const token = generateToken(user.id.toString());
       
       res.json({
         token,
         user: {
-          id: user._id,
+          id: user.id,
           fullName: user.fullName,
           email: user.email,
         },
@@ -90,12 +90,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid credentials" });
       }
       
-      const token = generateToken(user._id!);
+      const token = generateToken(user.id.toString());
       
       res.json({
         token,
         user: {
-          id: user._id,
+          id: user.id,
           fullName: user.fullName,
           email: user.email,
         },
@@ -185,9 +185,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const transferData = insertTransferSchema.parse(req.body);
       
       // Verify the from account belongs to the user
-      const fromAccount = await storage.getAccount(transferData.fromAccountId);
-      if (!fromAccount || fromAccount.userId !== req.userId) {
+      const fromAccount = await storage.getAccount(transferData.fromAccountId.toString());
+      if (!fromAccount || fromAccount.userId !== parseInt(req.userId!)) {
         return res.status(403).json({ message: "Invalid account" });
+      }
+      
+      // Check for transaction blocks on source account
+      if (fromAccount.transactionsBlocked || fromAccount.outgoingBlocked) {
+        return res.status(403).json({ message: "Outgoing transactions are blocked for this account" });
       }
       
       // Check sufficient balance
@@ -198,19 +203,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Insufficient funds" });
       }
       
+      // Check for transaction blocks on destination account (if internal transfer)
+      if (transferData.toAccountId) {
+        const toAccount = await storage.getAccount(transferData.toAccountId.toString());
+        if (toAccount && (toAccount.transactionsBlocked || toAccount.incomingBlocked)) {
+          return res.status(403).json({ message: "Incoming transactions are blocked for the destination account" });
+        }
+      }
+      
       // Create transfer
       const transfer = await storage.createTransfer(transferData);
       
       // Update account balances
-      await storage.updateAccount(transferData.fromAccountId, {
+      await storage.updateAccount(transferData.fromAccountId.toString(), {
         balance: (balance - amount).toFixed(2),
       });
       
       if (transferData.toAccountId) {
-        const toAccount = await storage.getAccount(transferData.toAccountId);
+        const toAccount = await storage.getAccount(transferData.toAccountId.toString());
         if (toAccount) {
           const toBalance = parseFloat(toAccount.balance);
-          await storage.updateAccount(transferData.toAccountId, {
+          await storage.updateAccount(transferData.toAccountId.toString(), {
             balance: (toBalance + amount).toFixed(2),
           });
         }
@@ -218,7 +231,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create transaction records
       await storage.createTransaction({
-        accountId: transferData.fromAccountId,
+        accountId: parseInt(transferData.fromAccountId.toString()),
         type: 'transfer',
         amount: `-${amount}`,
         description: `Transfer ${transferData.externalAccount ? 'to external account' : 'to internal account'}`,
@@ -280,6 +293,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...req.body,
         userId: req.userId,
       });
+      
+      // Check for transaction blocks on source account
+      const fromAccount = await storage.getAccount(billPaymentData.accountId.toString());
+      if (fromAccount && (fromAccount.transactionsBlocked || fromAccount.outgoingBlocked)) {
+        return res.status(403).json({ message: "Outgoing transactions are blocked for this account" });
+      }
       
       const billPayment = await storage.createBillPayment(billPaymentData);
       res.json(billPayment);
@@ -456,15 +475,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid credentials" });
       }
       
-      // Update last login
-      await storage.updateAdmin(admin._id!, { lastLogin: new Date() });
+      // Log the admin ID for debugging
+      console.log("Admin found:", { id: admin.id, type: typeof admin.id });
       
-      const token = generateAdminToken(admin._id!);
+      // Update last login - Use the numeric ID directly
+      await storage.updateAdmin(admin.id.toString(), { lastLogin: new Date() });
+      
+      const token = generateAdminToken(admin.id.toString());
       
       res.json({
         token,
         admin: {
-          id: admin._id,
+          id: admin.id,
           username: admin.username,
           email: admin.email,
           role: admin.role,
@@ -472,6 +494,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
       });
     } catch (error: any) {
+      console.error("Admin login error:", error);
       res.status(400).json({ message: error.message });
     }
   });
@@ -495,12 +518,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         password: hashedPassword,
       });
       
-      const token = generateAdminToken(admin._id!);
+      const token = generateAdminToken(admin.id.toString());
       
       res.json({
         token,
         admin: {
-          id: admin._id,
+          id: admin.id,
           username: admin.username,
           email: admin.email,
           role: admin.role,
@@ -621,7 +644,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       for (const user of users) {
         const notification = await storage.createNotification({
-          userId: user._id,
+          userId: user.id.toString(),
           title,
           message,
           type: type || "info",
@@ -731,11 +754,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create transaction record for balance adjustment
       await storage.createTransaction({
-        accountId,
+        accountId: parseInt(accountId),
         type: 'deposit',
         amount: balance,
         description: `Admin balance adjustment: ${reason}`,
         status: 'completed',
+      });
+
+      res.json(updatedAccount);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/admin/accounts/:id/block-transactions", authenticateAdmin, requirePermission('manage_accounts'), async (req: AdminAuthRequest, res) => {
+    try {
+      const accountId = req.params.id;
+      const { blockType, blocked } = req.body;
+      
+      const account = await storage.getAccount(accountId);
+      if (!account) {
+        return res.status(404).json({ message: "Account not found" });
+      }
+
+      let updateData = {};
+      switch (blockType) {
+        case 'all':
+          updateData = { transactionsBlocked: blocked };
+          break;
+        case 'incoming':
+          updateData = { incomingBlocked: blocked };
+          break;
+        case 'outgoing':
+          updateData = { outgoingBlocked: blocked };
+          break;
+        default:
+          return res.status(400).json({ message: "Invalid block type" });
+      }
+
+      const updatedAccount = await storage.updateAccount(accountId, updateData);
+      
+      // Create notification for the user
+      await storage.createNotification({
+        userId: account.userId.toString(),
+        title: "Account Transaction Status Changed",
+        message: `Your account ${account.accountNumber} has ${blocked ? 'blocked' : 'unblocked'} ${blockType} transactions by admin.`,
+        type: 'security',
+        isRead: false
       });
 
       res.json(updatedAccount);

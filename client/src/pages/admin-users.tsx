@@ -9,7 +9,7 @@ import { Trash2, Edit, Mail, User, CheckCircle, XCircle } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
 interface User {
-  _id: string;
+  id: string;
   fullName: string;
   email: string;
   phone?: string;
@@ -115,7 +115,7 @@ export default function AdminUserManagement() {
 
       <div className="grid gap-4">
         {users?.map((user: User) => (
-          <Card key={user._id}>
+          <Card key={user.id}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
@@ -156,14 +156,14 @@ export default function AdminUserManagement() {
                     <div className="flex items-center space-x-2">
                       <Switch
                         checked={user.isVerified}
-                        onCheckedChange={() => handleVerificationToggle(user._id, user.isVerified)}
+                        onCheckedChange={() => handleVerificationToggle(user.id, user.isVerified)}
                       />
                       <span className="text-sm text-gray-600">Verified</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Switch
                         checked={user.isAdmin}
-                        onCheckedChange={() => handleAdminToggle(user._id, user.isAdmin)}
+                        onCheckedChange={() => handleAdminToggle(user.id, user.isAdmin)}
                       />
                       <span className="text-sm text-gray-600">Admin</span>
                     </div>
@@ -173,7 +173,7 @@ export default function AdminUserManagement() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleDeleteUser(user._id)}
+                      onClick={() => handleDeleteUser(user.id)}
                       disabled={deleteUserMutation.isPending}
                     >
                       <Trash2 className="w-4 h-4" />

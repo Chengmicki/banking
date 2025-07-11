@@ -14,7 +14,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { format } from "date-fns";
 
 interface Notification {
-  _id: string;
+  id: string;
   userId: string;
   title: string;
   message: string;
@@ -209,7 +209,7 @@ export default function AdminNotificationManagement() {
       {/* Notifications List */}
       <div className="grid gap-4">
         {notifications?.map((notification: Notification) => (
-          <Card key={notification._id} className={`${!notification.isRead ? 'border-l-4 border-l-blue-500' : ''}`}>
+          <Card key={notification.id} className={`${!notification.isRead ? 'border-l-4 border-l-blue-500' : ''}`}>
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div className="flex items-start space-x-4">

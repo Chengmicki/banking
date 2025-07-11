@@ -3,7 +3,7 @@ import {
   type Transfer, type InsertTransfer, type Payee, type InsertPayee, type BillPayment, type InsertBillPayment,
   type Card, type InsertCard, type CryptoHolding, type InsertCryptoHolding, type Notification, type InsertNotification,
   type Admin, type InsertAdmin
-} from "@shared/mongodb-schema";
+} from "@shared/schema";
 
 export interface IStorage {
   // User operations

@@ -29,7 +29,7 @@ export async function authenticateAdmin(req: AdminAuthRequest, res: Response, ne
     }
 
     const admin = await storage.getAdmin(decoded.adminId);
-    if (!admin) {
+    if (!admin || !admin.isActive) {
       return res.status(403).json({ message: "Access denied. Admin not found or inactive." });
     }
 

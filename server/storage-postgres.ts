@@ -521,7 +521,13 @@ export class PostgresStorage implements IStorage {
 
   // Admin operations
   async getAdmin(id: string): Promise<MongoAdmin | null> {
-    const result = await db.select().from(schema.admins).where(eq(schema.admins.id, parseInt(id))).limit(1);
+    // Ensure id is a valid integer
+    const adminId = parseInt(id);
+    if (isNaN(adminId)) {
+      throw new Error(`Invalid admin ID: ${id}`);
+    }
+    
+    const result = await db.select().from(schema.admins).where(eq(schema.admins.id, adminId)).limit(1);
     if (result.length === 0) return null;
     return this.pgToMongo<Admin, MongoAdmin>(result[0]);
   }
@@ -547,9 +553,15 @@ export class PostgresStorage implements IStorage {
     const { _id, ...pgUpdateData } = updateData;
     const updateValues = { ...pgUpdateData, updatedAt: new Date() };
     
+    // Ensure id is a valid integer
+    const adminId = parseInt(id);
+    if (isNaN(adminId)) {
+      throw new Error(`Invalid admin ID: ${id}`);
+    }
+    
     const result = await db.update(schema.admins)
       .set(updateValues)
-      .where(eq(schema.admins.id, parseInt(id)))
+      .where(eq(schema.admins.id, adminId))
       .returning();
     
     if (result.length === 0) return null;

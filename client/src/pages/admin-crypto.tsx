@@ -11,7 +11,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { format } from "date-fns";
 
 interface CryptoHolding {
-  _id: string;
+  id: string;
   userId: string;
   symbol: string;
   name: string;
@@ -172,7 +172,7 @@ export default function AdminCryptoManagement() {
       {/* Holdings List */}
       <div className="grid gap-4">
         {filteredHoldings?.map((holding: CryptoHolding) => (
-          <Card key={holding._id}>
+          <Card key={holding.id}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">

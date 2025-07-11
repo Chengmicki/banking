@@ -11,7 +11,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { format } from "date-fns";
 
 interface Transaction {
-  _id: string;
+  id: string;
   accountId: string;
   type: string;
   amount: string;
@@ -166,7 +166,7 @@ export default function AdminTransactionManagement() {
       {/* Transaction List */}
       <div className="grid gap-4">
         {filteredTransactions?.map((transaction: Transaction) => (
-          <Card key={transaction._id}>
+          <Card key={transaction.id}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
@@ -218,7 +218,7 @@ export default function AdminTransactionManagement() {
                         // View transaction details
                         toast({
                           title: "Transaction Details",
-                          description: `ID: ${transaction._id}`,
+                          description: `ID: ${transaction.id}`,
                         });
                       }}
                     >
@@ -227,7 +227,7 @@ export default function AdminTransactionManagement() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleDeleteTransaction(transaction._id)}
+                      onClick={() => handleDeleteTransaction(transaction.id)}
                       className="text-red-600 hover:text-red-700"
                     >
                       <Trash2 className="w-4 h-4" />

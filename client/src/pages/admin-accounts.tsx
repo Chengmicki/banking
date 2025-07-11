@@ -7,17 +7,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { DollarSign, Edit, Wallet, CreditCard } from "lucide-react";
+import { DollarSign, Edit, Wallet, CreditCard, Shield, ShieldOff, Ban } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
 interface Account {
-  _id: string;
+  id: string;
   userId: any;
   accountNumber: string;
   accountType: string;
   balance: string;
   isActive: boolean;
+  transactionsBlocked: boolean;
+  incomingBlocked: boolean;
+  outgoingBlocked: boolean;
   createdAt: string;
 }
 
@@ -62,6 +66,27 @@ export default function AdminAccountManagement() {
     },
   });
 
+  const blockTransactionsMutation = useMutation({
+    mutationFn: async ({ accountId, blockType, blocked }: { accountId: string; blockType: string; blocked: boolean }) => {
+      const response = await apiRequest("PUT", `/api/admin/accounts/${accountId}/block-transactions`, { blockType, blocked });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/accounts"] });
+      toast({
+        title: "Transaction Block Updated",
+        description: "Account transaction restrictions have been updated successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Update Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleBalanceUpdate = () => {
     if (!selectedAccount || !newBalance || !reason) {
       toast({
@@ -73,7 +98,7 @@ export default function AdminAccountManagement() {
     }
 
     updateBalanceMutation.mutate({
-      accountId: selectedAccount._id,
+      accountId: selectedAccount.id,
       balance: newBalance,
       reason,
     });
@@ -83,6 +108,10 @@ export default function AdminAccountManagement() {
     setSelectedAccount(account);
     setNewBalance(account.balance);
     setIsDialogOpen(true);
+  };
+
+  const handleTransactionBlock = (accountId: string, blockType: string, blocked: boolean) => {
+    blockTransactionsMutation.mutate({ accountId, blockType, blocked });
   };
 
   if (isLoading) {
@@ -107,7 +136,7 @@ export default function AdminAccountManagement() {
 
       <div className="grid gap-4">
         {accounts?.map((account: Account) => (
-          <Card key={account._id}>
+          <Card key={account.id}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
@@ -141,21 +170,66 @@ export default function AdminAccountManagement() {
                         <span>Owner: {account.userId.fullName || account.userId.email || 'Unknown'}</span>
                       )}
                     </div>
+                    <div className="flex items-center gap-2 mt-2">
+                      {account.transactionsBlocked && (
+                        <Badge variant="destructive">All Transactions Blocked</Badge>
+                      )}
+                      {account.incomingBlocked && (
+                        <Badge variant="secondary">Incoming Blocked</Badge>
+                      )}
+                      {account.outgoingBlocked && (
+                        <Badge variant="secondary">Outgoing Blocked</Badge>
+                      )}
+                    </div>
                     <p className="text-xs text-gray-400">
                       Created: {new Date(account.createdAt).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => openBalanceDialog(account)}
-                  >
-                    <Edit className="w-4 h-4 mr-2" />
-                    Adjust Balance
-                  </Button>
+                <div className="flex flex-col space-y-3">
+                  <div className="flex space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => openBalanceDialog(account)}
+                    >
+                      <Edit className="w-4 h-4 mr-2" />
+                      Adjust Balance
+                    </Button>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        checked={account.transactionsBlocked}
+                        onCheckedChange={(checked) => handleTransactionBlock(account.id, 'all', checked)}
+                        disabled={blockTransactionsMutation.isPending}
+                      />
+                      <Ban className="w-4 h-4 text-red-500" />
+                      <span className="text-sm text-gray-600">Block All Transactions</span>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        checked={account.incomingBlocked}
+                        onCheckedChange={(checked) => handleTransactionBlock(account.id, 'incoming', checked)}
+                        disabled={blockTransactionsMutation.isPending}
+                      />
+                      <ShieldOff className="w-4 h-4 text-orange-500" />
+                      <span className="text-sm text-gray-600">Block Incoming</span>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        checked={account.outgoingBlocked}
+                        onCheckedChange={(checked) => handleTransactionBlock(account.id, 'outgoing', checked)}
+                        disabled={blockTransactionsMutation.isPending}
+                      />
+                      <Shield className="w-4 h-4 text-blue-500" />
+                      <span className="text-sm text-gray-600">Block Outgoing</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardContent>

@@ -23,6 +23,9 @@ export const accounts = pgTable("accounts", {
   accountType: text("account_type").notNull(), // checking, savings, credit
   balance: decimal("balance", { precision: 15, scale: 2 }).notNull().default("0.00"),
   isActive: boolean("is_active").default(true),
+  transactionsBlocked: boolean("transactions_blocked").default(false),
+  incomingBlocked: boolean("incoming_blocked").default(false),
+  outgoingBlocked: boolean("outgoing_blocked").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

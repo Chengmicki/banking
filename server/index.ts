@@ -1,8 +1,17 @@
 import express, { type Request, Response, NextFunction } from "express";
+import dotenv from "dotenv";
 // import { connectDB } from "./db-mongo";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { seedAdmin } from "./seed-admin";
+
+// Load environment variables
+dotenv.config();
+
+// Check for required environment variables
+if (!process.env.JWT_SECRET) {
+  throw new Error("JWT_SECRET environment variable is required");
+}
 
 const app = express();
 app.use(express.json());

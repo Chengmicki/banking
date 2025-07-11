@@ -49,6 +49,14 @@ export default function Landing() {
               >
                 Get Started
               </Button>
+              <Button 
+                variant="ghost"
+                size="sm"
+                onClick={() => window.location.href = '/admin/login'}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                Admin
+              </Button>
             </div>
           </div>
         </div>

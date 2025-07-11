@@ -13,7 +13,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { format } from "date-fns";
 
 interface Card {
-  _id: string;
+  id: string;
   userId: string;
   accountId: string;
   cardNumber: string;
@@ -104,7 +104,7 @@ export default function AdminCardManagement() {
     if (!selectedCard) return;
 
     updateCardMutation.mutate({
-      cardId: selectedCard._id,
+      cardId: selectedCard.id,
       data: editFormData,
     });
   };
@@ -167,7 +167,7 @@ export default function AdminCardManagement() {
       {/* Cards Grid */}
       <div className="grid gap-4">
         {cards?.map((card: Card) => (
-          <Card key={card._id} className={`${!card.isActive ? 'opacity-60' : ''}`}>
+          <Card key={card.id} className={`${!card.isActive ? 'opacity-60' : ''}`}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
@@ -220,7 +220,7 @@ export default function AdminCardManagement() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleDeleteCard(card._id)}
+                      onClick={() => handleDeleteCard(card.id)}
                       className="text-red-600 hover:text-red-700"
                     >
                       <Trash2 className="w-4 h-4" />
