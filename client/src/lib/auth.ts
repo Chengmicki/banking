@@ -1,4 +1,4 @@
-import { apiRequest } from "./queryClient";
+import { apiRequest } from './queryClient';
 
 export interface User {
   id: number;
@@ -39,14 +39,14 @@ class AuthService {
   }
 
   async login(email: string, password: string): Promise<AuthResponse> {
-    const response = await apiRequest("POST", "/api/auth/login", { email, password });
+    const response = await apiRequest('POST', '/api/auth/login', { email, password });
     const data = await response.json();
     this.setAuth(data.token, data.user);
     return data;
   }
 
   async register(fullName: string, email: string, password: string): Promise<AuthResponse> {
-    const response = await apiRequest("POST", "/api/auth/register", { fullName, email, password });
+    const response = await apiRequest('POST', '/api/auth/register', { fullName, email, password });
     const data = await response.json();
     this.setAuth(data.token, data.user);
     return data;

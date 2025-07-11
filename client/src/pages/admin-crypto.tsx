@@ -1,14 +1,20 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
-import { Bitcoin, TrendingUp, TrendingDown, DollarSign, Search, BarChart } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
-import { format } from "date-fns";
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
+import { Bitcoin, TrendingUp, TrendingDown, DollarSign, Search, BarChart } from 'lucide-react';
+import { apiRequest } from '@/lib/queryClient';
+import { format } from 'date-fns';
 
 interface CryptoHolding {
   id: string;
@@ -24,23 +30,27 @@ interface CryptoHolding {
 export default function AdminCryptoManagement() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [symbolFilter, setSymbolFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState('');
+  const [symbolFilter, setSymbolFilter] = useState('all');
 
   const { data: cryptoHoldings, isLoading } = useQuery({
-    queryKey: ["/api/admin/crypto"],
+    queryKey: ['/api/admin/crypto'],
     queryFn: async () => {
-      const response = await apiRequest("GET", "/api/admin/crypto");
+      const response = await apiRequest('GET', '/api/admin/crypto');
       return response.json();
     },
   });
 
   const getCryptoIcon = (symbol: string) => {
     switch (symbol.toUpperCase()) {
-      case "BTC":
+      case 'BTC':
         return <Bitcoin className="w-5 h-5 text-orange-500" />;
-      case "ETH":
-        return <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">Ξ</div>;
+      case 'ETH':
+        return (
+          <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+            Ξ
+          </div>
+        );
       default:
         return <DollarSign className="w-5 h-5 text-gray-500" />;
     }
@@ -48,35 +58,38 @@ export default function AdminCryptoManagement() {
 
   const getSymbolColor = (symbol: string) => {
     switch (symbol.toUpperCase()) {
-      case "BTC":
-        return "bg-orange-100 text-orange-800";
-      case "ETH":
-        return "bg-blue-100 text-blue-800";
-      case "ADA":
-        return "bg-purple-100 text-purple-800";
-      case "DOT":
-        return "bg-pink-100 text-pink-800";
+      case 'BTC':
+        return 'bg-orange-100 text-orange-800';
+      case 'ETH':
+        return 'bg-blue-100 text-blue-800';
+      case 'ADA':
+        return 'bg-purple-100 text-purple-800';
+      case 'DOT':
+        return 'bg-pink-100 text-pink-800';
       default:
-        return "bg-gray-100 text-gray-800";
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
   const filteredHoldings = cryptoHoldings?.filter((holding: CryptoHolding) => {
-    const matchesSearch = holding.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         holding.symbol.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesSymbol = symbolFilter === "all" || holding.symbol === symbolFilter;
+    const matchesSearch =
+      holding.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      holding.symbol.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSymbol = symbolFilter === 'all' || holding.symbol === symbolFilter;
     return matchesSearch && matchesSymbol;
   });
 
   const uniqueSymbols = [...new Set(cryptoHoldings?.map((h: CryptoHolding) => h.symbol) || [])];
 
-  const totalValue = filteredHoldings?.reduce((sum: number, holding: CryptoHolding) => {
-    return sum + (parseFloat(holding.amount) * parseFloat(holding.averageCost));
-  }, 0) || 0;
+  const totalValue =
+    filteredHoldings?.reduce((sum: number, holding: CryptoHolding) => {
+      return sum + parseFloat(holding.amount) * parseFloat(holding.averageCost);
+    }, 0) || 0;
 
-  const totalAmount = filteredHoldings?.reduce((sum: number, holding: CryptoHolding) => {
-    return sum + parseFloat(holding.amount);
-  }, 0) || 0;
+  const totalAmount =
+    filteredHoldings?.reduce((sum: number, holding: CryptoHolding) => {
+      return sum + parseFloat(holding.amount);
+    }, 0) || 0;
 
   if (isLoading) {
     return (
@@ -94,12 +107,8 @@ export default function AdminCryptoManagement() {
           <p className="text-gray-600">Monitor customer cryptocurrency portfolios</p>
         </div>
         <div className="flex items-center space-x-2">
-          <Badge variant="secondary">
-            {filteredHoldings?.length} Holdings
-          </Badge>
-          <Badge variant="outline">
-            Total Value: ${totalValue.toFixed(2)}
-          </Badge>
+          <Badge variant="secondary">{filteredHoldings?.length} Holdings</Badge>
+          <Badge variant="outline">Total Value: ${totalValue.toFixed(2)}</Badge>
         </div>
       </div>
 
@@ -124,9 +133,7 @@ export default function AdminCryptoManagement() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">${totalValue.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">
-              Combined portfolio value
-            </p>
+            <p className="text-xs text-muted-foreground">Combined portfolio value</p>
           </CardContent>
         </Card>
         <Card>
@@ -136,9 +143,7 @@ export default function AdminCryptoManagement() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalAmount.toFixed(8)}</div>
-            <p className="text-xs text-muted-foreground">
-              Total cryptocurrency units
-            </p>
+            <p className="text-xs text-muted-foreground">Total cryptocurrency units</p>
           </CardContent>
         </Card>
       </div>
@@ -150,7 +155,7 @@ export default function AdminCryptoManagement() {
           <Input
             placeholder="Search by name or symbol..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={e => setSearchTerm(e.target.value)}
             className="pl-10"
           />
         </div>
@@ -160,7 +165,7 @@ export default function AdminCryptoManagement() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Cryptocurrencies</SelectItem>
-            {uniqueSymbols.map((symbol) => (
+            {uniqueSymbols.map(symbol => (
               <SelectItem key={symbol} value={symbol}>
                 {symbol.toUpperCase()}
               </SelectItem>
@@ -183,16 +188,12 @@ export default function AdminCryptoManagement() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="text-lg font-medium text-gray-900">
-                        {holding.name}
-                      </h3>
+                      <h3 className="text-lg font-medium text-gray-900">{holding.name}</h3>
                       <Badge className={getSymbolColor(holding.symbol)}>
                         {holding.symbol.toUpperCase()}
                       </Badge>
                     </div>
-                    <p className="text-sm text-gray-500">
-                      User ID: {holding.userId}
-                    </p>
+                    <p className="text-sm text-gray-500">User ID: {holding.userId}</p>
                     <p className="text-sm text-gray-500">
                       Last Updated: {format(new Date(holding.updatedAt), "MMM d, yyyy 'at' h:mm a")}
                     </p>

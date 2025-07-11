@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useAuth } from "@/hooks/use-auth";
-import { useToast } from "@/hooks/use-toast";
-import { Building } from "lucide-react";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useAuth } from '@/hooks/use-auth';
+import { useToast } from '@/hooks/use-toast';
+import { Building } from 'lucide-react';
 
 interface RegisterModalProps {
   isOpen: boolean;
@@ -14,10 +14,10 @@ interface RegisterModalProps {
 }
 
 export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModalProps) {
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
@@ -25,21 +25,21 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (password !== confirmPassword) {
       toast({
-        title: "Password mismatch",
-        description: "Please make sure your passwords match",
-        variant: "destructive",
+        title: 'Password mismatch',
+        description: 'Please make sure your passwords match',
+        variant: 'destructive',
       });
       return;
     }
 
     if (!agreeToTerms) {
       toast({
-        title: "Terms required",
-        description: "Please agree to the Terms of Service",
-        variant: "destructive",
+        title: 'Terms required',
+        description: 'Please agree to the Terms of Service',
+        variant: 'destructive',
       });
       return;
     }
@@ -49,15 +49,15 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
     try {
       await register(fullName, email, password);
       toast({
-        title: "Account created!",
-        description: "Welcome to Everstead Bank!",
+        title: 'Account created!',
+        description: 'Welcome to Everstead Bank!',
       });
       onClose();
     } catch (error: any) {
       toast({
-        title: "Registration failed",
-        description: error.message || "Something went wrong",
-        variant: "destructive",
+        title: 'Registration failed',
+        description: error.message || 'Something went wrong',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -74,7 +74,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
           <DialogTitle className="text-2xl font-bold">Join Everstead Bank</DialogTitle>
           <p className="text-muted-foreground">Create your account in minutes</p>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="register-name">Full Name</Label>
@@ -83,11 +83,11 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
               type="text"
               placeholder="Enter your full name"
               value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
+              onChange={e => setFullName(e.target.value)}
               required
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="register-email">Email</Label>
             <Input
@@ -95,11 +95,11 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
               type="email"
               placeholder="Enter your email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               required
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="register-password">Password</Label>
             <Input
@@ -107,11 +107,11 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
               type="password"
               placeholder="Create a password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               required
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="register-confirm">Confirm Password</Label>
             <Input
@@ -119,17 +119,17 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
               type="password"
               placeholder="Confirm your password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={e => setConfirmPassword(e.target.value)}
               required
             />
           </div>
-          
+
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
               id="terms"
               checked={agreeToTerms}
-              onChange={(e) => setAgreeToTerms(e.target.checked)}
+              onChange={e => setAgreeToTerms(e.target.checked)}
               className="rounded border-gray-300"
               required
             />
@@ -137,18 +137,15 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
               I agree to the Terms of Service and Privacy Policy
             </label>
           </div>
-          
+
           <Button type="submit" className="w-full btn-gradient" disabled={loading}>
-            {loading ? "Creating account..." : "Create Account"}
+            {loading ? 'Creating account...' : 'Create Account'}
           </Button>
         </form>
-        
+
         <div className="text-center text-sm">
           <span className="text-muted-foreground">Already have an account? </span>
-          <button
-            onClick={onSwitchToLogin}
-            className="text-primary hover:underline font-medium"
-          >
+          <button onClick={onSwitchToLogin} className="text-primary hover:underline font-medium">
             Sign in
           </button>
         </div>

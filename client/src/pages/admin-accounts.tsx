@@ -1,16 +1,23 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Switch } from "@/components/ui/switch";
-import { useToast } from "@/hooks/use-toast";
-import { DollarSign, Edit, Wallet, CreditCard, Shield, ShieldOff, Ban } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Switch } from '@/components/ui/switch';
+import { useToast } from '@/hooks/use-toast';
+import { DollarSign, Edit, Wallet, CreditCard, Shield, ShieldOff, Ban } from 'lucide-react';
+import { apiRequest } from '@/lib/queryClient';
 
 interface Account {
   id: string;
@@ -29,60 +36,83 @@ export default function AdminAccountManagement() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
-  const [newBalance, setNewBalance] = useState("");
-  const [reason, setReason] = useState("");
+  const [newBalance, setNewBalance] = useState('');
+  const [reason, setReason] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const { data: accounts, isLoading } = useQuery({
-    queryKey: ["/api/admin/accounts"],
+    queryKey: ['/api/admin/accounts'],
     queryFn: async () => {
-      const response = await apiRequest("GET", "/api/admin/accounts");
+      const response = await apiRequest('GET', '/api/admin/accounts');
       return response.json();
     },
   });
 
   const updateBalanceMutation = useMutation({
-    mutationFn: async ({ accountId, balance, reason }: { accountId: string; balance: string; reason: string }) => {
-      const response = await apiRequest("PUT", `/api/admin/accounts/${accountId}/balance`, { balance, reason });
+    mutationFn: async ({
+      accountId,
+      balance,
+      reason,
+    }: {
+      accountId: string;
+      balance: string;
+      reason: string;
+    }) => {
+      const response = await apiRequest('PUT', `/api/admin/accounts/${accountId}/balance`, {
+        balance,
+        reason,
+      });
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/accounts"] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/accounts'] });
       toast({
-        title: "Balance Updated",
-        description: "Account balance has been updated successfully.",
+        title: 'Balance Updated',
+        description: 'Account balance has been updated successfully.',
       });
       setIsDialogOpen(false);
-      setNewBalance("");
-      setReason("");
+      setNewBalance('');
+      setReason('');
       setSelectedAccount(null);
     },
     onError: (error: any) => {
       toast({
-        title: "Update Failed",
+        title: 'Update Failed',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
 
   const blockTransactionsMutation = useMutation({
-    mutationFn: async ({ accountId, blockType, blocked }: { accountId: string; blockType: string; blocked: boolean }) => {
-      const response = await apiRequest("PUT", `/api/admin/accounts/${accountId}/block-transactions`, { blockType, blocked });
+    mutationFn: async ({
+      accountId,
+      blockType,
+      blocked,
+    }: {
+      accountId: string;
+      blockType: string;
+      blocked: boolean;
+    }) => {
+      const response = await apiRequest(
+        'PUT',
+        `/api/admin/accounts/${accountId}/block-transactions`,
+        { blockType, blocked }
+      );
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/accounts"] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/accounts'] });
       toast({
-        title: "Transaction Block Updated",
-        description: "Account transaction restrictions have been updated successfully.",
+        title: 'Transaction Block Updated',
+        description: 'Account transaction restrictions have been updated successfully.',
       });
     },
     onError: (error: any) => {
       toast({
-        title: "Update Failed",
+        title: 'Update Failed',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
@@ -90,9 +120,9 @@ export default function AdminAccountManagement() {
   const handleBalanceUpdate = () => {
     if (!selectedAccount || !newBalance || !reason) {
       toast({
-        title: "Missing Information",
-        description: "Please provide both balance and reason for adjustment.",
-        variant: "destructive",
+        title: 'Missing Information',
+        description: 'Please provide both balance and reason for adjustment.',
+        variant: 'destructive',
       });
       return;
     }
@@ -129,9 +159,7 @@ export default function AdminAccountManagement() {
           <h2 className="text-2xl font-bold text-gray-900">Account Management</h2>
           <p className="text-gray-600">Manage customer accounts and balances</p>
         </div>
-        <Badge variant="secondary">
-          {accounts?.length} Total Accounts
-        </Badge>
+        <Badge variant="secondary">{accounts?.length} Total Accounts</Badge>
       </div>
 
       <div className="grid gap-4">
@@ -151,23 +179,21 @@ export default function AdminAccountManagement() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-lg font-medium text-gray-900">
-                        {account.accountNumber}
-                      </h3>
+                      <h3 className="text-lg font-medium text-gray-900">{account.accountNumber}</h3>
                       <Badge variant={account.accountType === 'credit' ? 'destructive' : 'default'}>
                         {account.accountType.charAt(0).toUpperCase() + account.accountType.slice(1)}
                       </Badge>
-                      {!account.isActive && (
-                        <Badge variant="outline">Inactive</Badge>
-                      )}
+                      {!account.isActive && <Badge variant="outline">Inactive</Badge>}
                     </div>
                     <div className="flex items-center text-sm text-gray-500 space-x-4">
                       <span className="flex items-center">
-                        <DollarSign className="w-4 h-4 mr-1" />
-                        ${parseFloat(account.balance).toFixed(2)}
+                        <DollarSign className="w-4 h-4 mr-1" />$
+                        {parseFloat(account.balance).toFixed(2)}
                       </span>
                       {account.userId && (
-                        <span>Owner: {account.userId.fullName || account.userId.email || 'Unknown'}</span>
+                        <span>
+                          Owner: {account.userId.fullName || account.userId.email || 'Unknown'}
+                        </span>
                       )}
                     </div>
                     <div className="flex items-center gap-2 mt-2">
@@ -189,41 +215,43 @@ export default function AdminAccountManagement() {
 
                 <div className="flex flex-col space-y-3">
                   <div className="flex space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => openBalanceDialog(account)}
-                    >
+                    <Button variant="outline" size="sm" onClick={() => openBalanceDialog(account)}>
                       <Edit className="w-4 h-4 mr-2" />
                       Adjust Balance
                     </Button>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2">
                       <Switch
                         checked={account.transactionsBlocked}
-                        onCheckedChange={(checked) => handleTransactionBlock(account.id, 'all', checked)}
+                        onCheckedChange={checked =>
+                          handleTransactionBlock(account.id, 'all', checked)
+                        }
                         disabled={blockTransactionsMutation.isPending}
                       />
                       <Ban className="w-4 h-4 text-red-500" />
                       <span className="text-sm text-gray-600">Block All Transactions</span>
                     </div>
-                    
+
                     <div className="flex items-center space-x-2">
                       <Switch
                         checked={account.incomingBlocked}
-                        onCheckedChange={(checked) => handleTransactionBlock(account.id, 'incoming', checked)}
+                        onCheckedChange={checked =>
+                          handleTransactionBlock(account.id, 'incoming', checked)
+                        }
                         disabled={blockTransactionsMutation.isPending}
                       />
                       <ShieldOff className="w-4 h-4 text-orange-500" />
                       <span className="text-sm text-gray-600">Block Incoming</span>
                     </div>
-                    
+
                     <div className="flex items-center space-x-2">
                       <Switch
                         checked={account.outgoingBlocked}
-                        onCheckedChange={(checked) => handleTransactionBlock(account.id, 'outgoing', checked)}
+                        onCheckedChange={checked =>
+                          handleTransactionBlock(account.id, 'outgoing', checked)
+                        }
                         disabled={blockTransactionsMutation.isPending}
                       />
                       <Shield className="w-4 h-4 text-blue-500" />
@@ -260,7 +288,7 @@ export default function AdminAccountManagement() {
               <Label htmlFor="currentBalance">Current Balance</Label>
               <Input
                 id="currentBalance"
-                value={selectedAccount ? `$${parseFloat(selectedAccount.balance).toFixed(2)}` : ""}
+                value={selectedAccount ? `$${parseFloat(selectedAccount.balance).toFixed(2)}` : ''}
                 disabled
               />
             </div>
@@ -272,7 +300,7 @@ export default function AdminAccountManagement() {
                 step="0.01"
                 placeholder="Enter new balance"
                 value={newBalance}
-                onChange={(e) => setNewBalance(e.target.value)}
+                onChange={e => setNewBalance(e.target.value)}
               />
             </div>
             <div>
@@ -281,18 +309,15 @@ export default function AdminAccountManagement() {
                 id="reason"
                 placeholder="Explain why this balance adjustment is being made..."
                 value={reason}
-                onChange={(e) => setReason(e.target.value)}
+                onChange={e => setReason(e.target.value)}
               />
             </div>
             <div className="flex justify-end space-x-2">
               <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button 
-                onClick={handleBalanceUpdate}
-                disabled={updateBalanceMutation.isPending}
-              >
-                {updateBalanceMutation.isPending ? "Updating..." : "Update Balance"}
+              <Button onClick={handleBalanceUpdate} disabled={updateBalanceMutation.isPending}>
+                {updateBalanceMutation.isPending ? 'Updating...' : 'Update Balance'}
               </Button>
             </div>
           </div>

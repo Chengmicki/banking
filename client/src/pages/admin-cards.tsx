@@ -1,16 +1,23 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
-import { CreditCard, Edit, Trash2, DollarSign, Eye, EyeOff } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
-import { format } from "date-fns";
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { useToast } from '@/hooks/use-toast';
+import { CreditCard, Edit, Trash2, DollarSign, Eye, EyeOff } from 'lucide-react';
+import { apiRequest } from '@/lib/queryClient';
+import { format } from 'date-fns';
 
 interface Card {
   id: string;
@@ -33,59 +40,59 @@ export default function AdminCardManagement() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [showCardNumbers, setShowCardNumbers] = useState(false);
   const [editFormData, setEditFormData] = useState({
-    dailyLimit: "",
-    monthlyLimit: "",
+    dailyLimit: '',
+    monthlyLimit: '',
     isActive: true,
   });
 
   const { data: cards, isLoading } = useQuery({
-    queryKey: ["/api/admin/cards"],
+    queryKey: ['/api/admin/cards'],
     queryFn: async () => {
-      const response = await apiRequest("GET", "/api/admin/cards");
+      const response = await apiRequest('GET', '/api/admin/cards');
       return response.json();
     },
   });
 
   const updateCardMutation = useMutation({
     mutationFn: async ({ cardId, data }: { cardId: string; data: any }) => {
-      const response = await apiRequest("PUT", `/api/admin/cards/${cardId}`, data);
+      const response = await apiRequest('PUT', `/api/admin/cards/${cardId}`, data);
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/cards"] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/cards'] });
       toast({
-        title: "Card Updated",
-        description: "Card has been updated successfully.",
+        title: 'Card Updated',
+        description: 'Card has been updated successfully.',
       });
       setIsEditDialogOpen(false);
       setSelectedCard(null);
     },
     onError: (error: any) => {
       toast({
-        title: "Update Failed",
+        title: 'Update Failed',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
 
   const deleteCardMutation = useMutation({
     mutationFn: async (cardId: string) => {
-      const response = await apiRequest("DELETE", `/api/admin/cards/${cardId}`);
+      const response = await apiRequest('DELETE', `/api/admin/cards/${cardId}`);
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/cards"] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/cards'] });
       toast({
-        title: "Card Deleted",
-        description: "Card has been deleted successfully.",
+        title: 'Card Deleted',
+        description: 'Card has been deleted successfully.',
       });
     },
     onError: (error: any) => {
       toast({
-        title: "Delete Failed",
+        title: 'Delete Failed',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
@@ -110,25 +117,23 @@ export default function AdminCardManagement() {
   };
 
   const handleDeleteCard = (cardId: string) => {
-    if (confirm("Are you sure you want to delete this card? This action cannot be undone.")) {
+    if (confirm('Are you sure you want to delete this card? This action cannot be undone.')) {
       deleteCardMutation.mutate(cardId);
     }
   };
 
   const maskCardNumber = (cardNumber: string) => {
-    return showCardNumbers 
-      ? cardNumber 
-      : `**** **** **** ${cardNumber.slice(-4)}`;
+    return showCardNumbers ? cardNumber : `**** **** **** ${cardNumber.slice(-4)}`;
   };
 
   const getCardTypeColor = (cardType: string) => {
     switch (cardType.toLowerCase()) {
-      case "debit":
-        return "bg-blue-100 text-blue-800";
-      case "credit":
-        return "bg-purple-100 text-purple-800";
+      case 'debit':
+        return 'bg-blue-100 text-blue-800';
+      case 'credit':
+        return 'bg-purple-100 text-purple-800';
       default:
-        return "bg-gray-100 text-gray-800";
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -154,13 +159,15 @@ export default function AdminCardManagement() {
               size="sm"
               onClick={() => setShowCardNumbers(!showCardNumbers)}
             >
-              {showCardNumbers ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
-              {showCardNumbers ? "Hide" : "Show"} Card Numbers
+              {showCardNumbers ? (
+                <EyeOff className="w-4 h-4 mr-2" />
+              ) : (
+                <Eye className="w-4 h-4 mr-2" />
+              )}
+              {showCardNumbers ? 'Hide' : 'Show'} Card Numbers
             </Button>
           </div>
-          <Badge variant="secondary">
-            {cards?.length} Total Cards
-          </Badge>
+          <Badge variant="secondary">{cards?.length} Total Cards</Badge>
         </div>
       </div>
 
@@ -181,18 +188,12 @@ export default function AdminCardManagement() {
                       <h3 className="text-lg font-medium text-gray-900">
                         {maskCardNumber(card.cardNumber)}
                       </h3>
-                      <Badge className={getCardTypeColor(card.cardType)}>
-                        {card.cardType}
-                      </Badge>
-                      {!card.isActive && (
-                        <Badge variant="destructive">Inactive</Badge>
-                      )}
+                      <Badge className={getCardTypeColor(card.cardType)}>{card.cardType}</Badge>
+                      {!card.isActive && <Badge variant="destructive">Inactive</Badge>}
                     </div>
+                    <p className="text-sm text-gray-500">Expires: {card.expiryDate}</p>
                     <p className="text-sm text-gray-500">
-                      Expires: {card.expiryDate}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Created: {format(new Date(card.createdAt), "MMM d, yyyy")}
+                      Created: {format(new Date(card.createdAt), 'MMM d, yyyy')}
                     </p>
                   </div>
                 </div>
@@ -210,11 +211,7 @@ export default function AdminCardManagement() {
                     </p>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEditCard(card)}
-                    >
+                    <Button variant="outline" size="sm" onClick={() => handleEditCard(card)}>
                       <Edit className="w-4 h-4" />
                     </Button>
                     <Button
@@ -246,7 +243,8 @@ export default function AdminCardManagement() {
           <DialogHeader>
             <DialogTitle>Edit Card</DialogTitle>
             <DialogDescription>
-              Update card limits and status for {selectedCard?.cardNumber ? maskCardNumber(selectedCard.cardNumber) : ""}
+              Update card limits and status for{' '}
+              {selectedCard?.cardNumber ? maskCardNumber(selectedCard.cardNumber) : ''}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -259,7 +257,7 @@ export default function AdminCardManagement() {
                 type="number"
                 step="0.01"
                 value={editFormData.dailyLimit}
-                onChange={(e) => setEditFormData(prev => ({ ...prev, dailyLimit: e.target.value }))}
+                onChange={e => setEditFormData(prev => ({ ...prev, dailyLimit: e.target.value }))}
                 className="col-span-3"
               />
             </div>
@@ -272,7 +270,7 @@ export default function AdminCardManagement() {
                 type="number"
                 step="0.01"
                 value={editFormData.monthlyLimit}
-                onChange={(e) => setEditFormData(prev => ({ ...prev, monthlyLimit: e.target.value }))}
+                onChange={e => setEditFormData(prev => ({ ...prev, monthlyLimit: e.target.value }))}
                 className="col-span-3"
               />
             </div>
@@ -283,7 +281,9 @@ export default function AdminCardManagement() {
               <Switch
                 id="isActive"
                 checked={editFormData.isActive}
-                onCheckedChange={(checked) => setEditFormData(prev => ({ ...prev, isActive: checked }))}
+                onCheckedChange={checked =>
+                  setEditFormData(prev => ({ ...prev, isActive: checked }))
+                }
               />
             </div>
           </div>
@@ -292,7 +292,7 @@ export default function AdminCardManagement() {
               Cancel
             </Button>
             <Button onClick={handleUpdateCard} disabled={updateCardMutation.isPending}>
-              {updateCardMutation.isPending ? "Updating..." : "Update Card"}
+              {updateCardMutation.isPending ? 'Updating...' : 'Update Card'}
             </Button>
           </div>
         </DialogContent>

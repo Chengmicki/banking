@@ -15,17 +15,17 @@ export class CryptoService {
       const response = await fetch(
         `${this.baseUrl}/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`
       );
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch crypto prices');
       }
-      
+
       const data = await response.json();
-      
+
       return symbols.map(symbol => {
         const id = this.getCoingeckoId(symbol);
         const priceData = data[id];
-        
+
         return {
           symbol: symbol.toUpperCase(),
           name: this.getCryptoName(symbol),
@@ -48,24 +48,24 @@ export class CryptoService {
 
   private getCoingeckoId(symbol: string): string {
     const mapping: Record<string, string> = {
-      'BTC': 'bitcoin',
-      'ETH': 'ethereum',
-      'LTC': 'litecoin',
-      'XRP': 'ripple',
-      'ADA': 'cardano',
-      'DOT': 'polkadot',
+      BTC: 'bitcoin',
+      ETH: 'ethereum',
+      LTC: 'litecoin',
+      XRP: 'ripple',
+      ADA: 'cardano',
+      DOT: 'polkadot',
     };
     return mapping[symbol.toUpperCase()] || symbol.toLowerCase();
   }
 
   private getCryptoName(symbol: string): string {
     const mapping: Record<string, string> = {
-      'BTC': 'Bitcoin',
-      'ETH': 'Ethereum',
-      'LTC': 'Litecoin',
-      'XRP': 'Ripple',
-      'ADA': 'Cardano',
-      'DOT': 'Polkadot',
+      BTC: 'Bitcoin',
+      ETH: 'Ethereum',
+      LTC: 'Litecoin',
+      XRP: 'Ripple',
+      ADA: 'Cardano',
+      DOT: 'Polkadot',
     };
     return mapping[symbol.toUpperCase()] || symbol;
   }

@@ -1,20 +1,20 @@
-import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Link } from "wouter";
-import { 
-  Wallet, 
-  PiggyBank, 
-  CreditCard, 
-  ArrowLeftRight, 
-  Receipt, 
+import { useQuery } from '@tanstack/react-query';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Link } from 'wouter';
+import {
+  Wallet,
+  PiggyBank,
+  CreditCard,
+  ArrowLeftRight,
+  Receipt,
   Bitcoin,
   Plus,
   Minus,
   TrendingUp,
-  TrendingDown
-} from "lucide-react";
-import { authService } from "@/lib/auth";
+  TrendingDown,
+} from 'lucide-react';
+import { authService } from '@/lib/auth';
 
 interface Account {
   id: number;
@@ -42,9 +42,9 @@ interface CryptoHolding {
 
 export default function Dashboard() {
   const { data: accounts } = useQuery<Account[]>({
-    queryKey: ["/api/accounts"],
+    queryKey: ['/api/accounts'],
     queryFn: async () => {
-      const response = await fetch("/api/accounts", {
+      const response = await fetch('/api/accounts', {
         headers: authService.getAuthHeaders(),
       });
       return response.json();
@@ -52,9 +52,9 @@ export default function Dashboard() {
   });
 
   const { data: transactions } = useQuery<Transaction[]>({
-    queryKey: ["/api/transactions"],
+    queryKey: ['/api/transactions'],
     queryFn: async () => {
-      const response = await fetch("/api/transactions?limit=5", {
+      const response = await fetch('/api/transactions?limit=5', {
         headers: authService.getAuthHeaders(),
       });
       return response.json();
@@ -62,25 +62,26 @@ export default function Dashboard() {
   });
 
   const { data: cryptoHoldings } = useQuery<CryptoHolding[]>({
-    queryKey: ["/api/crypto/holdings"],
+    queryKey: ['/api/crypto/holdings'],
     queryFn: async () => {
-      const response = await fetch("/api/crypto/holdings", {
+      const response = await fetch('/api/crypto/holdings', {
         headers: authService.getAuthHeaders(),
       });
       return response.json();
     },
   });
 
-  const totalBalance = accounts?.reduce((sum, account) => sum + parseFloat(account.balance), 0) || 0;
+  const totalBalance =
+    accounts?.reduce((sum, account) => sum + parseFloat(account.balance), 0) || 0;
   const checkingAccount = accounts?.find(acc => acc.accountType === 'checking');
   const savingsAccount = accounts?.find(acc => acc.accountType === 'savings');
   const creditAccount = accounts?.find(acc => acc.accountType === 'credit');
 
   const quickActions = [
-    { href: "/transfers", icon: ArrowLeftRight, label: "Transfer", color: "text-blue-600" },
-    { href: "/bill-pay", icon: Receipt, label: "Pay Bills", color: "text-green-600" },
-    { href: "/cards", icon: CreditCard, label: "Manage Cards", color: "text-purple-600" },
-    { href: "/crypto", icon: Bitcoin, label: "Crypto", color: "text-orange-600" },
+    { href: '/transfers', icon: ArrowLeftRight, label: 'Transfer', color: 'text-blue-600' },
+    { href: '/bill-pay', icon: Receipt, label: 'Pay Bills', color: 'text-green-600' },
+    { href: '/cards', icon: CreditCard, label: 'Manage Cards', color: 'text-purple-600' },
+    { href: '/crypto', icon: Bitcoin, label: 'Crypto', color: 'text-orange-600' },
   ];
 
   return (
@@ -107,7 +108,10 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ${parseFloat(checkingAccount?.balance || '0').toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              $
+              {parseFloat(checkingAccount?.balance || '0').toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+              })}
             </div>
             <p className="text-sm text-muted-foreground mt-2">
               ****{checkingAccount?.accountNumber?.slice(-4)}
@@ -122,7 +126,10 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ${parseFloat(savingsAccount?.balance || '0').toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              $
+              {parseFloat(savingsAccount?.balance || '0').toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+              })}
             </div>
             <p className="text-sm text-muted-foreground mt-2">
               ****{savingsAccount?.accountNumber?.slice(-4)}
@@ -136,9 +143,7 @@ export default function Dashboard() {
             <CreditCard className="h-6 w-6 text-orange-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              $0.00
-            </div>
+            <div className="text-2xl font-bold">$0.00</div>
             <p className="text-sm text-green-600 mt-2">Available: $5,000.00</p>
           </CardContent>
         </Card>
@@ -173,19 +178,29 @@ export default function Dashboard() {
           <CardHeader className="flex items-center justify-between">
             <CardTitle>Recent Transactions</CardTitle>
             <Link href="/transactions">
-              <Button variant="outline" size="sm">View All</Button>
+              <Button variant="outline" size="sm">
+                View All
+              </Button>
             </Link>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {transactions?.length ? (
-                transactions.map((transaction) => (
-                  <div key={transaction.id} className="transaction-item flex items-center justify-between p-3 rounded-lg">
+                transactions.map(transaction => (
+                  <div
+                    key={transaction.id}
+                    className="transaction-item flex items-center justify-between p-3 rounded-lg"
+                  >
                     <div className="flex items-center space-x-3">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        transaction.type === 'deposit' ? 'bg-green-100' :
-                        transaction.type === 'withdrawal' ? 'bg-red-100' : 'bg-blue-100'
-                      }`}>
+                      <div
+                        className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                          transaction.type === 'deposit'
+                            ? 'bg-green-100'
+                            : transaction.type === 'withdrawal'
+                              ? 'bg-red-100'
+                              : 'bg-blue-100'
+                        }`}
+                      >
                         {transaction.type === 'deposit' ? (
                           <Plus className="text-green-600 w-5 h-5" />
                         ) : transaction.type === 'withdrawal' ? (
@@ -201,11 +216,17 @@ export default function Dashboard() {
                         </p>
                       </div>
                     </div>
-                    <span className={`font-semibold ${
-                      transaction.type === 'deposit' ? 'text-green-600' :
-                      transaction.type === 'withdrawal' ? 'text-red-600' : 'text-blue-600'
-                    }`}>
-                      {transaction.type === 'deposit' ? '+' : ''}${Math.abs(parseFloat(transaction.amount)).toFixed(2)}
+                    <span
+                      className={`font-semibold ${
+                        transaction.type === 'deposit'
+                          ? 'text-green-600'
+                          : transaction.type === 'withdrawal'
+                            ? 'text-red-600'
+                            : 'text-blue-600'
+                      }`}
+                    >
+                      {transaction.type === 'deposit' ? '+' : ''}$
+                      {Math.abs(parseFloat(transaction.amount)).toFixed(2)}
                     </span>
                   </div>
                 ))
@@ -224,7 +245,11 @@ export default function Dashboard() {
           <CardHeader className="flex items-center justify-between">
             <CardTitle>Crypto Portfolio</CardTitle>
             <Link href="/crypto">
-              <Button variant="outline" size="sm" className="text-blue-300 border-blue-300 hover:bg-blue-700">
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-blue-300 border-blue-300 hover:bg-blue-700"
+              >
                 View All
               </Button>
             </Link>
@@ -232,17 +257,21 @@ export default function Dashboard() {
           <CardContent>
             <div className="space-y-4">
               {cryptoHoldings?.length ? (
-                cryptoHoldings.map((holding) => (
+                cryptoHoldings.map(holding => (
                   <div key={holding.id} className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        holding.symbol === 'BTC' ? 'bg-orange-500' : 'bg-purple-500'
-                      }`}>
+                      <div
+                        className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                          holding.symbol === 'BTC' ? 'bg-orange-500' : 'bg-purple-500'
+                        }`}
+                      >
                         <Bitcoin className="text-white w-5 h-5" />
                       </div>
                       <div>
                         <p className="font-medium">{holding.name}</p>
-                        <p className="text-sm opacity-70">{holding.amount} {holding.symbol}</p>
+                        <p className="text-sm opacity-70">
+                          {holding.amount} {holding.symbol}
+                        </p>
                       </div>
                     </div>
                     <div className="text-right">

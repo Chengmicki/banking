@@ -1,17 +1,23 @@
-import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
-import { authService } from "@/lib/auth";
-import { queryClient } from "@/lib/queryClient";
-import { ArrowLeftRight, DollarSign, Calendar, Repeat } from "lucide-react";
+import { useState } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useToast } from '@/hooks/use-toast';
+import { authService } from '@/lib/auth';
+import { queryClient } from '@/lib/queryClient';
+import { ArrowLeftRight, DollarSign, Calendar, Repeat } from 'lucide-react';
 
 interface Account {
   id: number;
@@ -36,21 +42,21 @@ interface Transfer {
 
 export default function Transfers() {
   const { toast } = useToast();
-  const [fromAccount, setFromAccount] = useState("");
-  const [toAccount, setToAccount] = useState("");
-  const [externalAccount, setExternalAccount] = useState("");
-  const [amount, setAmount] = useState("");
-  const [transferType, setTransferType] = useState("immediate");
-  const [scheduledDate, setScheduledDate] = useState("");
+  const [fromAccount, setFromAccount] = useState('');
+  const [toAccount, setToAccount] = useState('');
+  const [externalAccount, setExternalAccount] = useState('');
+  const [amount, setAmount] = useState('');
+  const [transferType, setTransferType] = useState('immediate');
+  const [scheduledDate, setScheduledDate] = useState('');
   const [isRecurring, setIsRecurring] = useState(false);
-  const [recurringFrequency, setRecurringFrequency] = useState("");
-  const [memo, setMemo] = useState("");
+  const [recurringFrequency, setRecurringFrequency] = useState('');
+  const [memo, setMemo] = useState('');
   const [showReviewModal, setShowReviewModal] = useState(false);
 
   const { data: accounts } = useQuery<Account[]>({
-    queryKey: ["/api/accounts"],
+    queryKey: ['/api/accounts'],
     queryFn: async () => {
-      const response = await fetch("/api/accounts", {
+      const response = await fetch('/api/accounts', {
         headers: authService.getAuthHeaders(),
       });
       return response.json();
@@ -58,9 +64,9 @@ export default function Transfers() {
   });
 
   const { data: transfers } = useQuery<Transfer[]>({
-    queryKey: ["/api/transfers"],
+    queryKey: ['/api/transfers'],
     queryFn: async () => {
-      const response = await fetch("/api/transfers", {
+      const response = await fetch('/api/transfers', {
         headers: authService.getAuthHeaders(),
       });
       return response.json();
@@ -69,69 +75,69 @@ export default function Transfers() {
 
   const transferMutation = useMutation({
     mutationFn: async (transferData: any) => {
-      const response = await fetch("/api/transfers", {
-        method: "POST",
+      const response = await fetch('/api/transfers', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           ...authService.getAuthHeaders(),
         },
         body: JSON.stringify(transferData),
       });
-      
+
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.message);
       }
-      
+
       return response.json();
     },
     onSuccess: () => {
       toast({
-        title: "Transfer Successful",
-        description: "Your transfer has been completed successfully.",
+        title: 'Transfer Successful',
+        description: 'Your transfer has been completed successfully.',
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/accounts"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/transfers"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/transactions"] });
+      queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/transfers'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/transactions'] });
       resetForm();
       setShowReviewModal(false);
     },
     onError: (error: any) => {
       toast({
-        title: "Transfer Failed",
+        title: 'Transfer Failed',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
 
   const resetForm = () => {
-    setFromAccount("");
-    setToAccount("");
-    setExternalAccount("");
-    setAmount("");
-    setTransferType("immediate");
-    setScheduledDate("");
+    setFromAccount('');
+    setToAccount('');
+    setExternalAccount('');
+    setAmount('');
+    setTransferType('immediate');
+    setScheduledDate('');
     setIsRecurring(false);
-    setRecurringFrequency("");
-    setMemo("");
+    setRecurringFrequency('');
+    setMemo('');
   };
 
   const handleReviewTransfer = () => {
     if (!fromAccount || !amount || (!toAccount && !externalAccount)) {
       toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
-        variant: "destructive",
+        title: 'Missing Information',
+        description: 'Please fill in all required fields.',
+        variant: 'destructive',
       });
       return;
     }
 
     if (parseFloat(amount) <= 0) {
       toast({
-        title: "Invalid Amount",
-        description: "Please enter a valid amount greater than 0.",
-        variant: "destructive",
+        title: 'Invalid Amount',
+        description: 'Please enter a valid amount greater than 0.',
+        variant: 'destructive',
       });
       return;
     }
@@ -139,9 +145,9 @@ export default function Transfers() {
     const selectedAccount = accounts?.find(acc => acc.id.toString() === fromAccount);
     if (selectedAccount && parseFloat(selectedAccount.balance) < parseFloat(amount)) {
       toast({
-        title: "Insufficient Funds",
+        title: 'Insufficient Funds',
         description: "You don't have enough balance for this transfer.",
-        variant: "destructive",
+        variant: 'destructive',
       });
       return;
     }
@@ -152,11 +158,11 @@ export default function Transfers() {
   const handleConfirmTransfer = () => {
     const transferData = {
       fromAccountId: parseInt(fromAccount),
-      toAccountId: toAccount === "external" ? undefined : parseInt(toAccount),
-      externalAccount: toAccount === "external" ? externalAccount : undefined,
+      toAccountId: toAccount === 'external' ? undefined : parseInt(toAccount),
+      externalAccount: toAccount === 'external' ? externalAccount : undefined,
       amount: amount,
       memo: memo || undefined,
-      scheduledDate: transferType === "scheduled" ? scheduledDate : undefined,
+      scheduledDate: transferType === 'scheduled' ? scheduledDate : undefined,
       isRecurring: isRecurring,
       recurringFrequency: isRecurring ? recurringFrequency : undefined,
     };
@@ -169,9 +175,11 @@ export default function Transfers() {
   };
 
   const getToAccountDisplay = () => {
-    if (toAccount === "external") return "External Bank Account";
+    if (toAccount === 'external') return 'External Bank Account';
     const account = accounts?.find(acc => acc.id.toString() === toAccount);
-    return account ? `${account.accountType.charAt(0).toUpperCase() + account.accountType.slice(1)} (****${account.accountNumber.slice(-4)})` : "";
+    return account
+      ? `${account.accountType.charAt(0).toUpperCase() + account.accountType.slice(1)} (****${account.accountNumber.slice(-4)})`
+      : '';
   };
 
   return (
@@ -193,7 +201,7 @@ export default function Transfers() {
                   <SelectValue placeholder="Select account" />
                 </SelectTrigger>
                 <SelectContent>
-                  {accounts?.map((account) => (
+                  {accounts?.map(account => (
                     <SelectItem key={account.id} value={account.id.toString()}>
                       {getAccountDisplay(account)}
                     </SelectItem>
@@ -209,24 +217,27 @@ export default function Transfers() {
                   <SelectValue placeholder="Select destination" />
                 </SelectTrigger>
                 <SelectContent>
-                  {accounts?.filter(acc => acc.id.toString() !== fromAccount).map((account) => (
-                    <SelectItem key={account.id} value={account.id.toString()}>
-                      {account.accountType.charAt(0).toUpperCase() + account.accountType.slice(1)} (****{account.accountNumber.slice(-4)})
-                    </SelectItem>
-                  ))}
+                  {accounts
+                    ?.filter(acc => acc.id.toString() !== fromAccount)
+                    .map(account => (
+                      <SelectItem key={account.id} value={account.id.toString()}>
+                        {account.accountType.charAt(0).toUpperCase() + account.accountType.slice(1)}{' '}
+                        (****{account.accountNumber.slice(-4)})
+                      </SelectItem>
+                    ))}
                   <SelectItem value="external">External Bank Account</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            {toAccount === "external" && (
+            {toAccount === 'external' && (
               <div className="space-y-2">
                 <Label htmlFor="external-account">External Account Details</Label>
                 <Input
                   id="external-account"
                   placeholder="Account number or routing details"
                   value={externalAccount}
-                  onChange={(e) => setExternalAccount(e.target.value)}
+                  onChange={e => setExternalAccount(e.target.value)}
                 />
               </div>
             )}
@@ -240,7 +251,7 @@ export default function Transfers() {
                   type="number"
                   placeholder="0.00"
                   value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
+                  onChange={e => setAmount(e.target.value)}
                   className="pl-10"
                   step="0.01"
                   min="0"
@@ -262,7 +273,7 @@ export default function Transfers() {
               </RadioGroup>
             </div>
 
-            {transferType === "scheduled" && (
+            {transferType === 'scheduled' && (
               <div className="space-y-4 pl-6 border-l-2 border-primary">
                 <div className="space-y-2">
                   <Label htmlFor="scheduled-date">Schedule Date</Label>
@@ -270,7 +281,7 @@ export default function Transfers() {
                     id="scheduled-date"
                     type="date"
                     value={scheduledDate}
-                    onChange={(e) => setScheduledDate(e.target.value)}
+                    onChange={e => setScheduledDate(e.target.value)}
                     min={new Date().toISOString().split('T')[0]}
                   />
                 </div>
@@ -280,7 +291,7 @@ export default function Transfers() {
                     type="checkbox"
                     id="recurring"
                     checked={isRecurring}
-                    onChange={(e) => setIsRecurring(e.target.checked)}
+                    onChange={e => setIsRecurring(e.target.checked)}
                     className="rounded border-gray-300"
                   />
                   <Label htmlFor="recurring">Make this recurring</Label>
@@ -310,12 +321,12 @@ export default function Transfers() {
                 id="memo"
                 placeholder="Add a note for this transfer..."
                 value={memo}
-                onChange={(e) => setMemo(e.target.value)}
+                onChange={e => setMemo(e.target.value)}
                 rows={3}
               />
             </div>
 
-            <Button 
+            <Button
               onClick={handleReviewTransfer}
               className="w-full btn-gradient"
               disabled={transferMutation.isPending}
@@ -332,15 +343,18 @@ export default function Transfers() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {transfers?.slice(0, 5).map((transfer) => (
-                <div key={transfer.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              {transfers?.slice(0, 5).map(transfer => (
+                <div
+                  key={transfer.id}
+                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                >
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                       <ArrowLeftRight className="text-blue-600 w-5 h-5" />
                     </div>
                     <div>
                       <p className="font-medium text-gray-900">
-                        {transfer.externalAccount ? "To External Account" : "Internal Transfer"}
+                        {transfer.externalAccount ? 'To External Account' : 'Internal Transfer'}
                       </p>
                       <p className="text-sm text-gray-500">
                         {new Date(transfer.createdAt).toLocaleDateString()}
@@ -351,10 +365,15 @@ export default function Transfers() {
                     <p className="font-semibold text-gray-900">
                       ${parseFloat(transfer.amount).toFixed(2)}
                     </p>
-                    <p className={`text-sm ${
-                      transfer.status === 'completed' ? 'text-green-600' :
-                      transfer.status === 'pending' ? 'text-yellow-600' : 'text-red-600'
-                    }`}>
+                    <p
+                      className={`text-sm ${
+                        transfer.status === 'completed'
+                          ? 'text-green-600'
+                          : transfer.status === 'pending'
+                            ? 'text-yellow-600'
+                            : 'text-red-600'
+                      }`}
+                    >
                       {transfer.status.charAt(0).toUpperCase() + transfer.status.slice(1)}
                     </p>
                   </div>
@@ -381,25 +400,31 @@ export default function Transfers() {
             <div>
               <p className="text-sm text-muted-foreground">From</p>
               <p className="font-medium">
-                {accounts?.find(acc => acc.id.toString() === fromAccount)?.accountType.charAt(0).toUpperCase() + 
-                 accounts?.find(acc => acc.id.toString() === fromAccount)?.accountType.slice(1)} Account
+                {accounts
+                  ?.find(acc => acc.id.toString() === fromAccount)
+                  ?.accountType.charAt(0)
+                  .toUpperCase() +
+                  accounts
+                    ?.find(acc => acc.id.toString() === fromAccount)
+                    ?.accountType.slice(1)}{' '}
+                Account
               </p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">To</p>
               <p className="font-medium">
                 {getToAccountDisplay()}
-                {toAccount === "external" && externalAccount && ` - ${externalAccount}`}
+                {toAccount === 'external' && externalAccount && ` - ${externalAccount}`}
               </p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Amount</p>
-              <p className="font-medium text-lg">${parseFloat(amount || "0").toFixed(2)}</p>
+              <p className="font-medium text-lg">${parseFloat(amount || '0').toFixed(2)}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">When</p>
               <p className="font-medium">
-                {transferType === "immediate" ? "Now" : scheduledDate}
+                {transferType === 'immediate' ? 'Now' : scheduledDate}
                 {isRecurring && ` (${recurringFrequency})`}
               </p>
             </div>
@@ -422,7 +447,7 @@ export default function Transfers() {
                 disabled={transferMutation.isPending}
                 className="flex-1 btn-gradient"
               >
-                {transferMutation.isPending ? "Processing..." : "Confirm Transfer"}
+                {transferMutation.isPending ? 'Processing...' : 'Confirm Transfer'}
               </Button>
             </div>
           </div>

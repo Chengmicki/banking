@@ -1,9 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Link } from "wouter";
-import { Wallet, PiggyBank, CreditCard } from "lucide-react";
-import { authService } from "@/lib/auth";
+import { useQuery } from '@tanstack/react-query';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Link } from 'wouter';
+import { Wallet, PiggyBank, CreditCard } from 'lucide-react';
+import { authService } from '@/lib/auth';
 
 interface Account {
   _id: string;
@@ -16,9 +16,9 @@ interface Account {
 
 export default function Accounts() {
   const { data: accounts, isLoading } = useQuery<Account[]>({
-    queryKey: ["/api/accounts"],
+    queryKey: ['/api/accounts'],
     queryFn: async () => {
-      const response = await fetch("/api/accounts", {
+      const response = await fetch('/api/accounts', {
         headers: authService.getAuthHeaders(),
       });
       return response.json();
@@ -28,7 +28,7 @@ export default function Accounts() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        {[1, 2, 3].map((i) => (
+        {[1, 2, 3].map(i => (
           <Card key={i} className="animate-pulse">
             <CardContent className="p-6">
               <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
@@ -75,7 +75,7 @@ export default function Accounts() {
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {accounts?.map((account) => (
+        {accounts?.map(account => (
           <Card key={account._id} className="account-card shadow-hover">
             <CardHeader className="flex items-center justify-between space-y-0 pb-4">
               <CardTitle className="text-lg font-semibold">
@@ -88,11 +88,14 @@ export default function Accounts() {
                 <p className="text-sm text-muted-foreground">Account Number</p>
                 <p className="font-mono text-lg">****{account.accountNumber.slice(-4)}</p>
               </div>
-              
+
               <div>
                 <p className="text-sm text-muted-foreground">Available Balance</p>
                 <p className="text-2xl font-bold">
-                  ${parseFloat(account.balance).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                  $
+                  {parseFloat(account.balance).toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                  })}
                 </p>
               </div>
 
@@ -139,7 +142,10 @@ export default function Accounts() {
             <div className="bg-blue-50 rounded-lg p-4">
               <p className="text-sm text-muted-foreground">Total Balance</p>
               <p className="text-2xl font-bold text-blue-600">
-                ${accounts?.reduce((sum, acc) => sum + parseFloat(acc.balance), 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) || '0.00'}
+                $
+                {accounts
+                  ?.reduce((sum, acc) => sum + parseFloat(acc.balance), 0)
+                  .toLocaleString('en-US', { minimumFractionDigits: 2 }) || '0.00'}
               </p>
             </div>
             <div className="bg-green-50 rounded-lg p-4">

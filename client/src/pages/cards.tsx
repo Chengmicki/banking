@@ -1,22 +1,14 @@
-import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Slider } from "@/components/ui/slider";
-import { useToast } from "@/hooks/use-toast";
-import { authService } from "@/lib/auth";
-import { queryClient } from "@/lib/queryClient";
-import { 
-  CreditCard, 
-  Wifi, 
-  Lock, 
-  AlertTriangle, 
-  Shield,
-  Eye,
-  EyeOff
-} from "lucide-react";
+import { useState } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Slider } from '@/components/ui/slider';
+import { useToast } from '@/hooks/use-toast';
+import { authService } from '@/lib/auth';
+import { queryClient } from '@/lib/queryClient';
+import { CreditCard, Wifi, Lock, AlertTriangle, Shield, Eye, EyeOff } from 'lucide-react';
 
 interface CardData {
   id: number;
@@ -42,9 +34,9 @@ export default function Cards() {
   const [monthlyLimit, setMonthlyLimit] = useState([2000]);
 
   const { data: cards } = useQuery<CardData[]>({
-    queryKey: ["/api/cards"],
+    queryKey: ['/api/cards'],
     queryFn: async () => {
-      const response = await fetch("/api/cards", {
+      const response = await fetch('/api/cards', {
         headers: authService.getAuthHeaders(),
       });
       return response.json();
@@ -54,33 +46,33 @@ export default function Cards() {
   const updateCardMutation = useMutation({
     mutationFn: async ({ cardId, updates }: { cardId: number; updates: any }) => {
       const response = await fetch(`/api/cards/${cardId}`, {
-        method: "PUT",
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           ...authService.getAuthHeaders(),
         },
         body: JSON.stringify(updates),
       });
-      
+
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.message);
       }
-      
+
       return response.json();
     },
     onSuccess: () => {
       toast({
-        title: "Card Updated",
-        description: "Your card settings have been updated successfully.",
+        title: 'Card Updated',
+        description: 'Your card settings have been updated successfully.',
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/cards"] });
+      queryClient.invalidateQueries({ queryKey: ['/api/cards'] });
     },
     onError: (error: any) => {
       toast({
-        title: "Update Failed",
+        title: 'Update Failed',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
@@ -103,15 +95,16 @@ export default function Cards() {
       updates: { isActive: false },
     });
     toast({
-      title: "Card Frozen",
-      description: "Your card has been temporarily frozen for security.",
+      title: 'Card Frozen',
+      description: 'Your card has been temporarily frozen for security.',
     });
   };
 
   const handleReportLost = () => {
     toast({
-      title: "Card Reported",
-      description: "We've received your report. A replacement card will be issued within 3-5 business days.",
+      title: 'Card Reported',
+      description:
+        "We've received your report. A replacement card will be issued within 3-5 business days.",
     });
   };
 
@@ -131,7 +124,7 @@ export default function Cards() {
       expiryDate: '12/27',
       holderName: 'JOHN DOE',
       isActive: true,
-      brand: 'visa'
+      brand: 'visa',
     },
     {
       id: 2,
@@ -140,8 +133,8 @@ export default function Cards() {
       expiryDate: '08/28',
       holderName: 'JOHN DOE',
       isActive: true,
-      brand: 'mastercard'
-    }
+      brand: 'mastercard',
+    },
   ];
 
   const displayCards = cards?.length ? cards : mockCards;
@@ -157,11 +150,11 @@ export default function Cards() {
         {/* Card Display */}
         <div className="space-y-6">
           {displayCards.map((card, index) => (
-            <Card 
-              key={card.id} 
+            <Card
+              key={card.id}
               className={`${
-                index === 0 
-                  ? 'bg-gradient-to-br from-gray-800 to-gray-900' 
+                index === 0
+                  ? 'bg-gradient-to-br from-gray-800 to-gray-900'
                   : 'bg-gradient-to-br from-blue-600 to-blue-800'
               } text-white shadow-hover`}
             >
@@ -172,7 +165,7 @@ export default function Cards() {
                   </h3>
                   <Wifi className="w-6 h-6" />
                 </div>
-                
+
                 <div className="mb-6">
                   <p className="font-mono text-xl tracking-widest mb-2">
                     {formatCardNumber(card.cardNumber, showCardNumbers)}
@@ -188,7 +181,7 @@ export default function Cards() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <p className="text-sm">{card.holderName || 'JOHN DOE'}</p>
                   <div className="text-2xl font-bold">
@@ -198,7 +191,7 @@ export default function Cards() {
               </CardContent>
             </Card>
           ))}
-          
+
           <Button
             variant="outline"
             onClick={() => setShowCardNumbers(!showCardNumbers)}
@@ -234,21 +227,16 @@ export default function Cards() {
                 <span className="text-sm text-green-600 font-medium">Active</span>
               </div>
               <div className="flex space-x-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   className="flex-1"
                   onClick={() => handleFreezeCard(displayCards[0].id)}
                 >
                   <Lock className="w-4 h-4 mr-2" />
                   Freeze Card
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="flex-1"
-                  onClick={handleReportLost}
-                >
+                <Button variant="outline" size="sm" className="flex-1" onClick={handleReportLost}>
                   <AlertTriangle className="w-4 h-4 mr-2" />
                   Report Lost
                 </Button>
@@ -278,15 +266,12 @@ export default function Cards() {
                   </div>
                   <div className="mt-2">
                     <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
-                        className="progress-bar h-2 rounded-full" 
-                        style={{ width: '60%' }}
-                      ></div>
+                      <div className="progress-bar h-2 rounded-full" style={{ width: '60%' }}></div>
                     </div>
                     <p className="text-xs text-gray-500 mt-1">$300 used today</p>
                   </div>
                 </div>
-                
+
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-600">Monthly Purchase Limit</span>
@@ -306,10 +291,7 @@ export default function Cards() {
                   </div>
                   <div className="mt-2">
                     <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
-                        className="progress-bar h-2 rounded-full" 
-                        style={{ width: '35%' }}
-                      ></div>
+                      <div className="progress-bar h-2 rounded-full" style={{ width: '35%' }}></div>
                     </div>
                     <p className="text-xs text-gray-500 mt-1">$700 used this month</p>
                   </div>
@@ -323,10 +305,7 @@ export default function Cards() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm">Online Purchases</span>
-                  <Switch
-                    checked={onlinePayments}
-                    onCheckedChange={setOnlinePayments}
-                  />
+                  <Switch checked={onlinePayments} onCheckedChange={setOnlinePayments} />
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm">International Transactions</span>
@@ -337,10 +316,7 @@ export default function Cards() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm">Contactless Payments</span>
-                  <Switch
-                    checked={contactlessPayments}
-                    onCheckedChange={setContactlessPayments}
-                  />
+                  <Switch checked={contactlessPayments} onCheckedChange={setContactlessPayments} />
                 </div>
               </div>
             </div>
@@ -348,12 +324,12 @@ export default function Cards() {
             {/* Actions */}
             <div className="pt-4 border-t">
               <div className="flex space-x-3">
-                <Button 
+                <Button
                   onClick={handleUpdateLimits}
                   disabled={updateCardMutation.isPending}
                   className="flex-1"
                 >
-                  {updateCardMutation.isPending ? "Updating..." : "Update Limits"}
+                  {updateCardMutation.isPending ? 'Updating...' : 'Update Limits'}
                 </Button>
                 <Button variant="outline" className="flex-1">
                   Order New Card

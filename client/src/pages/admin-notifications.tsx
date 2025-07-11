@@ -1,17 +1,30 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
-import { Bell, Send, AlertCircle, Info, CheckCircle, XCircle } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
-import { format } from "date-fns";
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { useToast } from '@/hooks/use-toast';
+import { Bell, Send, AlertCircle, Info, CheckCircle, XCircle } from 'lucide-react';
+import { apiRequest } from '@/lib/queryClient';
+import { format } from 'date-fns';
 
 interface Notification {
   id: string;
@@ -28,38 +41,38 @@ export default function AdminNotificationManagement() {
   const queryClient = useQueryClient();
   const [isBroadcastDialogOpen, setIsBroadcastDialogOpen] = useState(false);
   const [broadcastData, setBroadcastData] = useState({
-    title: "",
-    message: "",
-    type: "info",
+    title: '',
+    message: '',
+    type: 'info',
   });
 
   const { data: notifications, isLoading } = useQuery({
-    queryKey: ["/api/admin/notifications"],
+    queryKey: ['/api/admin/notifications'],
     queryFn: async () => {
-      const response = await apiRequest("GET", "/api/admin/notifications");
+      const response = await apiRequest('GET', '/api/admin/notifications');
       return response.json();
     },
   });
 
   const broadcastNotificationMutation = useMutation({
     mutationFn: async (data: { title: string; message: string; type: string }) => {
-      const response = await apiRequest("POST", "/api/admin/notifications/broadcast", data);
+      const response = await apiRequest('POST', '/api/admin/notifications/broadcast', data);
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/notifications"] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/notifications'] });
       toast({
-        title: "Notification Sent",
-        description: "Broadcast notification has been sent to all users.",
+        title: 'Notification Sent',
+        description: 'Broadcast notification has been sent to all users.',
       });
       setIsBroadcastDialogOpen(false);
-      setBroadcastData({ title: "", message: "", type: "info" });
+      setBroadcastData({ title: '', message: '', type: 'info' });
     },
     onError: (error: any) => {
       toast({
-        title: "Broadcast Failed",
+        title: 'Broadcast Failed',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
@@ -67,9 +80,9 @@ export default function AdminNotificationManagement() {
   const handleBroadcast = () => {
     if (!broadcastData.title || !broadcastData.message) {
       toast({
-        title: "Missing Information",
-        description: "Please provide both title and message for the notification.",
-        variant: "destructive",
+        title: 'Missing Information',
+        description: 'Please provide both title and message for the notification.',
+        variant: 'destructive',
       });
       return;
     }
@@ -79,13 +92,13 @@ export default function AdminNotificationManagement() {
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
-      case "info":
+      case 'info':
         return <Info className="w-5 h-5 text-blue-600" />;
-      case "success":
+      case 'success':
         return <CheckCircle className="w-5 h-5 text-green-600" />;
-      case "warning":
+      case 'warning':
         return <AlertCircle className="w-5 h-5 text-yellow-600" />;
-      case "error":
+      case 'error':
         return <XCircle className="w-5 h-5 text-red-600" />;
       default:
         return <Bell className="w-5 h-5 text-gray-600" />;
@@ -94,16 +107,16 @@ export default function AdminNotificationManagement() {
 
   const getNotificationColor = (type: string) => {
     switch (type) {
-      case "info":
-        return "bg-blue-100 text-blue-800";
-      case "success":
-        return "bg-green-100 text-green-800";
-      case "warning":
-        return "bg-yellow-100 text-yellow-800";
-      case "error":
-        return "bg-red-100 text-red-800";
+      case 'info':
+        return 'bg-blue-100 text-blue-800';
+      case 'success':
+        return 'bg-green-100 text-green-800';
+      case 'warning':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'error':
+        return 'bg-red-100 text-red-800';
       default:
-        return "bg-gray-100 text-gray-800";
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -147,7 +160,7 @@ export default function AdminNotificationManagement() {
                   <Input
                     id="title"
                     value={broadcastData.title}
-                    onChange={(e) => setBroadcastData(prev => ({ ...prev, title: e.target.value }))}
+                    onChange={e => setBroadcastData(prev => ({ ...prev, title: e.target.value }))}
                     placeholder="Notification title"
                     className="col-span-3"
                   />
@@ -158,7 +171,7 @@ export default function AdminNotificationManagement() {
                   </Label>
                   <Select
                     value={broadcastData.type}
-                    onValueChange={(value) => setBroadcastData(prev => ({ ...prev, type: value }))}
+                    onValueChange={value => setBroadcastData(prev => ({ ...prev, type: value }))}
                   >
                     <SelectTrigger className="col-span-3">
                       <SelectValue />
@@ -178,7 +191,7 @@ export default function AdminNotificationManagement() {
                   <Textarea
                     id="message"
                     value={broadcastData.message}
-                    onChange={(e) => setBroadcastData(prev => ({ ...prev, message: e.target.value }))}
+                    onChange={e => setBroadcastData(prev => ({ ...prev, message: e.target.value }))}
                     placeholder="Notification message"
                     className="col-span-3"
                     rows={4}
@@ -189,27 +202,27 @@ export default function AdminNotificationManagement() {
                 <Button variant="outline" onClick={() => setIsBroadcastDialogOpen(false)}>
                   Cancel
                 </Button>
-                <Button onClick={handleBroadcast} disabled={broadcastNotificationMutation.isPending}>
-                  {broadcastNotificationMutation.isPending ? "Sending..." : "Send Broadcast"}
+                <Button
+                  onClick={handleBroadcast}
+                  disabled={broadcastNotificationMutation.isPending}
+                >
+                  {broadcastNotificationMutation.isPending ? 'Sending...' : 'Send Broadcast'}
                 </Button>
               </div>
             </DialogContent>
           </Dialog>
-          <Badge variant="secondary">
-            {notifications?.length} Total Notifications
-          </Badge>
-          {unreadCount > 0 && (
-            <Badge variant="destructive">
-              {unreadCount} Unread
-            </Badge>
-          )}
+          <Badge variant="secondary">{notifications?.length} Total Notifications</Badge>
+          {unreadCount > 0 && <Badge variant="destructive">{unreadCount} Unread</Badge>}
         </div>
       </div>
 
       {/* Notifications List */}
       <div className="grid gap-4">
         {notifications?.map((notification: Notification) => (
-          <Card key={notification.id} className={`${!notification.isRead ? 'border-l-4 border-l-blue-500' : ''}`}>
+          <Card
+            key={notification.id}
+            className={`${!notification.isRead ? 'border-l-4 border-l-blue-500' : ''}`}
+          >
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div className="flex items-start space-x-4">
@@ -220,19 +233,13 @@ export default function AdminNotificationManagement() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="text-lg font-medium text-gray-900">
-                        {notification.title}
-                      </h3>
+                      <h3 className="text-lg font-medium text-gray-900">{notification.title}</h3>
                       <Badge className={getNotificationColor(notification.type)}>
                         {notification.type}
                       </Badge>
-                      {!notification.isRead && (
-                        <Badge variant="secondary">Unread</Badge>
-                      )}
+                      {!notification.isRead && <Badge variant="secondary">Unread</Badge>}
                     </div>
-                    <p className="text-sm text-gray-600 mb-2">
-                      {notification.message}
-                    </p>
+                    <p className="text-sm text-gray-600 mb-2">{notification.message}</p>
                     <p className="text-xs text-gray-400">
                       {format(new Date(notification.createdAt), "MMM d, yyyy 'at' h:mm a")}
                     </p>
@@ -245,12 +252,12 @@ export default function AdminNotificationManagement() {
                     onClick={() => {
                       // Mark as read/unread functionality could be added here
                       toast({
-                        title: "Notification Action",
-                        description: "Feature can be implemented as needed.",
+                        title: 'Notification Action',
+                        description: 'Feature can be implemented as needed.',
                       });
                     }}
                   >
-                    {notification.isRead ? "Mark Unread" : "Mark Read"}
+                    {notification.isRead ? 'Mark Unread' : 'Mark Read'}
                   </Button>
                 </div>
               </div>

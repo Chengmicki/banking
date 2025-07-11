@@ -1,14 +1,14 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
-import { useLocation } from "wouter";
-import { 
-  type Admin, 
-  type AdminAuthContext, 
-  getStoredAdminToken, 
-  getStoredAdminData, 
-  setStoredAdminAuth, 
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { useLocation } from 'wouter';
+import {
+  type Admin,
+  type AdminAuthContext,
+  getStoredAdminToken,
+  getStoredAdminData,
+  setStoredAdminAuth,
   clearStoredAdminAuth,
-  adminLogin 
-} from "@/lib/admin-auth";
+  adminLogin,
+} from '@/lib/admin-auth';
 
 const AdminAuthContext = createContext<AdminAuthContext | null>(null);
 
@@ -30,12 +30,12 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const login = async (username: string, password: string) => {
     try {
       const { token: newToken, admin: newAdmin } = await adminLogin(username, password);
-      
+
       setToken(newToken);
       setAdmin(newAdmin);
       setStoredAdminAuth(newToken, newAdmin);
-      
-      setLocation("/admin/dashboard");
+
+      setLocation('/admin/dashboard');
     } catch (error) {
       throw error;
     }
@@ -45,7 +45,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     setToken(null);
     setAdmin(null);
     clearStoredAdminAuth();
-    setLocation("/admin/login");
+    setLocation('/admin/login');
   };
 
   const isAuthenticated = !!(admin && token);
@@ -60,7 +60,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 export function useAdminAuth() {
   const context = useContext(AdminAuthContext);
   if (!context) {
-    throw new Error("useAdminAuth must be used within AdminAuthProvider");
+    throw new Error('useAdminAuth must be used within AdminAuthProvider');
   }
   return context;
 }

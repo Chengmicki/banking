@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useAuth } from "@/hooks/use-auth";
-import { useToast } from "@/hooks/use-toast";
-import { Building } from "lucide-react";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useAuth } from '@/hooks/use-auth';
+import { useToast } from '@/hooks/use-toast';
+import { Building } from 'lucide-react';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -14,8 +14,8 @@ interface LoginModalProps {
 }
 
 export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalProps) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const { toast } = useToast();
@@ -27,15 +27,15 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
     try {
       await login(email, password);
       toast({
-        title: "Welcome back!",
-        description: "You have successfully logged in.",
+        title: 'Welcome back!',
+        description: 'You have successfully logged in.',
       });
       onClose();
     } catch (error: any) {
       toast({
-        title: "Login failed",
-        description: error.message || "Invalid email or password",
-        variant: "destructive",
+        title: 'Login failed',
+        description: error.message || 'Invalid email or password',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -52,7 +52,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
           <DialogTitle className="text-2xl font-bold">Welcome Back</DialogTitle>
           <p className="text-muted-foreground">Sign in to your account</p>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="login-email">Email</Label>
@@ -61,11 +61,11 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
               type="email"
               placeholder="Enter your email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               required
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="login-password">Password</Label>
             <Input
@@ -73,11 +73,11 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
               type="password"
               placeholder="Enter your password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               required
             />
           </div>
-          
+
           <div className="flex items-center justify-between text-sm">
             <label className="flex items-center space-x-2 cursor-pointer">
               <input type="checkbox" className="rounded border-gray-300" />
@@ -87,18 +87,15 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
               Forgot password?
             </a>
           </div>
-          
+
           <Button type="submit" className="w-full btn-gradient" disabled={loading}>
-            {loading ? "Signing in..." : "Sign In"}
+            {loading ? 'Signing in...' : 'Sign In'}
           </Button>
         </form>
-        
+
         <div className="text-center text-sm">
           <span className="text-muted-foreground">Don't have an account? </span>
-          <button
-            onClick={onSwitchToRegister}
-            className="text-primary hover:underline font-medium"
-          >
+          <button onClick={onSwitchToRegister} className="text-primary hover:underline font-medium">
             Sign up
           </button>
         </div>

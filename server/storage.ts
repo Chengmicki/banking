@@ -1,9 +1,25 @@
 import {
-  type User, type InsertUser, type Account, type InsertAccount, type Transaction, type InsertTransaction,
-  type Transfer, type InsertTransfer, type Payee, type InsertPayee, type BillPayment, type InsertBillPayment,
-  type Card, type InsertCard, type CryptoHolding, type InsertCryptoHolding, type Notification, type InsertNotification,
-  type Admin, type InsertAdmin
-} from "@shared/schema";
+  type User,
+  type InsertUser,
+  type Account,
+  type InsertAccount,
+  type Transaction,
+  type InsertTransaction,
+  type Transfer,
+  type InsertTransfer,
+  type Payee,
+  type InsertPayee,
+  type BillPayment,
+  type InsertBillPayment,
+  type Card,
+  type InsertCard,
+  type CryptoHolding,
+  type InsertCryptoHolding,
+  type Notification,
+  type InsertNotification,
+  type Admin,
+  type InsertAdmin,
+} from '@shared/schema';
 
 export interface IStorage {
   // User operations
@@ -13,7 +29,7 @@ export interface IStorage {
   updateUser(id: string, user: Partial<User>): Promise<User | null>;
   getAllUsers(): Promise<User[]>;
   deleteUser(id: string): Promise<boolean>;
-  
+
   // Account operations
   getAccountsByUserId(userId: string): Promise<Account[]>;
   getAccount(id: string): Promise<Account | null>;
@@ -21,40 +37,40 @@ export interface IStorage {
   updateAccount(id: string, account: Partial<Account>): Promise<Account | null>;
   getAllAccounts(): Promise<Account[]>;
   deleteAccount(id: string): Promise<boolean>;
-  
+
   // Transaction operations
   getTransactionsByAccountId(accountId: string, limit?: number): Promise<Transaction[]>;
   getTransactionsByUserId(userId: string, limit?: number): Promise<Transaction[]>;
   createTransaction(transaction: InsertTransaction): Promise<Transaction>;
   getAllTransactions(): Promise<Transaction[]>;
   deleteTransaction(id: string): Promise<boolean>;
-  
+
   // Transfer operations
   getTransfersByUserId(userId: string, limit?: number): Promise<Transfer[]>;
   createTransfer(transfer: InsertTransfer): Promise<Transfer>;
   updateTransfer(id: string, transfer: Partial<Transfer>): Promise<Transfer | null>;
   getAllTransfers(): Promise<Transfer[]>;
   deleteTransfer(id: string): Promise<boolean>;
-  
+
   // Payee operations
   getPayeesByUserId(userId: string): Promise<Payee[]>;
   createPayee(payee: InsertPayee): Promise<Payee>;
   getAllPayees(): Promise<Payee[]>;
   deletePayee(id: string): Promise<boolean>;
-  
+
   // Bill payment operations
   getBillPaymentsByUserId(userId: string): Promise<BillPayment[]>;
   createBillPayment(billPayment: InsertBillPayment): Promise<BillPayment>;
   getAllBillPayments(): Promise<BillPayment[]>;
   deleteBillPayment(id: string): Promise<boolean>;
-  
+
   // Card operations
   getCardsByUserId(userId: string): Promise<Card[]>;
   createCard(card: InsertCard): Promise<Card>;
   updateCard(id: string, card: Partial<Card>): Promise<Card | null>;
   getAllCards(): Promise<Card[]>;
   deleteCard(id: string): Promise<boolean>;
-  
+
   // Crypto operations
   getCryptoHoldingsByUserId(userId: string): Promise<CryptoHolding[]>;
   getCryptoHolding(userId: string, symbol: string): Promise<CryptoHolding | null>;
@@ -62,7 +78,7 @@ export interface IStorage {
   updateCryptoHolding(id: string, holding: Partial<CryptoHolding>): Promise<CryptoHolding | null>;
   getAllCryptoHoldings(): Promise<CryptoHolding[]>;
   deleteCryptoHolding(id: string): Promise<boolean>;
-  
+
   // Notification operations
   getNotificationsByUserId(userId: string): Promise<Notification[]>;
   createNotification(notification: InsertNotification): Promise<Notification>;
@@ -91,7 +107,7 @@ export class MemStorage implements IStorage {
   private cryptoHoldings: Map<string, CryptoHolding> = new Map();
   private notifications: Map<string, Notification> = new Map();
   private admins: Map<string, Admin> = new Map();
-  
+
   private currentUserId = 1;
   private currentAccountId = 1;
   private currentTransactionId = 1;
@@ -164,7 +180,7 @@ export class MemStorage implements IStorage {
   async updateAccount(id: string, updateData: Partial<Account>): Promise<Account | null> {
     const account = this.accounts.get(id);
     if (!account) return null;
-    
+
     const updatedAccount = { ...account, ...updateData };
     this.accounts.set(id, updatedAccount);
     return updatedAccount;
@@ -189,7 +205,7 @@ export class MemStorage implements IStorage {
   async getTransactionsByUserId(userId: string, limit: number = 50): Promise<Transaction[]> {
     const userAccounts = await this.getAccountsByUserId(userId);
     const accountIds = userAccounts.map(account => account._id!);
-    
+
     return Array.from(this.transactions.values())
       .filter(transaction => accountIds.includes(transaction.accountId))
       .sort((a, b) => b.createdAt!.getTime() - a.createdAt!.getTime())
@@ -219,7 +235,7 @@ export class MemStorage implements IStorage {
   async getTransfersByUserId(userId: string, limit: number = 50): Promise<Transfer[]> {
     const userAccounts = await this.getAccountsByUserId(userId);
     const accountIds = userAccounts.map(account => account._id!);
-    
+
     return Array.from(this.transfers.values())
       .filter(transfer => accountIds.includes(transfer.fromAccountId))
       .sort((a, b) => b.createdAt!.getTime() - a.createdAt!.getTime())
@@ -240,7 +256,7 @@ export class MemStorage implements IStorage {
   async updateTransfer(id: string, updateData: Partial<Transfer>): Promise<Transfer | null> {
     const transfer = this.transfers.get(id);
     if (!transfer) return null;
-    
+
     const updatedTransfer = { ...transfer, ...updateData };
     this.transfers.set(id, updatedTransfer);
     return updatedTransfer;
@@ -321,7 +337,7 @@ export class MemStorage implements IStorage {
   async updateCard(id: string, updateData: Partial<Card>): Promise<Card | null> {
     const card = this.cards.get(id);
     if (!card) return null;
-    
+
     const updatedCard = { ...card, ...updateData };
     this.cards.set(id, updatedCard);
     return updatedCard;
@@ -341,8 +357,11 @@ export class MemStorage implements IStorage {
   }
 
   async getCryptoHolding(userId: string, symbol: string): Promise<CryptoHolding | null> {
-    return Array.from(this.cryptoHoldings.values())
-      .find(holding => holding.userId === userId && holding.symbol === symbol) || null;
+    return (
+      Array.from(this.cryptoHoldings.values()).find(
+        holding => holding.userId === userId && holding.symbol === symbol
+      ) || null
+    );
   }
 
   async createCryptoHolding(insertCryptoHolding: InsertCryptoHolding): Promise<CryptoHolding> {
@@ -357,10 +376,13 @@ export class MemStorage implements IStorage {
     return holding;
   }
 
-  async updateCryptoHolding(id: string, updateData: Partial<CryptoHolding>): Promise<CryptoHolding | null> {
+  async updateCryptoHolding(
+    id: string,
+    updateData: Partial<CryptoHolding>
+  ): Promise<CryptoHolding | null> {
     const holding = this.cryptoHoldings.get(id);
     if (!holding) return null;
-    
+
     const updatedHolding = { ...holding, ...updateData, updatedAt: new Date() };
     this.cryptoHoldings.set(id, updatedHolding);
     return updatedHolding;
@@ -392,10 +414,13 @@ export class MemStorage implements IStorage {
     return notification;
   }
 
-  async updateNotification(id: string, updateData: Partial<Notification>): Promise<Notification | null> {
+  async updateNotification(
+    id: string,
+    updateData: Partial<Notification>
+  ): Promise<Notification | null> {
     const notification = this.notifications.get(id);
     if (!notification) return null;
-    
+
     const updatedNotification = { ...notification, ...updateData };
     this.notifications.set(id, updatedNotification);
     return updatedNotification;
@@ -436,7 +461,7 @@ export class MemStorage implements IStorage {
   async updateAdmin(id: string, updateData: Partial<Admin>): Promise<Admin | null> {
     const admin = this.admins.get(id);
     if (!admin) return null;
-    
+
     const updatedAdmin = { ...admin, ...updateData };
     this.admins.set(id, updatedAdmin);
     return updatedAdmin;

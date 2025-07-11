@@ -1,12 +1,12 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
-import { useToast } from "@/hooks/use-toast";
-import { Trash2, Edit, Mail, User, CheckCircle, XCircle } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { useToast } from '@/hooks/use-toast';
+import { Trash2, Edit, Mail, User, CheckCircle, XCircle } from 'lucide-react';
+import { apiRequest } from '@/lib/queryClient';
 
 interface User {
   id: string;
@@ -24,51 +24,51 @@ export default function AdminUserManagement() {
   const queryClient = useQueryClient();
 
   const { data: users, isLoading } = useQuery({
-    queryKey: ["/api/admin/users"],
+    queryKey: ['/api/admin/users'],
     queryFn: async () => {
-      const response = await apiRequest("GET", "/api/admin/users");
+      const response = await apiRequest('GET', '/api/admin/users');
       return response.json();
     },
   });
 
   const updateUserMutation = useMutation({
     mutationFn: async ({ userId, data }: { userId: string; data: any }) => {
-      const response = await apiRequest("PUT", `/api/admin/users/${userId}`, data);
+      const response = await apiRequest('PUT', `/api/admin/users/${userId}`, data);
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
       toast({
-        title: "User Updated",
-        description: "User has been updated successfully.",
+        title: 'User Updated',
+        description: 'User has been updated successfully.',
       });
     },
     onError: (error: any) => {
       toast({
-        title: "Update Failed",
+        title: 'Update Failed',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
 
   const deleteUserMutation = useMutation({
     mutationFn: async (userId: string) => {
-      const response = await apiRequest("DELETE", `/api/admin/users/${userId}`);
+      const response = await apiRequest('DELETE', `/api/admin/users/${userId}`);
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
       toast({
-        title: "User Deleted",
-        description: "User has been deleted successfully.",
+        title: 'User Deleted',
+        description: 'User has been deleted successfully.',
       });
     },
     onError: (error: any) => {
       toast({
-        title: "Delete Failed",
+        title: 'Delete Failed',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
@@ -88,7 +88,7 @@ export default function AdminUserManagement() {
   };
 
   const handleDeleteUser = (userId: string) => {
-    if (confirm("Are you sure you want to delete this user? This action cannot be undone.")) {
+    if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
       deleteUserMutation.mutate(userId);
     }
   };
@@ -108,9 +108,7 @@ export default function AdminUserManagement() {
           <h2 className="text-2xl font-bold text-gray-900">User Management</h2>
           <p className="text-gray-600">Manage user accounts and permissions</p>
         </div>
-        <Badge variant="secondary">
-          {users?.length} Total Users
-        </Badge>
+        <Badge variant="secondary">{users?.length} Total Users</Badge>
       </div>
 
       <div className="grid gap-4">
@@ -129,11 +127,11 @@ export default function AdminUserManagement() {
                       <h3 className="text-lg font-medium text-gray-900 truncate">
                         {user.fullName}
                       </h3>
-                      {user.isVerified && (
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                      )}
+                      {user.isVerified && <CheckCircle className="w-4 h-4 text-green-500" />}
                       {user.isAdmin && (
-                        <Badge variant="default" className="text-xs">Admin</Badge>
+                        <Badge variant="default" className="text-xs">
+                          Admin
+                        </Badge>
                       )}
                     </div>
                     <div className="flex items-center text-sm text-gray-500 space-x-4">
@@ -141,9 +139,7 @@ export default function AdminUserManagement() {
                         <Mail className="w-4 h-4 mr-1" />
                         {user.email}
                       </span>
-                      {user.phone && (
-                        <span>{user.phone}</span>
-                      )}
+                      {user.phone && <span>{user.phone}</span>}
                     </div>
                     <p className="text-xs text-gray-400">
                       Joined: {new Date(user.createdAt).toLocaleDateString()}

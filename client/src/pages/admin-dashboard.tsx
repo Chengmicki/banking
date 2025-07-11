@@ -1,42 +1,42 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { useAdminAuth } from "@/hooks/use-admin-auth";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { 
-  Users, 
-  CreditCard, 
-  DollarSign, 
-  ArrowRightLeft, 
-  Bitcoin, 
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useAdminAuth } from '@/hooks/use-admin-auth';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import {
+  Users,
+  CreditCard,
+  DollarSign,
+  ArrowRightLeft,
+  Bitcoin,
   Bell,
   LogOut,
   Shield,
   Database,
-  Activity
-} from "lucide-react";
-import AdminUserManagement from "./admin-users";
-import AdminAccountManagement from "./admin-accounts";
-import AdminTransactionManagement from "./admin-transactions";
-import AdminCardManagement from "./admin-cards";
-import AdminCryptoManagement from "./admin-crypto";
-import AdminNotificationManagement from "./admin-notifications";
+  Activity,
+} from 'lucide-react';
+import AdminUserManagement from './admin-users';
+import AdminAccountManagement from './admin-accounts';
+import AdminTransactionManagement from './admin-transactions';
+import AdminCardManagement from './admin-cards';
+import AdminCryptoManagement from './admin-crypto';
+import AdminNotificationManagement from './admin-notifications';
 
 export default function AdminDashboard() {
   const { admin, logout } = useAdminAuth();
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState('overview');
 
   const { data: stats, isLoading } = useQuery({
-    queryKey: ["/api/admin/dashboard/stats"],
+    queryKey: ['/api/admin/dashboard/stats'],
     queryFn: async () => {
-      const response = await fetch("/api/admin/dashboard/stats", {
+      const response = await fetch('/api/admin/dashboard/stats', {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("admin_token")}`,
+          Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
         },
       });
-      if (!response.ok) throw new Error("Failed to fetch stats");
+      if (!response.ok) throw new Error('Failed to fetch stats');
       return response.json();
     },
   });
@@ -180,19 +180,27 @@ export default function AdminDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 gap-3">
-                    <Button onClick={() => setActiveTab("users")} variant="outline" size="sm">
+                    <Button onClick={() => setActiveTab('users')} variant="outline" size="sm">
                       <Users className="h-4 w-4 mr-2" />
                       Manage Users
                     </Button>
-                    <Button onClick={() => setActiveTab("accounts")} variant="outline" size="sm">
+                    <Button onClick={() => setActiveTab('accounts')} variant="outline" size="sm">
                       <DollarSign className="h-4 w-4 mr-2" />
                       View Accounts
                     </Button>
-                    <Button onClick={() => setActiveTab("transactions")} variant="outline" size="sm">
+                    <Button
+                      onClick={() => setActiveTab('transactions')}
+                      variant="outline"
+                      size="sm"
+                    >
                       <ArrowRightLeft className="h-4 w-4 mr-2" />
                       Transactions
                     </Button>
-                    <Button onClick={() => setActiveTab("notifications")} variant="outline" size="sm">
+                    <Button
+                      onClick={() => setActiveTab('notifications')}
+                      variant="outline"
+                      size="sm"
+                    >
                       <Bell className="h-4 w-4 mr-2" />
                       Send Alert
                     </Button>

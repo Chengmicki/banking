@@ -1,35 +1,45 @@
 # Everstead Bank - Modern Banking Application
 
-A full-stack banking application built with React, TypeScript, Express.js, and PostgreSQL.
+A comprehensive full-stack banking application built with React, TypeScript, Express.js, and PostgreSQL.
 
 ## Features
 
-- **Account Management**: Checking, savings, and credit accounts
-- **Transaction Tracking**: Real-time transaction monitoring
-- **Money Transfers**: Internal and external transfers
-- **Bill Payments**: Automated bill payment system
-- **Credit Cards**: Card management with limits and controls
-- **Cryptocurrency**: Bitcoin and Ethereum trading
-- **Admin Panel**: Comprehensive administrative controls
-- **Real-time Notifications**: Transaction and security alerts
+### Core Banking Features
+- **Account Management**: Multiple account types (checking, savings, credit)
+- **Transaction Processing**: Deposits, withdrawals, transfers, and bill payments
+- **Card Management**: Credit and debit card services with limits
+- **Cryptocurrency Trading**: Buy, sell, and manage crypto holdings
+- **Real-time Notifications**: Transaction alerts and security updates
+
+### Security Features
+- **JWT Authentication**: Secure token-based authentication
+- **Password Hashing**: bcrypt for secure password storage
+- **Role-based Access**: User and admin permission systems
+- **Input Validation**: Zod schemas for data validation
+
+### Admin Panel
+- **User Management**: View, edit, and manage user accounts
+- **Account Oversight**: Balance controls and transaction monitoring
+- **Card Administration**: Manage card limits and status
+- **System Analytics**: Real-time dashboard with statistics
 
 ## Tech Stack
 
 ### Frontend
-- React 18 with TypeScript
-- Tailwind CSS with shadcn/ui components
-- React Query for state management
-- Wouter for routing
-- Vite for build tooling
+- **React 18** with TypeScript
+- **Vite** for build tooling
+- **Tailwind CSS** + shadcn/ui for styling
+- **React Query** for server state management
+- **Wouter** for routing
 
-### Backend
-- Node.js with Express.js
-- PostgreSQL with Drizzle ORM
-- JWT authentication
-- bcrypt for password hashing
-- Stripe integration for payments
+### Backend  
+- **Express.js** with TypeScript
+- **PostgreSQL** with Drizzle ORM
+- **bcrypt** for password hashing
+- **JWT** for authentication
+- **Stripe** for payment processing
 
-## Getting Started
+## Quick Start
 
 ### Prerequisites
 - Node.js 18+
@@ -44,13 +54,9 @@ A full-stack banking application built with React, TypeScript, Express.js, and P
    ```
 
 3. Set up environment variables:
-   Copy `.env.example` to `.env` and configure the following:
-   ```
-   DATABASE_URL=postgresql://username:password@localhost:5432/banking_db
-   JWT_SECRET=your-super-secret-jwt-key-here
-   SMTP_USER=your-email@example.com
-   SMTP_PASS=your-email-password
-   STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
+   ```bash
+   cp .env.example .env
+   # Edit .env with your database URL and secrets
    ```
 
 4. Push database schema:
@@ -65,62 +71,101 @@ A full-stack banking application built with React, TypeScript, Express.js, and P
 
 The application will be available at `http://localhost:5000`
 
-## Database Schema
+## Default Credentials
 
-The application uses PostgreSQL with the following main tables:
-- `users` - User accounts and authentication
-- `accounts` - Bank accounts (checking, savings, credit)
-- `transactions` - Transaction history
-- `transfers` - Money transfers
-- `cards` - Credit/debit cards
-- `crypto_holdings` - Cryptocurrency holdings
-- `notifications` - User notifications
-- `admins` - Administrative users
+### Sample User
+- **Email**: john.doe@example.com
+- **Password**: password123
+
+### Admin Access
+- **Username**: admin
+- **Password**: admin123
+
+## Environment Variables
+
+Create a `.env` file with the following variables:
+
+```env
+# Database
+DATABASE_URL=postgresql://username:password@localhost:5432/bankingapp
+
+# Security
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+
+# Optional Services
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
+SMTP_HOST=smtp.example.com
+SMTP_USER=your-email@example.com
+SMTP_PASS=your-email-password
+```
 
 ## API Endpoints
 
 ### Authentication
 - `POST /api/auth/register` - User registration
 - `POST /api/auth/login` - User login
+- `POST /api/auth/forgot-password` - Password reset
 
-### User Data
+### User Routes
 - `GET /api/user/profile` - Get user profile
 - `PUT /api/user/profile` - Update user profile
 - `GET /api/accounts` - Get user accounts
-- `GET /api/transactions` - Get user transactions
-- `GET /api/transfers` - Get user transfers
-- `POST /api/transfers` - Create new transfer
+- `GET /api/transactions` - Get transactions
+- `POST /api/transfers` - Create transfer
+- `GET /api/cards` - Get user cards
+- `GET /api/crypto/holdings` - Get crypto holdings
 
-### Admin Panel
-- `GET /api/admin/dashboard/stats` - Admin dashboard statistics
-- `GET /api/admin/users` - Manage users
-- `GET /api/admin/accounts` - Manage accounts
-- `GET /api/admin/transactions` - Manage transactions
+### Admin Routes
+- `GET /api/admin/users` - Get all users
+- `GET /api/admin/accounts` - Get all accounts
+- `GET /api/admin/transactions` - Get all transactions
+- `POST /api/admin/notifications/broadcast` - Send notifications
+- `GET /api/admin/dashboard/stats` - Get dashboard statistics
 
-## Security Features
+## Database Schema
 
-- JWT token-based authentication
-- Password hashing with bcrypt
-- CORS configuration
-- Input validation with Zod schemas
-- Protected routes with middleware
+The application uses PostgreSQL with the following main tables:
+- `users` - User accounts and profiles
+- `accounts` - Banking accounts (checking, savings, credit)
+- `transactions` - All financial transactions
+- `cards` - Credit and debit cards
+- `crypto_holdings` - Cryptocurrency portfolios
+- `admins` - Administrative users
 
 ## Development
 
 ### Available Scripts
-
 - `npm run dev` - Start development server
-- `npm run build` - Build for production
+- `npm run build` - Build for production  
 - `npm run start` - Start production server
-- `npm run db:push` - Push database schema
-- `npm run check` - Type checking
+- `npm run db:push` - Push database schema changes
+- `npx eslint . --ext .ts,.tsx,.js --fix` - Run ESLint with auto-fix
+- `npx prettier --write .` - Format code with Prettier
 
-### Admin Access
+### Project Structure
+```
+├── client/           # React frontend
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   └── lib/
+├── server/           # Express backend
+│   ├── middleware/
+│   ├── services/
+│   └── routes.ts
+├── shared/           # Shared types and schemas
+└── package.json
+```
 
-Default admin credentials:
-- Username: `admin`
-- Password: `admin123`
+## Security Best Practices
+
+- All passwords are hashed using bcrypt
+- JWT tokens for secure authentication
+- Input validation with Zod schemas
+- CORS configuration for API security
+- Environment variable protection for secrets
+- Role-based access control for admin features
 
 ## License
 
-MIT License
+MIT License - See LICENSE file for details

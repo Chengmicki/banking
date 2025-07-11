@@ -1,26 +1,26 @@
-import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/hooks/use-toast";
-import { authService } from "@/lib/auth";
-import { queryClient } from "@/lib/queryClient";
-import { 
-  User, 
-  Shield, 
-  Bell, 
-  CreditCard, 
+import { useState } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useToast } from '@/hooks/use-toast';
+import { authService } from '@/lib/auth';
+import { queryClient } from '@/lib/queryClient';
+import {
+  User,
+  Shield,
+  Bell,
+  CreditCard,
   Settings as SettingsIcon,
   CheckCircle,
   Smartphone,
   Mail,
-  Lock
-} from "lucide-react";
+  Lock,
+} from 'lucide-react';
 
 interface UserProfile {
   id: number;
@@ -33,59 +33,59 @@ interface UserProfile {
 
 export default function Settings() {
   const { toast } = useToast();
-  const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
+  const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [pushNotifications, setPushNotifications] = useState(false);
   const [smsNotifications, setSmsNotifications] = useState(true);
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(true);
 
   const { data: profile } = useQuery<UserProfile>({
-    queryKey: ["/api/user/profile"],
+    queryKey: ['/api/user/profile'],
     queryFn: async () => {
-      const response = await fetch("/api/user/profile", {
+      const response = await fetch('/api/user/profile', {
         headers: authService.getAuthHeaders(),
       });
       return response.json();
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       setFullName(data.fullName);
-      setPhone(data.phone || "");
-      setAddress(data.address || "");
+      setPhone(data.phone || '');
+      setAddress(data.address || '');
     },
   });
 
   const updateProfileMutation = useMutation({
     mutationFn: async (profileData: any) => {
-      const response = await fetch("/api/user/profile", {
-        method: "PUT",
+      const response = await fetch('/api/user/profile', {
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           ...authService.getAuthHeaders(),
         },
         body: JSON.stringify(profileData),
       });
-      
+
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.message);
       }
-      
+
       return response.json();
     },
     onSuccess: () => {
       toast({
-        title: "Profile Updated",
-        description: "Your profile has been updated successfully.",
+        title: 'Profile Updated',
+        description: 'Your profile has been updated successfully.',
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/user/profile"] });
+      queryClient.invalidateQueries({ queryKey: ['/api/user/profile'] });
     },
     onError: (error: any) => {
       toast({
-        title: "Update Failed",
+        title: 'Update Failed',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
@@ -100,15 +100,15 @@ export default function Settings() {
 
   const handleChangePassword = () => {
     toast({
-      title: "Password Change",
-      description: "Password change functionality will be implemented here.",
+      title: 'Password Change',
+      description: 'Password change functionality will be implemented here.',
     });
   };
 
   const handleExportData = () => {
     toast({
-      title: "Data Export",
-      description: "Your data export will be prepared and sent to your email within 24 hours.",
+      title: 'Data Export',
+      description: 'Your data export will be prepared and sent to your email within 24 hours.',
     });
   };
 
@@ -141,49 +141,46 @@ export default function Settings() {
                 <Input
                   id="full-name"
                   value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
+                  onChange={e => setFullName(e.target.value)}
                   placeholder="Enter your full name"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
-                <Input
-                  id="email"
-                  value={profile?.email || ""}
-                  disabled
-                  className="bg-gray-50"
-                />
-                <p className="text-sm text-gray-500">Email cannot be changed for security reasons</p>
+                <Input id="email" value={profile?.email || ''} disabled className="bg-gray-50" />
+                <p className="text-sm text-gray-500">
+                  Email cannot be changed for security reasons
+                </p>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
                 <Input
                   id="phone"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={e => setPhone(e.target.value)}
                   placeholder="+1 (555) 123-4567"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="address">Address</Label>
                 <Textarea
                   id="address"
                   value={address}
-                  onChange={(e) => setAddress(e.target.value)}
+                  onChange={e => setAddress(e.target.value)}
                   placeholder="Enter your full address"
                   rows={3}
                 />
               </div>
 
-              <Button 
+              <Button
                 onClick={handleUpdateProfile}
                 disabled={updateProfileMutation.isPending}
                 className="w-full"
               >
-                {updateProfileMutation.isPending ? "Updating..." : "Update Profile"}
+                {updateProfileMutation.isPending ? 'Updating...' : 'Update Profile'}
               </Button>
             </CardContent>
           </Card>
@@ -227,7 +224,11 @@ export default function Settings() {
               {/* Password */}
               <div>
                 <h4 className="text-sm font-medium mb-3">Password</h4>
-                <Button variant="outline" onClick={handleChangePassword} className="w-full justify-between">
+                <Button
+                  variant="outline"
+                  onClick={handleChangePassword}
+                  className="w-full justify-between"
+                >
                   <span>Change Password</span>
                   <Lock className="w-4 h-4" />
                 </Button>
@@ -245,12 +246,9 @@ export default function Settings() {
                         <p className="text-sm text-gray-500">Receive codes via SMS</p>
                       </div>
                     </div>
-                    <Switch
-                      checked={twoFactorEnabled}
-                      onCheckedChange={setTwoFactorEnabled}
-                    />
+                    <Switch checked={twoFactorEnabled} onCheckedChange={setTwoFactorEnabled} />
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <Shield className="w-5 h-5 text-green-600" />
@@ -259,7 +257,9 @@ export default function Settings() {
                         <p className="text-sm text-gray-500">Use Google Authenticator or similar</p>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm">Setup</Button>
+                    <Button variant="outline" size="sm">
+                      Setup
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -274,9 +274,11 @@ export default function Settings() {
                       <p className="text-sm text-gray-500">Chrome on Windows • New York, NY</p>
                       <p className="text-xs text-gray-400">Last active: Now</p>
                     </div>
-                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Current</span>
+                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                      Current
+                    </span>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                     <div>
                       <p className="font-medium">Mobile App</p>
@@ -312,12 +314,9 @@ export default function Settings() {
                       <Mail className="w-4 h-4 text-blue-600" />
                       <span className="text-sm">Transaction alerts</span>
                     </div>
-                    <Switch
-                      checked={emailNotifications}
-                      onCheckedChange={setEmailNotifications}
-                    />
+                    <Switch checked={emailNotifications} onCheckedChange={setEmailNotifications} />
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <Mail className="w-4 h-4 text-blue-600" />
@@ -325,7 +324,7 @@ export default function Settings() {
                     </div>
                     <Switch checked={true} disabled />
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <Mail className="w-4 h-4 text-blue-600" />
@@ -345,12 +344,9 @@ export default function Settings() {
                       <Smartphone className="w-4 h-4 text-green-600" />
                       <span className="text-sm">Mobile app notifications</span>
                     </div>
-                    <Switch
-                      checked={pushNotifications}
-                      onCheckedChange={setPushNotifications}
-                    />
+                    <Switch checked={pushNotifications} onCheckedChange={setPushNotifications} />
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <Smartphone className="w-4 h-4 text-green-600" />
@@ -372,16 +368,13 @@ export default function Settings() {
                     </div>
                     <Switch checked={true} disabled />
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <Smartphone className="w-4 h-4 text-purple-600" />
                       <span className="text-sm">Large transactions</span>
                     </div>
-                    <Switch
-                      checked={smsNotifications}
-                      onCheckedChange={setSmsNotifications}
-                    />
+                    <Switch checked={smsNotifications} onCheckedChange={setSmsNotifications} />
                   </div>
                 </div>
               </div>
@@ -412,11 +405,13 @@ export default function Settings() {
                       Export
                     </Button>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                     <div>
                       <p className="font-medium">Delete my account</p>
-                      <p className="text-sm text-gray-500">Permanently remove your account and data</p>
+                      <p className="text-sm text-gray-500">
+                        Permanently remove your account and data
+                      </p>
                     </div>
                     <Button variant="outline" className="text-red-600 hover:text-red-700">
                       Delete
@@ -433,12 +428,12 @@ export default function Settings() {
                     <span className="text-sm">Share usage analytics</span>
                     <Switch checked={false} />
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Marketing communications</span>
                     <Switch checked={false} />
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Third-party data sharing</span>
                     <Switch checked={false} disabled />

@@ -1,16 +1,16 @@
-import { useState } from "react";
-import { useLocation } from "wouter";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
-import { useAdminAuth } from "@/hooks/use-admin-auth";
-import { Shield, LogIn } from "lucide-react";
+import { useState } from 'react';
+import { useLocation } from 'wouter';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
+import { useAdminAuth } from '@/hooks/use-admin-auth';
+import { Shield, LogIn } from 'lucide-react';
 
 export default function AdminLogin() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAdminAuth();
   const { toast } = useToast();
@@ -23,14 +23,14 @@ export default function AdminLogin() {
     try {
       await login(username, password);
       toast({
-        title: "Login Successful",
-        description: "Welcome to the admin panel!",
+        title: 'Login Successful',
+        description: 'Welcome to the admin panel!',
       });
     } catch (error: any) {
       toast({
-        title: "Login Failed",
+        title: 'Login Failed',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -45,9 +45,7 @@ export default function AdminLogin() {
             <Shield className="h-12 w-12 text-blue-600" />
           </div>
           <CardTitle className="text-2xl font-bold">Everstead Bank Admin</CardTitle>
-          <CardDescription>
-            Sign in to access the admin panel
-          </CardDescription>
+          <CardDescription>Sign in to access the admin panel</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -58,7 +56,7 @@ export default function AdminLogin() {
                 type="text"
                 placeholder="Enter your username"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={e => setUsername(e.target.value)}
                 required
               />
             </div>
@@ -69,7 +67,7 @@ export default function AdminLogin() {
                 type="password"
                 placeholder="Enter your password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={e => setPassword(e.target.value)}
                 required
               />
             </div>
@@ -88,20 +86,16 @@ export default function AdminLogin() {
             </Button>
           </form>
           <div className="mt-6 text-center">
-            <Button 
-              variant="link" 
-              onClick={() => setLocation("/admin/register")}
+            <Button
+              variant="link"
+              onClick={() => setLocation('/admin/register')}
               className="text-sm"
             >
               Need an admin account? Register here
             </Button>
           </div>
           <div className="mt-4 text-center">
-            <Button 
-              variant="link" 
-              onClick={() => setLocation("/")}
-              className="text-sm"
-            >
+            <Button variant="link" onClick={() => setLocation('/')} className="text-sm">
               Back to Customer Portal
             </Button>
           </div>

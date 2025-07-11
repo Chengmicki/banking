@@ -1,19 +1,25 @@
-import { useState } from "react";
-import { useLocation } from "wouter";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
-import { adminRegister } from "@/lib/admin-auth";
-import { Shield, UserPlus } from "lucide-react";
+import { useState } from 'react';
+import { useLocation } from 'wouter';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
+import { adminRegister } from '@/lib/admin-auth';
+import { Shield, UserPlus } from 'lucide-react';
 
 export default function AdminRegister() {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState<"super_admin" | "admin" | "moderator">("admin");
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [role, setRole] = useState<'super_admin' | 'admin' | 'moderator'>('admin');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const [, setLocation] = useLocation();
@@ -25,15 +31,15 @@ export default function AdminRegister() {
     try {
       await adminRegister(username, email, password, role);
       toast({
-        title: "Registration Successful",
-        description: "Admin account created successfully! You can now sign in.",
+        title: 'Registration Successful',
+        description: 'Admin account created successfully! You can now sign in.',
       });
-      setLocation("/admin/login");
+      setLocation('/admin/login');
     } catch (error: any) {
       toast({
-        title: "Registration Failed",
+        title: 'Registration Failed',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -48,9 +54,7 @@ export default function AdminRegister() {
             <Shield className="h-12 w-12 text-blue-600" />
           </div>
           <CardTitle className="text-2xl font-bold">Create Admin Account</CardTitle>
-          <CardDescription>
-            Register a new admin account for Everstead Bank
-          </CardDescription>
+          <CardDescription>Register a new admin account for Everstead Bank</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -61,7 +65,7 @@ export default function AdminRegister() {
                 type="text"
                 placeholder="Enter username"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={e => setUsername(e.target.value)}
                 required
               />
             </div>
@@ -72,7 +76,7 @@ export default function AdminRegister() {
                 type="email"
                 placeholder="Enter email address"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={e => setEmail(e.target.value)}
                 required
               />
             </div>
@@ -83,14 +87,17 @@ export default function AdminRegister() {
                 type="password"
                 placeholder="Enter password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={e => setPassword(e.target.value)}
                 required
                 minLength={6}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="role">Admin Role</Label>
-              <Select value={role} onValueChange={(value: "super_admin" | "admin" | "moderator") => setRole(value)}>
+              <Select
+                value={role}
+                onValueChange={(value: 'super_admin' | 'admin' | 'moderator') => setRole(value)}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select admin role" />
                 </SelectTrigger>
@@ -116,11 +123,7 @@ export default function AdminRegister() {
             </Button>
           </form>
           <div className="mt-6 text-center">
-            <Button 
-              variant="link" 
-              onClick={() => setLocation("/admin/login")}
-              className="text-sm"
-            >
+            <Button variant="link" onClick={() => setLocation('/admin/login')} className="text-sm">
               Already have an account? Sign in
             </Button>
           </div>
