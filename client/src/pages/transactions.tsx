@@ -10,8 +10,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Search, Plus, Minus, ArrowLeftRight, ShoppingCart } from 'lucide-react';
+import { Search, Plus, Minus, ArrowLeftRight, ShoppingCart, Receipt } from 'lucide-react';
 import { authService } from '@/lib/auth';
+import TransactionReceiptModal from '@/components/transaction-receipt-modal';
 
 interface Transaction {
   _id: string;
@@ -30,6 +31,8 @@ export default function Transactions() {
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('30');
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
 
   const { data: transactions, isLoading } = useQuery<Transaction[]>({
     queryKey: ['/api/transactions'],
@@ -189,10 +192,14 @@ export default function Transactions() {
         <CardContent className="p-0">
           <div className="space-y-0">
             {filteredTransactions.length ? (
-              filteredTransactions.map(transaction => (
+              filteredTransactions.map((transaction, index) => (
                 <div
-                  key={transaction._id}
-                  className="transaction-item flex items-center justify-between p-4 border-b border-gray-200 last:border-b-0"
+                  key={transaction._id || `transaction-${index}`}
+                  className="transaction-item flex items-center justify-between p-4 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 cursor-pointer"
+                  onClick={() => {
+                    setSelectedTransaction(transaction);
+                    setIsReceiptModalOpen(true);
+                  }}
                 >
                   <div className="flex items-center space-x-4">
                     <div
@@ -246,6 +253,18 @@ export default function Transactions() {
                       {transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
                     </p>
                   </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedTransaction(transaction);
+                      setIsReceiptModalOpen(true);
+                    }}
+                    className="ml-2"
+                  >
+                    <Receipt className="w-4 h-4" />
+                  </Button>
                 </div>
               ))
             ) : (
@@ -261,6 +280,16 @@ export default function Transactions() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Transaction Receipt Modal */}
+      <TransactionReceiptModal
+        isOpen={isReceiptModalOpen}
+        onClose={() => {
+          setIsReceiptModalOpen(false);
+          setSelectedTransaction(null);
+        }}
+        transaction={selectedTransaction}
+      />
 
       {/* Pagination */}
       {filteredTransactions.length > 0 && (

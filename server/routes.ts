@@ -289,14 +289,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/payees', authenticateToken, async (req: AuthRequest, res) => {
     try {
-      const payeeData = insertPayeeSchema.parse({
+      console.log('Payee request body:', req.body);
+      console.log('User ID:', req.userId);
+      
+      // Create the payee data for the current storage interface
+      const payeeData = {
         ...req.body,
-        userId: req.userId,
-      });
+        userId: req.userId!, // Keep as string for storage interface
+      };
 
+      console.log('Payee data for storage:', payeeData);
       const payee = await storage.createPayee(payeeData);
       res.json(payee);
     } catch (error: any) {
+      console.error('Payee creation error:', error);
+      console.error('Error details:', error.issues || error.message);
       res.status(400).json({ message: error.message });
     }
   });
@@ -328,12 +335,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const billPayment = await storage.createBillPayment(billPaymentData);
       
+      // Create transaction record for bill payment
+      await storage.createTransaction({
+        accountId: parseInt(billPaymentData.accountId.toString()),
+        type: 'payment',
+        amount: `-${billPaymentData.amount}`,
+        description: `Bill payment to ${billPaymentData.payeeId}`,
+        status: 'completed',
+      });
+
+      // Update account balance
+      const account = await storage.getAccount(billPaymentData.accountId.toString());
+      if (account) {
+        const currentBalance = parseFloat(account.balance);
+        const paymentAmount = parseFloat(billPaymentData.amount);
+        await storage.updateAccount(billPaymentData.accountId.toString(), {
+          balance: (currentBalance - paymentAmount).toFixed(2),
+        });
+      }
+      
       // Create notification for bill payment
       const payee = await storage.getPayee(billPaymentData.payeeId.toString());
       await storage.createNotification({
         userId: parseInt(req.userId!),
-        title: 'Bill Payment Scheduled',
-        message: `Bill payment of $${billPaymentData.amount} to ${payee?.name || 'payee'} has been scheduled.`,
+        title: 'Bill Payment Completed',
+        message: `Bill payment of $${billPaymentData.amount} to ${payee?.name || 'payee'} has been completed.`,
         type: 'transaction',
         isRead: false,
       });
