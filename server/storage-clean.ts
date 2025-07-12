@@ -223,6 +223,16 @@ export class PostgresStorage implements IStorage {
   }
 
   // Payee operations
+  async getPayee(id: string): Promise<Payee | null> {
+    const result = await db
+      .select()
+      .from(schema.payees)
+      .where(eq(schema.payees.id, parseInt(id)))
+      .limit(1);
+    if (result.length === 0) return null;
+    return result[0];
+  }
+
   async getPayeesByUserId(userId: string): Promise<Payee[]> {
     const result = await db
       .select()

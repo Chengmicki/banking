@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 
 interface Account {
-  _id: string;
+  id: number;
   accountNumber: string;
   accountType: string;
   balance: string;
@@ -145,7 +145,7 @@ export default function Crypto() {
     buyMutation.mutate({
       symbol: selectedCrypto,
       amount: cryptoAmount,
-      accountId: paymentAccount,
+      accountId: parseInt(paymentAccount),
     });
   };
 
@@ -329,7 +329,7 @@ export default function Crypto() {
                     </SelectTrigger>
                     <SelectContent>
                       {accounts?.map(account => (
-                        <SelectItem key={account._id} value={account._id}>
+                        <SelectItem key={account.id} value={account.id.toString()}>
                           {account.accountType.charAt(0).toUpperCase() +
                             account.accountType.slice(1)}{' '}
                           Account (****{account.accountNumber.slice(-4)})

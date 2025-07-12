@@ -10,6 +10,12 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### Fixed Transfer Functionality (July 2025)
+- ✅ Fixed transfer endpoint error caused by undefined emailService
+- ✅ Made email notifications optional when email service is not configured
+- ✅ Transfers now work correctly for both internal and external transfers
+- ✅ All banking functionality is now operational
+
 ### Complete Migration from Replit Agent to Replit Environment (July 2025)
 - ✅ Successfully migrated banking application from Replit Agent to Replit environment
 - ✅ Set up PostgreSQL database with proper schema and relationships

@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { PostgresStorage } from '../storage-postgres';
+import { PostgresStorage } from '../storage-clean';
 
 const storage = new PostgresStorage();
 

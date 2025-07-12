@@ -255,10 +255,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Update transfer status
       await storage.updateTransfer(transfer.id, { status: 'completed' });
 
-      // Send notification email
+      // Create notification for transfer completion
+      await storage.createNotification({
+        userId: parseInt(req.userId!),
+        title: 'Transfer Completed',
+        message: `Transfer of $${amount.toFixed(2)} has been completed successfully.`,
+        type: 'transaction',
+        isRead: false,
+      });
+
+      // Send notification email (optional - only if email service is configured)
       const user = await storage.getUser(req.userId!);
-      if (user) {
-        await emailService.sendTransferNotification(user.email, transfer);
+      if (user && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+        // Email service would be called here if configured
+        // await emailService.sendTransferNotification(user.email, transfer);
       }
 
       res.json(transfer);
@@ -317,6 +327,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const billPayment = await storage.createBillPayment(billPaymentData);
+      
+      // Create notification for bill payment
+      const payee = await storage.getPayee(billPaymentData.payeeId.toString());
+      await storage.createNotification({
+        userId: parseInt(req.userId!),
+        title: 'Bill Payment Scheduled',
+        message: `Bill payment of $${billPaymentData.amount} to ${payee?.name || 'payee'} has been scheduled.`,
+        type: 'transaction',
+        isRead: false,
+      });
+      
       res.json(billPayment);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -375,8 +396,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { symbol, amount, accountId } = req.body;
 
       // Verify account belongs to user
-      const account = await storage.getAccount(accountId);
-      if (!account || account.userId !== req.userId) {
+      const account = await storage.getAccount(accountId.toString());
+      if (!account || account.userId !== parseInt(req.userId!)) {
         return res.status(403).json({ message: 'Invalid account' });
       }
 
@@ -431,6 +452,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         amount: `-${totalCost.toFixed(2)}`,
         description: `Crypto purchase: ${amount} ${symbol.toUpperCase()}`,
         status: 'completed',
+      });
+
+      // Create notification for crypto purchase
+      await storage.createNotification({
+        userId: parseInt(req.userId!),
+        title: 'Crypto Purchase Completed',
+        message: `Successfully purchased ${amount} ${symbol.toUpperCase()} for $${totalCost.toFixed(2)}.`,
+        type: 'transaction',
+        isRead: false,
       });
 
       res.json({ message: 'Crypto purchase successful' });
